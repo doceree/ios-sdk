@@ -11,7 +11,7 @@ import ImageIO
 import SafariServices
 import os.log
 
-public final class DocereeAdView: UIView, UIApplicationDelegate, SFSafariViewControllerDelegate {
+public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     //MARK: Properties
     var loadingResponses: [(_: URL) -> Void] = []
@@ -19,7 +19,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate, SFSafariViewCon
     public var delegate: DocereeAdViewDelegate?
     var ctaLink: String?
     var cbId: String?
-    var didLeaveAd: Bool = false
+    static var didLeaveAd: Bool = false
     var isResponseFromAdbutler: Bool = false
     var p1: String?, p2: String?, click: String?
     var placement1: Placement_1?
@@ -135,28 +135,13 @@ public final class DocereeAdView: UIView, UIApplicationDelegate, SFSafariViewCon
                                 return
                             }
                             DispatchQueue.main.async {
+                                NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+                                NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+                                NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
                                 let imageUrl = NSURL(string: adResponseData.sourceURL)
-                                if NSData(contentsOf: imageUrl! as URL)?.imageFormat == ImageFormat.GIF{
-                                    let url = adResponseData.sourceURL
-                                    let image = UIImage.gifImageWithURL(url)
-                                    self.adImageView.image = image
-                                } else {
-                                    let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil)
-                                    let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource!, 0, nil)!)
-                                    self.adImageView.image = image
-                                }
-//                                if self.delegate != nil{
-//                                    NotificationCenter.default.addObserver(self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
-//                                    if #available(iOS 13.0, *) {
-//                                        NotificationCenter.default.addObserver(self, selector: #selector(self.appMovedToBackground), name: UIScene.willDeactivateNotification, object: nil)
-//                                    } else {
-//                                        NotificationCenter.default.addObserver(self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
-//                                    }
-//                                }
-//                                self.delegate?.docereeAdViewDidReceiveAd(self)
-//                                docereeAdRequest.sendAnalytics(self.docereeAdUnitId, self.cbId!, TypeOfEvent.CPM)
+                                self.handleImageRendering(of: imageUrl)
+                                docereeAdRequest.sendAnalytics(self.docereeAdUnitId, self.cbId!, TypeOfEvent.CPM)
                                 if self.delegate != nil{
-                                      NotificationCenter.default.addObserver(self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
                                     self.delegate?.docereeAdViewDidReceiveAd(self)
                                 }
                             }
@@ -170,26 +155,36 @@ public final class DocereeAdView: UIView, UIApplicationDelegate, SFSafariViewCon
                                     return
                                 }
                                 DispatchQueue.main.async {
+                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
                                     let imageUrl = NSURL(string: (adResponseData.placements?.placement_1?.image_url)!)
-                                    let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil)
-                                    let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource!, 0, nil)!)
-                                    self.adImageView.image = image
+//                                    let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil)
+//                                    let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource!, 0, nil)!)
+//                                    self.adImageView.image = image
+                                    self.handleImageRendering(of: imageUrl)
+                                    if self.delegate != nil{
+                                        self.delegate?.docereeAdViewDidReceiveAd(self)
+                                    }
                                 }
                             } else {
                                 // Handle Rich media ads here
                                 // Show mraid banner
                                 let body: String = (adResponseData.placements?.placement_1?.body)!
-                                if (body == nil || body.count == 0){
+                                if (body.count == 0){
                                     return
                                 }
                                 DispatchQueue.main.async {
                                     let banner = DocereeAdViewRichMediaBanner()
-//                                    banner.initialize(parentViewController:self.rootViewController!, position:"bottom-center", respectSafeArea:true, renderBodyOverride: true, size: self.adSize!, body: body)
+                                    //                                    banner.initialize(parentViewController:self.rootViewController!, position:"bottom-center", respectSafeArea:true, renderBodyOverride: true, size: self.adSize!, body: body)
+                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
                                     banner.initialize(parentViewController: self.rootViewController!, frame: self.frame, renderBodyOverride: false, size: self.adSize!, body: body, docereeAdView: self, delegate: self.delegate)
+                                    if self.delegate != nil{
+                                        self.delegate?.docereeAdViewDidReceiveAd(self)
+                                    }
                                 }
-                            }
-                            if self.delegate != nil{
-                                self.delegate?.docereeAdViewDidReceiveAd(self)
                             }
                         }
                     } catch{
@@ -205,6 +200,21 @@ public final class DocereeAdView: UIView, UIApplicationDelegate, SFSafariViewCon
     }
     
     //MARK: Private methods
+    
+    private func handleImageRendering(of imageUrl: NSURL?){
+        if imageUrl == nil || imageUrl?.absoluteString?.count == 0 {
+            return
+        }
+        if NSData(contentsOf: imageUrl! as URL)?.imageFormat == ImageFormat.GIF {
+            let url = imageUrl
+            let image = UIImage.gifImageWithURL((url?.absoluteString)!)
+            self.adImageView.image = image
+        } else {
+            let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil)
+            let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource!, 0, nil)!)
+            self.adImageView.image = image
+        }
+    }
     
     private func setUpLayout(){
         //        NSLayoutConstraint.activate([
@@ -229,35 +239,49 @@ public final class DocereeAdView: UIView, UIApplicationDelegate, SFSafariViewCon
     
     //Mark: Action method
     @objc func onImageTouched(_ sender: UITapGestureRecognizer){
-        self.didLeaveAd = true
+        DocereeAdView.self.didLeaveAd = true
         if !self.isResponseFromAdbutler {
             let url = URL(string: ctaLink!)
-            let vc = SFSafariViewController(url: url!)
-            vc.delegate = self
-            self.rootViewController?.present(vc, animated: true, completion: {
+//            let vc = SFSafariViewController(url: url!)
+//            vc.delegate = self
+//            self.rootViewController?.present(vc, animated: true, completion: {
+            if UIApplication.shared.canOpenURL(url!){
                 DocereeAdRequest().sendAnalytics(self.docereeAdUnitId, self.cbId!, TypeOfEvent.CPC)
-                self.delegate?.docereeAdViewWillPresentScreen(self)
-            })
+                UIApplication.shared.openURL(url!)
+            }
+//                self.delegate?.docereeAdViewWillPresentScreen(self)
+//            })
         } else {
             let url = URL(string: ctaLink!)
-            let vc = SFSafariViewController(url: url!)
-            vc.delegate = self
-            self.rootViewController?.present(vc, animated: true, completion: {
+//            let vc = SFSafariViewController(url: url!)
+//            vc.delegate = self
+//            self.rootViewController?.present(vc, animated: true, completion: {
+//                DocereeAdRequest().sendImpressionsToAdButler()
+//                self.delegate?.docereeAdViewWillPresentScreen(self)
+//            })
+            if UIApplication.shared.canOpenURL(url!){
                 DocereeAdRequest().sendImpressionsToAdButler()
-                self.delegate?.docereeAdViewWillPresentScreen(self)
-            })
+                UIApplication.shared.openURL(url!)
+            }
         }
     }
     
     @objc func appMovedToBackground(){
-        if  didLeaveAd && delegate != nil {
+        if  DocereeAdView.didLeaveAd && delegate != nil {
             delegate?.docereeAdViewWillLeaveApplication(self)
         }
     }
     
-    @objc func adWillDismissScreen(){
-        if didLeaveAd && delegate != nil{
+    @objc func willMoveToForeground(){
+        if DocereeAdView.didLeaveAd && delegate != nil {
             delegate?.docereeAdViewWillDismissScreen(self)
+        }
+    }
+    
+    @objc func didBecomeActive(){
+        if DocereeAdView.didLeaveAd && delegate != nil {
+            delegate?.docereeAdViewDidDismissScreen(self)
+            DocereeAdView.didLeaveAd = false
         }
     }
     
@@ -293,22 +317,16 @@ public final class DocereeAdView: UIView, UIApplicationDelegate, SFSafariViewCon
     //        setUpLayout()
     //    }
     
-    public func applicationDidEnterBackground(_ application: UIApplication) {
-        self.delegate?.docereeAdViewWillLeaveApplication(self)
-    }
-    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
-    public override func didMoveToWindow() {
-        if self.window != nil && didLeaveAd && delegate != nil{
-            didLeaveAd = false
-            delegate?.docereeAdViewDidDismissScreen(self)
-        } else if didLeaveAd && delegate != nil{
-            delegate?.docereeAdViewWillLeaveApplication(self)
+    public override func willMove(toWindow newWindow: UIWindow?) {
+        if window != nil {
+            NotificationCenter.default.removeObserver(self)
         }
     }
+    
 }
 
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
@@ -506,5 +524,12 @@ extension NSData{
         } else {
             return .Unknown
         }
+    }
+}
+
+extension NotificationCenter{
+    func setObserver(observer: Any, selector: Selector, name: NSNotification.Name, object: AnyObject?){
+        NotificationCenter.default.removeObserver(observer, name: name, object: object)
+        NotificationCenter.default.addObserver(observer, selector: selector, name: name, object: object)
     }
 }

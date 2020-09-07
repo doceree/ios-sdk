@@ -24,6 +24,7 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
     private var isAdMRAIDMedia: Bool = false
     private var delegate: DocereeAdViewDelegate?
     private var docereeAdView: DocereeAdView?
+    private var frame1: CGRect?
     
     // MARK: desired size for ads
     private var size: AdSize = Banner()
@@ -37,15 +38,6 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
                    renderBodyOverride: renderBodyOverride, size: size, body: body, docereeAdView: docereeAdView, delegate: delegate)
     }
     
-    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        if let url = navigationAction.request.url{
-            decisionHandler(.cancel)
-            UIApplication.shared.openURL(url)
-        } else{
-            decisionHandler(.allow)
-        }
-    }
-    
     private func initialize(parentViewController:UIViewController, position:String?, frame:CGRect?, respectSafeArea:Bool = false, renderBodyOverride: Bool, size: AdSize, body: String?, docereeAdView: DocereeAdView?, delegate: DocereeAdViewDelegate?) {
         self.parentController = parentViewController
         self.respectSafeArea = respectSafeArea
@@ -53,7 +45,7 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
         self.delegate = delegate
         self.docereeAdView = docereeAdView
         
-        initBanner()
+        initBanner(frame: frame!)
         //        MRAIDUtilities.validateHTML(&renderBody)
         var renderBody2: String = body!
         
@@ -63,9 +55,6 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
             let url = URL(fileURLWithPath: "https://adbserver.doceree.com/")
             mraidView.loadHTMLString(renderBody2, baseURL:url)
             originalRootController = UIApplication.shared.delegate?.window??.rootViewController
-            let notification = NotificationCenter.default
-            notification.addObserver(self, selector: #selector(appMovedToBackground), name:UIApplication.didEnterBackgroundNotification, object: nil)
-            notification.addObserver(self, selector: #selector(appMovedToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
             if (frame != nil){
                 addAsNormalChild(to: parentViewController, frame: frame!)
             }
@@ -84,26 +73,64 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
         }
     }
     
-    public override func viewWillDisappear(_ animated: Bool) {
-           print("richmedia banner disappear")
-       }
+    // MARK: declare visibility var
     
+    private var didLeaveApplication: Bool = false
+
+    public override func viewDidLoad() {
+//        print("loaded")
+        NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToForeground), name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+
+    public override func viewDidDisappear(_ animated: Bool) {
+//        print("disappear")
+        NotificationCenter.default.removeObserver(self)
+    }
+
     @objc func appMovedToBackground(){
-        if delegate != nil && docereeAdView != nil{
-            delegate?.docereeAdViewWillLeaveApplication(self.docereeAdView!)
-        }
+        self.didLeaveApplication = true
     }
-    
+
     @objc func appMovedToForeground(){
-        if delegate != nil && docereeAdView != nil {
-            delegate?.docereeAdViewWillDismissScreen(self.docereeAdView!)
-            delegate?.docereeAdViewDidDismissScreen(self.docereeAdView!)
-        }
+        self.didLeaveApplication = false
+        self.removeFromParent()
+        self.addAsNormalChild(to: self.parentController, frame: frame1!)
     }
     
-    func initBanner(){
+    //MARK: creating WkWebViewConfiguration here
+    
+    func webViewConfiguration() -> WKWebViewConfiguration{
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController = userContentController()
+        return configuration
+    }
+    
+    private func userContentController() -> WKUserContentController{
+        let controller = WKUserContentController()
+        controller.addUserScript(viewPortScript())
+        return controller
+    }
+    
+    private func viewPortScript() -> WKUserScript{
+        let viewPorScript = """
+            var meta = document.createElement('meta');
+            meta.setAttribute('name', 'viewport');
+            meta.setAttribute('content', 'width=device-width');
+            meta.setAttribute('initial-scale', '1.0');
+            meta.setAttribute('maximum-scale', '1.0');
+            meta.setAttribute('minimum-scale', '1.0');
+            meta.setAttribute('user-scalable', 'no');
+            document.getElementsByTagName('head')[0].appendChild(meta);
+        """
+        return WKUserScript(source: viewPorScript, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+    }
+
+    
+    func initBanner(frame: CGRect){
         view.backgroundColor = UIColor.white
-        initWebView()
+        self.frame1 = frame
+        initWebView(frame: frame)
     }
     
     public override var prefersStatusBarHidden: Bool {
@@ -112,11 +139,12 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
         }
     }
     
-    private func initWebView(){
+    private func initWebView(frame: CGRect){
         mraidHandler = MRAIDHandler()
         mraidHandler.respectsSafeArea = respectSafeArea
         mraidHandler.initialize(parentViewController:self, mraidDelegate:self, isMRAIDCompatible: isAdMRAIDMedia)
         
+//        mraidView = WKWebView(frame: frame, configuration: webViewConfiguration())
         mraidView = WKWebView()
         mraidHandler.activeWebView = mraidView
         
@@ -191,7 +219,7 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
             mraidView!.scrollView.contentInsetAdjustmentBehavior = .never
         }
     }
-    
+        
     private func addAsNormalChild(to parent: UIViewController, frame: CGRect){
         view.frame = frame
         parent.view.addSubview(view)
@@ -200,8 +228,10 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
     private func addAsChild(to parent:UIViewController, frame:CGRect){
         defaultPosition = CGPoint(x:frame.minX, y:frame.minY)
         defaultSize = CGSize(width:frame.width, height:frame.height)
-        mraidHandler.setDefaultPosition(frame)
-        mraidHandler.setCurrentPosition(frame)
+        if (isAdMRAIDMedia){
+            mraidHandler.setDefaultPosition(frame)
+            mraidHandler.setCurrentPosition(frame)
+        }
     }
     
     private func setResizeMask(){
@@ -264,10 +294,6 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
     
     func customCloseClicked(){
         close()
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
     
     func setRootController(_ controller:UIViewController){
@@ -339,23 +365,9 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
         view.addConstraints(webViewSizeConstraints)
     }
     
-//    public override func viewWillDisappear(_ animated: Bool) {
-//        if delegateNotNil() {
-//            delegate?.docereeAdViewWillPresentScreen(self.docereeAdView!)
-//        }
-//    }
-//
-//    public override func viewWillAppear(_ animated: Bool) {
-//        if delegateNotNil() {
-//            delegate?.docereeAdViewWillDismissScreen(self.docereeAdView!)
-//        }
-//    }
-//
-//    public override func viewDidAppear(_ animated: Bool) {
-//        if delegateNotNil(){
-//            delegate?.docereeAdViewDidDismissScreen(self.docereeAdView!)
-//        }
-//    }
+    public override func viewDidAppear(_ animated: Bool) {
+//        print("view appeared")
+    }
     
     private func delegateNotNil() -> Bool{
         return delegate != nil && docereeAdView != nil
@@ -530,17 +542,7 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
             setResizeMask()
         }
     }
-    
 }
-
-//extension DocereeAdViewRichMediaBanner: WKNavigationDelegate{
-//    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-//        if navigationAction.navigationType == .linkActivated{
-//        } else{
-//            decisionHandler(.allow)
-//        }
-//    }
-//}
 
 extension String {
     func matches() -> Bool{
@@ -551,17 +553,17 @@ extension String {
 
 extension UIApplication{
     class func topViewController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-          if let navigationController = controller as? UINavigationController {
-              return topViewController(controller: navigationController.visibleViewController)
-          }
-          if let tabController = controller as? UITabBarController {
-              if let selected = tabController.selectedViewController {
-                  return topViewController(controller: selected)
-              }
-          }
-          if let presented = controller?.presentedViewController {
-              return topViewController(controller: presented)
-          }
-          return controller
-      }
+        if let navigationController = controller as? UINavigationController {
+            return topViewController(controller: navigationController.visibleViewController)
+        }
+        if let tabController = controller as? UITabBarController {
+            if let selected = tabController.selectedViewController {
+                return topViewController(controller: selected)
+            }
+        }
+        if let presented = controller?.presentedViewController {
+            return topViewController(controller: presented)
+        }
+        return controller
+    }
 }

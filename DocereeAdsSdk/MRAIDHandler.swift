@@ -76,9 +76,11 @@ public class MRAIDHandler : NSObject, WKUIDelegate, WKNavigationDelegate {
             return
         } else {
             if navigationAction.navigationType == .linkActivated  {
+                DocereeAdRequest().sendImpressionsToAdButler()
                 if let url = navigationAction.request.url,
                     let host = url.host, !host.hasPrefix("www.google.com"),
                     UIApplication.shared.canOpenURL(url) {
+                    DocereeAdView.didLeaveAd = true
                     UIApplication.shared.open(url)
                     decisionHandler(.cancel)
                 } else {

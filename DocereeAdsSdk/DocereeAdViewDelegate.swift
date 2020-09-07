@@ -9,8 +9,6 @@
 import Foundation
 import UIKit
 
-// DocereeAdView events protocol
-
 public protocol DocereeAdViewDelegate{
     func docereeAdViewDidReceiveAd(_ docereeAdView: DocereeAdView)
     func docereeAdView(_ docereeAdView: DocereeAdView,
