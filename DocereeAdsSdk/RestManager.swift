@@ -254,17 +254,7 @@ public final class RestManager{
         urlRequest.httpMethod = HttpMethod.get.rawValue
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
-        let task = session.dataTask(with: urlRequest) {(data, response, error) in
-            guard let data = data else { return }
-            let response = response as! HTTPURLResponse
-            if response.statusCode == 200{
-                do {
-//                    print(data)
-                } catch{
-//                    print("Exception thrown in adbutler response \(error)")
-                }
-            }
-        }
+        let task = session.dataTask(with: urlRequest)
         task.resume()
     }
     

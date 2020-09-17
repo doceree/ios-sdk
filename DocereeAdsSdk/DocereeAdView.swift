@@ -23,6 +23,8 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     var isResponseFromAdbutler: Bool = false
     var p1: String?, p2: String?, click: String?
     var placement1: Placement_1?
+    var countDown = 30
+    private var docereeAdRequest: DocereeAdRequest?
     
     @IBOutlet public weak var rootViewController: UIViewController?
     
@@ -113,6 +115,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     //MARK: Public methods
     public func load(_ docereeAdRequest: DocereeAdRequest){
         //        todo set image here
+        self.docereeAdRequest = docereeAdRequest
         let queue = OperationQueue()
         let operation1 = BlockOperation(block: {
             let width: Int = Int((self.adSize?.getAdSize().width)!)
@@ -144,6 +147,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                                 if self.delegate != nil{
                                     self.delegate?.docereeAdViewDidReceiveAd(self)
                                 }
+                                
                             }
                         } else {
                             self.isResponseFromAdbutler = true
@@ -197,6 +201,9 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             }
         })
         queue.addOperation(operation1)
+        AdsRefreshCountdownTimer.shared.startRefresh(){
+            self.refresh()
+        }
     }
     
     //MARK: Private methods
@@ -242,23 +249,12 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         DocereeAdView.self.didLeaveAd = true
         if !self.isResponseFromAdbutler {
             let url = URL(string: ctaLink!)
-//            let vc = SFSafariViewController(url: url!)
-//            vc.delegate = self
-//            self.rootViewController?.present(vc, animated: true, completion: {
             if UIApplication.shared.canOpenURL(url!){
                 DocereeAdRequest().sendAnalytics(self.docereeAdUnitId, self.cbId!, TypeOfEvent.CPC)
                 UIApplication.shared.openURL(url!)
             }
-//                self.delegate?.docereeAdViewWillPresentScreen(self)
-//            })
         } else {
             let url = URL(string: ctaLink!)
-//            let vc = SFSafariViewController(url: url!)
-//            vc.delegate = self
-//            self.rootViewController?.present(vc, animated: true, completion: {
-//                DocereeAdRequest().sendImpressionsToAdButler()
-//                self.delegate?.docereeAdViewWillPresentScreen(self)
-//            })
             if UIApplication.shared.canOpenURL(url!){
                 DocereeAdRequest().sendImpressionsToAdButler()
                 UIApplication.shared.openURL(url!)
@@ -267,6 +263,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     @objc func appMovedToBackground(){
+        AdsRefreshCountdownTimer.shared.stopRefresh()
         if  DocereeAdView.didLeaveAd && delegate != nil {
             delegate?.docereeAdViewWillLeaveApplication(self)
         }
@@ -283,6 +280,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             delegate?.docereeAdViewDidDismissScreen(self)
             DocereeAdView.didLeaveAd = false
         }
+        self.refresh()
     }
     
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
@@ -319,14 +317,21 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+        AdsRefreshCountdownTimer.shared.stopRefresh()
     }
     
     public override func willMove(toWindow newWindow: UIWindow?) {
         if window != nil {
             NotificationCenter.default.removeObserver(self)
+            AdsRefreshCountdownTimer.shared.stopRefresh()
         }
     }
-    
+
+    func refresh(){
+        if docereeAdRequest != nil {
+            load(self.docereeAdRequest!)
+        }
+    }
 }
 
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {

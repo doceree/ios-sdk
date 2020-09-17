@@ -25,6 +25,7 @@
 		566465E424F7C74200FDFACE /* MRAIDUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465D324F7C74200FDFACE /* MRAIDUtilities.swift */; };
 		566465E524F7C74200FDFACE /* MRAIDHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465D424F7C74200FDFACE /* MRAIDHandler.swift */; };
 		566465E624F7C74200FDFACE /* DocereeAdRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465D524F7C74200FDFACE /* DocereeAdRequest.swift */; };
+		56CEDBBD2510BD29001152D6 /* AdsRefreshCountdownTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		566465D324F7C74200FDFACE /* MRAIDUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MRAIDUtilities.swift; sourceTree = "<group>"; };
 		566465D424F7C74200FDFACE /* MRAIDHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MRAIDHandler.swift; sourceTree = "<group>"; };
 		566465D524F7C74200FDFACE /* DocereeAdRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocereeAdRequest.swift; sourceTree = "<group>"; };
+		56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsRefreshCountdownTimer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 				566465C824F7C74100FDFACE /* UAString.swift */,
 				566465BD24F7C72300FDFACE /* DocereeAdsSdk.h */,
 				566465BE24F7C72300FDFACE /* Info.plist */,
+				56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */,
 			);
 			path = DocereeAdsSdk;
 			sourceTree = "<group>";
@@ -199,6 +202,7 @@
 				566465E024F7C74200FDFACE /* DocereeRequestError.swift in Sources */,
 				566465E624F7C74200FDFACE /* DocereeAdRequest.swift in Sources */,
 				566465DD24F7C74200FDFACE /* Api.swift in Sources */,
+				56CEDBBD2510BD29001152D6 /* AdsRefreshCountdownTimer.swift in Sources */,
 				566465D624F7C74200FDFACE /* AdSize.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
