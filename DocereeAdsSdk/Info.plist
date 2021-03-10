@@ -18,5 +18,7 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Would you like to allow this app to track?</string>
 </dict>
 </plist>

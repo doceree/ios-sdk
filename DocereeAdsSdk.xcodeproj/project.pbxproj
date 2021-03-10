@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5660E01D25F792B900838E56 /* AdConsentUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5660E01C25F792B900838E56 /* AdConsentUIView.swift */; };
 		566465BF24F7C72300FDFACE /* DocereeAdsSdk.h in Headers */ = {isa = PBXBuildFile; fileRef = 566465BD24F7C72300FDFACE /* DocereeAdsSdk.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		566465D624F7C74200FDFACE /* AdSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465C524F7C74100FDFACE /* AdSize.swift */; };
 		566465D724F7C74200FDFACE /* MRAIDBrowserWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465C624F7C74100FDFACE /* MRAIDBrowserWindow.swift */; };
@@ -25,10 +26,12 @@
 		566465E424F7C74200FDFACE /* MRAIDUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465D324F7C74200FDFACE /* MRAIDUtilities.swift */; };
 		566465E524F7C74200FDFACE /* MRAIDHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465D424F7C74200FDFACE /* MRAIDHandler.swift */; };
 		566465E624F7C74200FDFACE /* DocereeAdRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465D524F7C74200FDFACE /* DocereeAdRequest.swift */; };
+		56843F6425F116B900811ECD /* AdConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56843F6325F116B900811ECD /* AdConsentViewController.swift */; };
 		56CEDBBD2510BD29001152D6 /* AdsRefreshCountdownTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5660E01C25F792B900838E56 /* AdConsentUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdConsentUIView.swift; sourceTree = "<group>"; };
 		566465BA24F7C72300FDFACE /* DocereeAdsSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DocereeAdsSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		566465BD24F7C72300FDFACE /* DocereeAdsSdk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocereeAdsSdk.h; sourceTree = "<group>"; };
 		566465BE24F7C72300FDFACE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -49,6 +52,7 @@
 		566465D324F7C74200FDFACE /* MRAIDUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MRAIDUtilities.swift; sourceTree = "<group>"; };
 		566465D424F7C74200FDFACE /* MRAIDHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MRAIDHandler.swift; sourceTree = "<group>"; };
 		566465D524F7C74200FDFACE /* DocereeAdRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocereeAdRequest.swift; sourceTree = "<group>"; };
+		56843F6325F116B900811ECD /* AdConsentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdConsentViewController.swift; sourceTree = "<group>"; };
 		56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsRefreshCountdownTimer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -102,6 +106,8 @@
 				566465BD24F7C72300FDFACE /* DocereeAdsSdk.h */,
 				566465BE24F7C72300FDFACE /* Info.plist */,
 				56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */,
+				56843F6325F116B900811ECD /* AdConsentViewController.swift */,
+				5660E01C25F792B900838E56 /* AdConsentUIView.swift */,
 			);
 			path = DocereeAdsSdk;
 			sourceTree = "<group>";
@@ -198,6 +204,8 @@
 				566465DB24F7C74200FDFACE /* DocereeAdView.swift in Sources */,
 				566465DC24F7C74200FDFACE /* MRAIDDelegate.swift in Sources */,
 				566465D924F7C74200FDFACE /* UAString.swift in Sources */,
+				5660E01D25F792B900838E56 /* AdConsentUIView.swift in Sources */,
+				56843F6425F116B900811ECD /* AdConsentViewController.swift in Sources */,
 				566465E124F7C74200FDFACE /* DocereeAdViewRichMediaBanner.swift in Sources */,
 				566465E024F7C74200FDFACE /* DocereeRequestError.swift in Sources */,
 				566465E624F7C74200FDFACE /* DocereeAdRequest.swift in Sources */,

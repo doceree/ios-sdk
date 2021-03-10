@@ -7,6 +7,9 @@
 //
 
 import Foundation
+import AppTrackingTransparency
+import AdSupport
+import OSLog
 
 public final class DocereeMobileAds{
     
@@ -36,6 +39,27 @@ public final class DocereeMobileAds{
 
         let obj: Any? = CompletionStatus.Loading
         (obj)
+        
+        if #available(iOS 14, *) {
+            ATTrackingManager.requestTrackingAuthorization{ (status) in
+                switch status{
+                case .authorized:
+                    os_log("authorized", log: .default, type: .error)
+                case .denied:
+                    os_log("denied", log: .default, type: .error)
+                    return
+                case .notDetermined:
+                    os_log("not determined", log: .default, type: .error)
+                    return
+                case .restricted:
+                    os_log("restricted", log: .default, type: .error)
+                    return
+                @unknown default:
+                    os_log("Unknown error", log: .default, type: .error)
+                    return
+                }
+            }
+        }
     }
     
     public static func clearUserData(){

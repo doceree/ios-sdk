@@ -20,11 +20,13 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     var ctaLink: String?
     var cbId: String?
     static var didLeaveAd: Bool = false
-    var isResponseFromAdbutler: Bool = false
-    var p1: String?, p2: String?, click: String?
-    var placement1: Placement_1?
     var countDown = 30
     private var docereeAdRequest: DocereeAdRequest?
+    
+    var crossImageView: UIImageView?
+    var infoImageView: UIImageView?
+    let iconWidth = 13
+    let iconHeight = 13
     
     @IBOutlet public weak var rootViewController: UIViewController?
     
@@ -125,74 +127,62 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                 os_log("Invalid Request. Ad size will not fit on screen", log: .default, type: .error)
                 return
             }
-            docereeAdRequest.requestAd(self.docereeAdUnitId, size){ (results, isResponseForUS, isRichMediaAd) in
+            docereeAdRequest.requestAd(self.docereeAdUnitId, size){ (results, isRichMediaAd) in
                 if let data = results.data {
                     let decoder = JSONDecoder()
                     do {
-                        if !isResponseForUS {
-                            self.isResponseFromAdbutler = false
-                            let adResponseData: AdResponse = try decoder.decode(AdResponse.self, from: data)
-                            self.ctaLink = adResponseData.ctaLink
-                            self.cbId = adResponseData.CBID
-                            if (adResponseData.sourceURL.count == 0){
+                        let adResponseData: AdResponseForPlatform = try decoder.decode(AdResponseForPlatform.self, from: data)
+                        let imageUrl = adResponseData.sourceURL
+                        self.ctaLink = adResponseData.ctaLink
+                        if !isRichMediaAd{
+                            if (imageUrl == nil || imageUrl?.count == 0) {
                                 return
                             }
                             DispatchQueue.main.async {
                                 NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
                                 NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
                                 NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-                                let imageUrl = NSURL(string: adResponseData.sourceURL)
+                                let imageUrl = NSURL(string: (adResponseData.sourceURL)!)
                                 self.handleImageRendering(of: imageUrl)
-                                docereeAdRequest.sendAnalytics(self.docereeAdUnitId, self.cbId!, TypeOfEvent.CPM)
                                 if self.delegate != nil{
                                     self.delegate?.docereeAdViewDidReceiveAd(self)
                                 }
-                                
                             }
                         } else {
-                            self.isResponseFromAdbutler = true
-                            let adResponseData: ResponseAdButler = try decoder.decode(ResponseAdButler.self, from: data)
-                            let imageUrl = adResponseData.placements?.placement_1?.image_url
-                            self.ctaLink = adResponseData.placements?.placement_1?.redirect_url
-                            if !isRichMediaAd{
-                                if (imageUrl == nil || imageUrl?.count == 0) {
-                                    return
-                                }
-                                DispatchQueue.main.async {
-                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
-                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-                                    let imageUrl = NSURL(string: (adResponseData.placements?.placement_1?.image_url)!)
-//                                    let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil)
-//                                    let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource!, 0, nil)!)
-//                                    self.adImageView.image = image
-                                    self.handleImageRendering(of: imageUrl)
-                                    if self.delegate != nil{
-                                        self.delegate?.docereeAdViewDidReceiveAd(self)
+                            // Handle Rich media ads here
+                            // Show mraid banner
+                            // get source url and download html body
+                            if let url = URL(string: adResponseData.sourceURL!){
+                                do{
+                                    let htmlContent = try String(contentsOf: url)
+                                    var refinedHtmlContent = htmlContent.withReplacedCharacter("<head>", by: "<head><style>html,body{padding:0;margin:0;}</style><base href=" + (adResponseData.sourceURL?.components(separatedBy: "unzip")[0])! + "unzip/" + "target=\"_blank\">")
+                                    if (self.ctaLink != nil && self.ctaLink!.count > 0){
+                                        refinedHtmlContent = refinedHtmlContent.replacingOccurrences(of: "[TRACKING_LINK]", with: self.ctaLink!)
                                     }
+                                    let body: String = refinedHtmlContent
+                                    if (body.count == 0){
+                                        return
+                                    }
+                                    DispatchQueue.main.async {
+                                        let banner = DocereeAdViewRichMediaBanner()
+                                        //                                    banner.initialize(parentViewController:self.rootViewController!, position:"bottom-center", respectSafeArea:true, renderBodyOverride: true, size: self.adSize!, body: body)
+                                        NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+                                        NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+                                        NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+                                        banner.initialize(parentViewController: self.rootViewController!, frame: self.frame, renderBodyOverride: false, size: self.adSize!, body: body, docereeAdView: self, delegate: self.delegate)
+                                        if self.delegate != nil{
+                                            self.delegate?.docereeAdViewDidReceiveAd(self)
+                                        }
+                                    }
+                                    
+                                } catch{
+                                    self.delegate?.docereeAdView(self, didFailToReceiveAdWithError: DocereeAdRequestError.failedToCreateRequest)
                                 }
                             } else {
-                                // Handle Rich media ads here
-                                // Show mraid banner
-                                let body: String = (adResponseData.placements?.placement_1?.body)!
-                                if (body.count == 0){
-                                    return
-                                }
-                                DispatchQueue.main.async {
-                                    let banner = DocereeAdViewRichMediaBanner()
-                                    //                                    banner.initialize(parentViewController:self.rootViewController!, position:"bottom-center", respectSafeArea:true, renderBodyOverride: true, size: self.adSize!, body: body)
-                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
-                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-                                    NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-                                    banner.initialize(parentViewController: self.rootViewController!, frame: self.frame, renderBodyOverride: false, size: self.adSize!, body: body, docereeAdView: self, delegate: self.delegate)
-                                    if self.delegate != nil{
-                                        self.delegate?.docereeAdViewDidReceiveAd(self)
-                                    }
-                                }
+                                self.delegate?.docereeAdView(self, didFailToReceiveAdWithError: DocereeAdRequestError.failedToCreateRequest)
                             }
                         }
                     } catch{
-                        self.isResponseFromAdbutler = false
                         self.delegate?.docereeAdView(self, didFailToReceiveAdWithError: DocereeAdRequestError.failedToCreateRequest)
                     }
                 } else {
@@ -216,10 +206,12 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             let url = imageUrl
             let image = UIImage.gifImageWithURL((url?.absoluteString)!)
             self.adImageView.image = image
+            setupConsentIcons()
         } else {
             let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil)
             let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource!, 0, nil)!)
             self.adImageView.image = image
+            setupConsentIcons()
         }
     }
     
@@ -238,6 +230,52 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         self.adImageView.isUserInteractionEnabled = true
     }
     
+    private func setupConsentIcons() {
+        let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
+            
+        self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))
+        crossImageView!.frame = CGRect(x: Int(adSize!.width) - iconWidth, y: 0, width: iconWidth, height: iconHeight)
+        crossImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
+        self.adImageView.addSubview(crossImageView!)
+        crossImageView!.isUserInteractionEnabled = true
+        let tapOnCrossButton = UITapGestureRecognizer(target: self, action: #selector(openAdConsentView))
+        crossImageView!.addGestureRecognizer(tapOnCrossButton)
+        
+        self.infoImageView = UIImageView(image: UIImage(systemName: "info.circle", withConfiguration: lightConfiguration))
+        infoImageView!.frame = CGRect(x: Int(adSize!.width) - 2*iconWidth, y: 0, width: iconWidth, height: iconHeight)
+        infoImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
+        self.adImageView.addSubview(infoImageView!)
+        infoImageView!.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(startLabelAnimation))
+        infoImageView!.addGestureRecognizer(tap)
+    }
+    
+    @objc func startLabelAnimation(_ sender: UITapGestureRecognizer){
+        
+        let xCoords = CGFloat(0)
+        let yCoords = CGFloat(self.infoImageView!.frame.origin.y)
+        
+        self.infoImageView!.layoutIfNeeded()
+        let placeHolderView = UILabel()
+        placeHolderView.text = "Ads by doceree"
+        placeHolderView.font = placeHolderView.font.withSize(9)
+        placeHolderView.textColor = UIColor(hexString: "#6C40F7")
+        placeHolderView.frame = CGRect(x: xCoords, y: yCoords, width: 0, height: (self.infoImageView?.frame.height)!)
+        self.infoImageView!.addSubview(placeHolderView)
+        
+        UIView.animate(withDuration: 1.0, animations: { [self] in
+            placeHolderView.backgroundColor = UIColor(hexString: "#F2F2F2")
+            placeHolderView.frame = CGRect(x: xCoords, y: yCoords, width: -placeHolderView.intrinsicContentSize.width, height: (self.infoImageView?.frame.height)!)
+        })
+    }
+    
+    @objc func openAdConsentView(_ sender: UITapGestureRecognizer){
+//         let consentVC = AdConsentViewController()
+//        consentVC.initialize(parentViewController: self.rootViewController!, adsize: self.adSize!, frame: self.frame)
+        let consentUV = AdConsentUIView(with: self.adSize!, frame: self.frame, rootVC: self.rootViewController!)
+        self.adImageView.addSubview(consentUV!)
+    }
+    
     public override class var requiresConstraintBasedLayout: Bool{
         return true
     }
@@ -247,18 +285,9 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     //Mark: Action method
     @objc func onImageTouched(_ sender: UITapGestureRecognizer){
         DocereeAdView.self.didLeaveAd = true
-        if !self.isResponseFromAdbutler {
-            let url = URL(string: ctaLink!)
-            if UIApplication.shared.canOpenURL(url!){
-                DocereeAdRequest().sendAnalytics(self.docereeAdUnitId, self.cbId!, TypeOfEvent.CPC)
-                UIApplication.shared.openURL(url!)
-            }
-        } else {
-            let url = URL(string: ctaLink!)
-            if UIApplication.shared.canOpenURL(url!){
-                DocereeAdRequest().sendImpressionsToAdButler()
-                UIApplication.shared.openURL(url!)
-            }
+        let url = URL(string: ctaLink!)
+        if url != nil && UIApplication.shared.canOpenURL(url!){
+            UIApplication.shared.openURL(url!)
         }
     }
     
@@ -326,7 +355,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             AdsRefreshCountdownTimer.shared.stopRefresh()
         }
     }
-
+    
     func refresh(){
         if docereeAdRequest != nil {
             load(self.docereeAdRequest!)
@@ -536,5 +565,25 @@ extension NotificationCenter{
     func setObserver(observer: Any, selector: Selector, name: NSNotification.Name, object: AnyObject?){
         NotificationCenter.default.removeObserver(observer, name: name, object: object)
         NotificationCenter.default.addObserver(observer, selector: selector, name: name, object: object)
+    }
+}
+
+extension UIColor {
+    convenience init(hexString: String) {
+        let hex = hexString.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int = UInt64()
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+        self.init(red: CGFloat(r) / 255, green: CGFloat(g) / 255, blue: CGFloat(b) / 255, alpha: CGFloat(a) / 255)
     }
 }
