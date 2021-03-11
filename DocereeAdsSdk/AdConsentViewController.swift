@@ -23,6 +23,29 @@ class AdConsentViewController: UIViewController, UIApplicationDelegate{
     private var frame: CGRect?
     private var rootViewController: UIViewController?
     
+    private lazy var purpleColor: UIColor = {
+        let purpleColor = UIColor(hexString: "#6C40F7")
+        return purpleColor
+    }()
+    
+    private lazy var blackColor: UIColor = {
+        let blackColor = UIColor(hexString: "#000000")
+        return blackColor
+    }()
+    
+    private lazy var whiteColor: UIColor = {
+        let whiteColor = UIColor(hexString: "#FFFFFF")
+        return whiteColor
+    }()
+    
+    private var textFontSize12: CGFloat = 12.0
+    private var textFontSize9: CGFloat = 9.0
+    
+    private lazy var backGroundColor: UIColor = {
+        let backgroundColor = UIColor(hexString: "#F2F2F2")
+        return backgroundColor
+    }()
+    
     // MARK: Initialize AdConsentUIView
     func initialize(parentViewController: UIViewController, adsize: AdSize, frame: CGRect){
         self.frame = frame
@@ -36,20 +59,20 @@ class AdConsentViewController: UIViewController, UIApplicationDelegate{
         // load back button
         
         let consentView: UIView = UIView()
-        consentView.backgroundColor = UIColor(hexString: "#F2F2F2")
+        consentView.backgroundColor = self.backGroundColor
         self.parent?.view.addSubview(consentView)
         
         let lightConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .light, scale: .small)
         let backButtonUIImageView: UIImageView = UIImageView(image: UIImage(systemName: "arrow.backward", withConfiguration: lightConfiguration))
         backButtonUIImageView.contentMode = .scaleAspectFit
-        backButtonUIImageView.tintColor = UIColor(hexString: "#6C40F7")
+        backButtonUIImageView.tintColor = self.purpleColor
         backButtonUIImageView.widthAnchor.constraint(equalToConstant: 15).isActive = true
         backButtonUIImageView.heightAnchor.constraint(equalToConstant: 15).isActive = true
         
         let titleView = UILabel()
         titleView.text = "Ads by doceree"
-        titleView.font = titleView.font.withSize(12)
-        titleView.textColor = UIColor(hexString: "#6C40F7")
+        titleView.font = .systemFont(ofSize: textFontSize12)
+        titleView.textColor = self.purpleColor
         titleView.widthAnchor.constraint(equalToConstant: self.frame!.width).isActive = true
         titleView.heightAnchor.constraint(equalToConstant: 15).isActive = true
         titleView.textAlignment = .center
@@ -72,9 +95,9 @@ class AdConsentViewController: UIViewController, UIApplicationDelegate{
         btnReportAd.setTitle("Report this Ad", for: .normal)
         btnReportAd.widthAnchor.constraint(equalToConstant: self.frame!.width * 0.4).isActive = true
         btnReportAd.heightAnchor.constraint(equalToConstant: self.frame!.height/2).isActive = true
-        btnReportAd.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btnReportAd.backgroundColor = UIColor(hexString: "#FFFFFF")
-        btnReportAd.titleLabel?.font = .systemFont(ofSize: 12) // UIFont(name: YourfontName, size: 12)
+        btnReportAd.setTitleColor(self.blackColor, for: .normal)
+        btnReportAd.backgroundColor = self.whiteColor
+        btnReportAd.titleLabel?.font = .systemFont(ofSize: textFontSize12) // UIFont(name: YourfontName, size: 12)
         btnReportAd.translatesAutoresizingMaskIntoConstraints = false
         btnReportAd.isUserInteractionEnabled = true
         let adReportTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(reportAdClicked))
@@ -83,13 +106,13 @@ class AdConsentViewController: UIViewController, UIApplicationDelegate{
         let btnWhyThisAd = UIButton()
         btnWhyThisAd.setTitle("Why this Ad?", for: .normal)
         let infoImage = UIImage(systemName: "info.circle", withConfiguration: lightConfigurationWithSmallScale)
-        infoImage?.withTintColor(UIColor(hexString: "#6C40F7"))
+        infoImage?.withTintColor(self.purpleColor)
         btnWhyThisAd.setImage(infoImage, for: .normal)
         btnWhyThisAd.widthAnchor.constraint(equalToConstant: self.frame!.width * 0.4).isActive = true
         btnWhyThisAd.heightAnchor.constraint(equalToConstant: self.frame!.height/2).isActive = true
-        btnWhyThisAd.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btnWhyThisAd.backgroundColor = UIColor(hexString: "#FFFFFF")
-        btnWhyThisAd.titleLabel?.font = .systemFont(ofSize: 12) // UIFont(name: YourfontName, size: 12)
+        btnWhyThisAd.setTitleColor(self.blackColor, for: .normal)
+        btnWhyThisAd.backgroundColor = self.whiteColor
+        btnWhyThisAd.titleLabel?.font = .systemFont(ofSize: textFontSize12) // UIFont(name: YourfontName, size: 12)
         btnWhyThisAd.semanticContentAttribute = .forceRightToLeft
         btnWhyThisAd.translatesAutoresizingMaskIntoConstraints = false
         btnWhyThisAd.isUserInteractionEnabled = true
@@ -122,7 +145,6 @@ class AdConsentViewController: UIViewController, UIApplicationDelegate{
         verticalStackView!.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: 0).isActive = true
         verticalStackView!.leadingAnchor.constraint(equalTo: consentView.leadingAnchor, constant: 0).isActive = true
         verticalStackView!.trailingAnchor.constraint(equalTo: consentView.trailingAnchor, constant: 0).isActive = true
-        
         
         consentView.frame = frame!
         rootViewController?.view.addSubview(consentView)

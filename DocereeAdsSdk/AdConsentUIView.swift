@@ -14,9 +14,38 @@ class AdConsentUIView: UIView {
     private var form1: UIView?
     private var form2: UIView?
     private var form3: UIView?
-    
+
     private var horizontalStackView: UIStackView?
     private var verticalStackView: UIStackView?
+    
+    
+    private lazy var purpleColor: UIColor = {
+        let purpleColor = UIColor(hexString: "#6C40F7")
+        return purpleColor
+    }()
+    
+    private lazy var blackColor: UIColor = {
+        let blackColor = UIColor(hexString: "#000000")
+        return blackColor
+    }()
+    
+    private lazy var whiteColor: UIColor = {
+        let whiteColor = UIColor(hexString: "#FFFFFF")
+        return whiteColor
+    }()
+    
+    private lazy var greyBackgroundColor: UIColor = {
+        let backgroundColor = UIColor(hexString: "#F2F2F2")
+        return backgroundColor
+    }()
+    
+    var isMediumRectangle: Bool = false
+    var isBanner: Bool = false
+    
+    private var textFontSize12: CGFloat = 12.0
+    private var textFontSize9: CGFloat = 9.0
+    private var textFontSize10: CGFloat = 10.0
+    private var textFontSize8: CGFloat = 8.0
     
     var adViewSize: AdSize?
     
@@ -42,6 +71,8 @@ class AdConsentUIView: UIView {
         adViewSize = adSize
         adViewFrame = frame
         rootViewController = rootVC
+        isMediumRectangle = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.MEDIUMRECTANGLE
+        isBanner = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.BANNER
         loadConsentForm1()
     }
         
@@ -56,25 +87,32 @@ class AdConsentUIView: UIView {
         // load back button
         
         let consentView: UIView = UIView()
-        consentView.backgroundColor = UIColor(hexString: "#F2F2F2")
+        let iconSize: CGFloat = 15.0
+        let titleHeight: CGFloat = 15.0
+        
+        let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.4
+        let buttonHeight: CGFloat = isMediumRectangle ? self.adViewFrame!.height * 0.2 : self.adViewFrame!.height/2
+        let buttonLabelFontSize: CGFloat = textFontSize12
+        
+        consentView.backgroundColor = self.greyBackgroundColor
 //        self.parent?.view.addSubview(consentView)
         
-        let lightConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .light, scale: .small)
+        let lightConfiguration = UIImage.SymbolConfiguration(pointSize: iconSize, weight: .light, scale: .small)
         let backButtonUIImageView: UIImageView = UIImageView(image: UIImage(systemName: "arrow.backward", withConfiguration: lightConfiguration))
         backButtonUIImageView.contentMode = .scaleAspectFit
-        backButtonUIImageView.tintColor = UIColor(hexString: "#6C40F7")
-        backButtonUIImageView.widthAnchor.constraint(equalToConstant: 15).isActive = true
-        backButtonUIImageView.heightAnchor.constraint(equalToConstant: 15).isActive = true
+        backButtonUIImageView.tintColor = self.purpleColor
+        backButtonUIImageView.widthAnchor.constraint(equalToConstant: iconSize).isActive = true
+        backButtonUIImageView.heightAnchor.constraint(equalToConstant: iconSize).isActive = true
         backButtonUIImageView.isUserInteractionEnabled = true
         let backButtonUITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(backButtonClicked))
         backButtonUIImageView.addGestureRecognizer(backButtonUITapGestureRecognizer)
         
         let titleView = UILabel()
         titleView.text = "Ads by doceree"
-        titleView.font = titleView.font.withSize(12)
-        titleView.textColor = UIColor(hexString: "#6C40F7")
+        titleView.font = .systemFont(ofSize: textFontSize12)
+        titleView.textColor = self.purpleColor
         titleView.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width).isActive = true
-        titleView.heightAnchor.constraint(equalToConstant: 15).isActive = true
+        titleView.heightAnchor.constraint(equalToConstant: titleHeight).isActive = true
         titleView.textAlignment = .center
         
         // horizontal stackview 1
@@ -93,11 +131,11 @@ class AdConsentUIView: UIView {
         
         let btnReportAd = UIButton()
         btnReportAd.setTitle("Report this Ad", for: .normal)
-        btnReportAd.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width * 0.4).isActive = true
-        btnReportAd.heightAnchor.constraint(equalToConstant: self.adViewFrame!.height/2).isActive = true
-        btnReportAd.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btnReportAd.backgroundColor = UIColor(hexString: "#FFFFFF")
-        btnReportAd.titleLabel?.font = .systemFont(ofSize: 12) // UIFont(name: YourfontName, size: 12)
+        btnReportAd.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+        btnReportAd.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        btnReportAd.setTitleColor(self.blackColor, for: .normal)
+        btnReportAd.backgroundColor = self.whiteColor
+        btnReportAd.titleLabel?.font = .systemFont(ofSize: buttonLabelFontSize) // UIFont(name: YourfontName, size: 12)
         btnReportAd.translatesAutoresizingMaskIntoConstraints = false
         btnReportAd.isUserInteractionEnabled = true
         let adReportTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(reportAdClicked))
@@ -106,27 +144,33 @@ class AdConsentUIView: UIView {
         let btnWhyThisAd = UIButton()
         btnWhyThisAd.setTitle("Why this Ad?", for: .normal)
         let infoImage = UIImage(systemName: "info.circle", withConfiguration: lightConfigurationWithSmallScale)
-        infoImage?.withTintColor(UIColor(hexString: "#6C40F7"))
+        infoImage?.withTintColor(self.purpleColor)
         btnWhyThisAd.setImage(infoImage, for: .normal)
-        btnWhyThisAd.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width * 0.4).isActive = true
-        btnWhyThisAd.heightAnchor.constraint(equalToConstant: self.adViewFrame!.height/2).isActive = true
-        btnWhyThisAd.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btnWhyThisAd.backgroundColor = UIColor(hexString: "#FFFFFF")
-        btnWhyThisAd.titleLabel?.font = .systemFont(ofSize: 12) // UIFont(name: YourfontName, size: 12)
+        btnWhyThisAd.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
+        btnWhyThisAd.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+        btnWhyThisAd.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        btnWhyThisAd.setTitleColor(self.blackColor, for: .normal)
+        btnWhyThisAd.backgroundColor = self.whiteColor
+        btnWhyThisAd.titleLabel?.font = .systemFont(ofSize: buttonLabelFontSize) // UIFont(name: YourfontName, size: 12)
         btnWhyThisAd.semanticContentAttribute = .forceRightToLeft
         btnWhyThisAd.translatesAutoresizingMaskIntoConstraints = false
         btnWhyThisAd.isUserInteractionEnabled = true
         let whyThisTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(whyThisClicked))
         btnWhyThisAd.addGestureRecognizer(whyThisTapGestureRecognizer)
         
-        //         horizontal stackview 2
+        // horizontal stackview 2
         let horizontalStackView2 = UIStackView()
-        horizontalStackView2.axis = .horizontal
-        horizontalStackView2.distribution = .fill
+        horizontalStackView2.axis =  self.isMediumRectangle ? .vertical : .horizontal
+        horizontalStackView2.distribution = self.isMediumRectangle ? .fillEqually : .fill
         horizontalStackView2.alignment = .center
         horizontalStackView2.spacing = 8.0
         horizontalStackView2.addArrangedSubview(btnReportAd)
         horizontalStackView2.addArrangedSubview(btnWhyThisAd)
+        
+        if isMediumRectangle {
+            btnReportAd.topAnchor.constraint(equalTo: horizontalStackView2.topAnchor, constant: self.adViewFrame!.height * 0.25).isActive = true
+        }
+        
         horizontalStackView2.translatesAutoresizingMaskIntoConstraints = false
         
         //         vertical stackview
@@ -142,7 +186,7 @@ class AdConsentUIView: UIView {
         consentView.addSubview(verticalStackView!)
         
         verticalStackView!.topAnchor.constraint(equalTo: consentView.topAnchor, constant: 0).isActive = true
-        verticalStackView!.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: 0).isActive = true
+        verticalStackView!.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: self.isMediumRectangle ? -self.adViewFrame!.height * 0.25 : 0).isActive = true
         verticalStackView!.leadingAnchor.constraint(equalTo: consentView.leadingAnchor, constant: 0).isActive = true
         verticalStackView!.trailingAnchor.constraint(equalTo: consentView.trailingAnchor, constant: 0).isActive = true
         
@@ -156,21 +200,21 @@ class AdConsentUIView: UIView {
         // load back button
         
         let consentView: UIView = UIView()
-        consentView.backgroundColor = UIColor(hexString: "#F2F2F2")
-//        self.parent?.view.addSubview(consentView)
+        consentView.backgroundColor = self.greyBackgroundColor
         
-        // add scrollview here
-//        let scrollView = UIScrollView()
+        let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.3
+        let buttonHeight: CGFloat = self.adViewFrame!.height * 0.8
+        let buttonLabelFontSize: CGFloat = self.isBanner ? textFontSize10 : textFontSize12
         
         let btnAdCoveringContent = UIButton()
         btnAdCoveringContent.setTitle("Ad is covering the content of the website.", for: .normal)
-        btnAdCoveringContent.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width * 0.3).isActive = true
-        btnAdCoveringContent.heightAnchor.constraint(equalToConstant: self.adViewFrame!.height * 0.8).isActive = true
-        btnAdCoveringContent.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btnAdCoveringContent.backgroundColor = UIColor(hexString: "#FFFFFF")
+        btnAdCoveringContent.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+        btnAdCoveringContent.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        btnAdCoveringContent.setTitleColor(self.blackColor, for: .normal)
+        btnAdCoveringContent.backgroundColor = self.whiteColor
         btnAdCoveringContent.titleLabel?.lineBreakMode = .byWordWrapping
         btnAdCoveringContent.titleLabel?.textAlignment = .center
-        btnAdCoveringContent.titleLabel?.font = .systemFont(ofSize: 10) // UIFont(name: YourfontName, size: 12)
+        btnAdCoveringContent.titleLabel?.font = .systemFont(ofSize: buttonLabelFontSize) // UIFont(name: YourfontName, size: 12)
         btnAdCoveringContent.translatesAutoresizingMaskIntoConstraints = false
         btnAdCoveringContent.isUserInteractionEnabled = true
         let tap1 = UITapGestureRecognizer(target: self, action: #selector(adCoveringContentClicked))
@@ -178,13 +222,13 @@ class AdConsentUIView: UIView {
         
         let btnAdInappropriate = UIButton()
         btnAdInappropriate.setTitle("Ad was inappropriate.", for: .normal)
-        btnAdInappropriate.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width * 0.3).isActive = true
-        btnAdInappropriate.heightAnchor.constraint(equalToConstant: self.adViewFrame!.height * 0.8).isActive = true
-        btnAdInappropriate.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btnAdInappropriate.backgroundColor = UIColor(hexString: "#FFFFFF")
+        btnAdInappropriate.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+        btnAdInappropriate.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        btnAdInappropriate.setTitleColor(self.blackColor, for: .normal)
+        btnAdInappropriate.backgroundColor = self.whiteColor
         btnAdInappropriate.titleLabel?.lineBreakMode = .byWordWrapping
         btnAdInappropriate.titleLabel?.textAlignment = .center
-        btnAdInappropriate.titleLabel?.font = .systemFont(ofSize: 10) // UIFont(name: YourfontName, size: 12)
+        btnAdInappropriate.titleLabel?.font = .systemFont(ofSize: buttonLabelFontSize) // UIFont(name: YourfontName, size: 12)
         btnAdInappropriate.translatesAutoresizingMaskIntoConstraints = false
         btnAdInappropriate.isUserInteractionEnabled = true
         let tap2 = UITapGestureRecognizer(target: self, action: #selector(adWasInappropriateClicked))
@@ -192,13 +236,13 @@ class AdConsentUIView: UIView {
         
         let btnAdNotInterested = UIButton()
         btnAdNotInterested.setTitle("Not interested in this ad.", for: .normal)
-        btnAdNotInterested.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width * 0.3).isActive = true
-        btnAdNotInterested.heightAnchor.constraint(equalToConstant: self.adViewFrame!.height * 0.8).isActive = true
-        btnAdNotInterested.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btnAdNotInterested.backgroundColor = UIColor(hexString: "#FFFFFF")
+        btnAdNotInterested.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+        btnAdNotInterested.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        btnAdNotInterested.setTitleColor(self.blackColor, for: .normal)
+        btnAdNotInterested.backgroundColor = self.whiteColor
         btnAdNotInterested.titleLabel?.lineBreakMode = .byWordWrapping
         btnAdNotInterested.titleLabel?.textAlignment = .center
-        btnAdNotInterested.titleLabel?.font = .systemFont(ofSize: 10) // UIFont(name: YourfontName, size: 12)
+        btnAdNotInterested.titleLabel?.font = .systemFont(ofSize: buttonLabelFontSize) // UIFont(name: YourfontName, size: 12)
         btnAdNotInterested.translatesAutoresizingMaskIntoConstraints = false
         btnAdNotInterested.isUserInteractionEnabled = true
         let tap3 = UITapGestureRecognizer(target: self, action: #selector(adNotInterestedClicked))
@@ -206,36 +250,26 @@ class AdConsentUIView: UIView {
         
         // horizontal stackview 2
         let horizontalStackView2 = UIStackView()
-        horizontalStackView2.axis = .horizontal
+        horizontalStackView2.axis = isMediumRectangle ? .vertical : .horizontal
         horizontalStackView2.distribution = .fillEqually
         horizontalStackView2.alignment = .center
-        horizontalStackView2.spacing = 4.0
+        horizontalStackView2.spacing = self.isMediumRectangle ? 8.0 : 4.0
         horizontalStackView2.addArrangedSubview(btnAdCoveringContent)
         horizontalStackView2.addArrangedSubview(btnAdInappropriate)
         horizontalStackView2.addArrangedSubview(btnAdNotInterested)
         horizontalStackView2.translatesAutoresizingMaskIntoConstraints = false
         
+        if isMediumRectangle {
+            btnAdCoveringContent.topAnchor.constraint(equalTo: horizontalStackView2.topAnchor, constant: self.adViewFrame!.height * 0.2).isActive = true
+        }
+        
         consentView.addSubview(horizontalStackView2)
         
         horizontalStackView2.topAnchor.constraint(equalTo: consentView.topAnchor, constant: 0).isActive = true
-        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: 0).isActive = true
+        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: self.isMediumRectangle ? -self.adViewFrame!.height * 0.2 : 0).isActive = true
         horizontalStackView2.leadingAnchor.constraint(equalTo: consentView.leadingAnchor, constant: 4).isActive = true
         horizontalStackView2.trailingAnchor.constraint(equalTo: consentView.trailingAnchor, constant: -4).isActive = true
-        
-//        scrollView.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.addSubview(horizontalStackView2)
-//        horizontalStackView2.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0).isActive = true
-//        horizontalStackView2.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0).isActive = true
-//        horizontalStackView2.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 0).isActive = true
-//        horizontalStackView2.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: 0).isActive = true
-//
-//        consentView.addSubview(scrollView)
-//
-//
-//        horizontalStackView2.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
-//        horizontalStackView2.widthAnchor.constraint(equalTo: scrollView.heightAnchor).isActive = true
-
-        
+    
         consentView.frame = adViewFrame!
         rootViewController?.view.addSubview(consentView)
     }
@@ -245,18 +279,22 @@ class AdConsentUIView: UIView {
         // load back button
         
         let consentView: UIView = UIView()
-        consentView.backgroundColor = UIColor(hexString: "#F2F2F2")
+        consentView.backgroundColor = self.greyBackgroundColor
 //        self.parent?.view.addSubview(consentView)
+        
+        let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.4
+        let buttonHeight: CGFloat = self.adViewFrame!.height * 0.9
+        let textFontSize: CGFloat = self.isBanner ? self.textFontSize8 : self.textFontSize12
         
         let btn1 = UIButton()
         btn1.setTitle("I'm not interested\n in seeing ads for this product.", for: .normal)
-        btn1.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width * 0.4).isActive = true
-        btn1.heightAnchor.constraint(equalToConstant: self.adViewFrame!.height/2).isActive = true
-        btn1.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btn1.backgroundColor = UIColor(hexString: "#FFFFFF")
+        btn1.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+        btn1.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        btn1.setTitleColor(self.blackColor, for: .normal)
+        btn1.backgroundColor = self.whiteColor
         btn1.titleLabel?.lineBreakMode = .byWordWrapping
         btn1.titleLabel?.textAlignment = .center
-        btn1.titleLabel?.font = .systemFont(ofSize: 12) // UIFont(name: YourfontName, size: 12)
+        btn1.titleLabel?.font = .systemFont(ofSize: textFontSize) // UIFont(name: YourfontName, size: 12)
         btn1.translatesAutoresizingMaskIntoConstraints = false
         btn1.isUserInteractionEnabled = true
         let tap1 = UITapGestureRecognizer(target: self, action: #selector(adNotInterestedClicked1))
@@ -264,41 +302,41 @@ class AdConsentUIView: UIView {
         
         let btn2 = UIButton()
         btn2.setTitle("I'm not interested\n in seeing ads for this brand.", for: .normal)
-        btn2.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width * 0.4).isActive = true
-        btn2.heightAnchor.constraint(equalToConstant: self.adViewFrame!.height/2).isActive = true
-        btn2.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btn2.backgroundColor = UIColor(hexString: "#FFFFFF")
+        btn2.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+        btn2.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        btn2.setTitleColor(self.blackColor, for: .normal)
+        btn2.backgroundColor = self.whiteColor
         btn2.titleLabel?.lineBreakMode = .byWordWrapping
         btn2.titleLabel?.textAlignment = .center
-        btn2.titleLabel?.font = .systemFont(ofSize: 12) // UIFont(name: YourfontName, size: 12)
+        btn2.titleLabel?.font = .systemFont(ofSize: textFontSize) // UIFont(name: YourfontName, size: 12)
         btn2.translatesAutoresizingMaskIntoConstraints = false
         btn2.isUserInteractionEnabled = true
         let tap2 = UITapGestureRecognizer(target: self, action: #selector(adNotInterestedClicked2))
         btn2.addGestureRecognizer(tap2)
         
         let btn3 = UIButton()
-        btn3.setTitle("I'm not interested\n in seeing ads for this category.", for: .normal)
-        btn3.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width * 0.4).isActive = true
-        btn3.heightAnchor.constraint(equalToConstant: self.adViewFrame!.height/2).isActive = true
-        btn3.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btn3.backgroundColor = UIColor(hexString: "#FFFFFF")
+        btn3.setTitle("I'm not interested in seeing ads for this category.", for: .normal)
+        btn3.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+        btn3.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        btn3.setTitleColor(self.blackColor, for: .normal)
+        btn3.backgroundColor = self.whiteColor
         btn3.titleLabel?.lineBreakMode = .byWordWrapping
         btn3.titleLabel?.textAlignment = .center
-        btn3.titleLabel?.font = .systemFont(ofSize: 12) // UIFont(name: YourfontName, size: 12)
+        btn3.titleLabel?.font = .systemFont(ofSize: textFontSize) // UIFont(name: YourfontName, size: 12)
         btn3.translatesAutoresizingMaskIntoConstraints = false
         btn3.isUserInteractionEnabled = true
         let tap3 = UITapGestureRecognizer(target: self, action: #selector(adNotInterestedClicked3))
         btn3.addGestureRecognizer(tap3)
         
         let btn4 = UIButton()
-        btn4.setTitle("I'm not interested in\n seeing ads from pharmaceutical brands.", for: .normal)
-        btn4.widthAnchor.constraint(equalToConstant: self.adViewFrame!.width * 0.4).isActive = true
-        btn4.heightAnchor.constraint(equalToConstant: self.adViewFrame!.height/2).isActive = true
-        btn4.setTitleColor(UIColor(hexString: "#000000"), for: .normal)
-        btn4.backgroundColor = UIColor(hexString: "#FFFFFF")
+        btn4.setTitle("I'm not interested in seeing ads from pharmaceutical brands.", for: .normal)
+        btn4.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+        btn4.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
+        btn4.setTitleColor(self.blackColor, for: .normal)
+        btn4.backgroundColor = self.whiteColor
         btn4.titleLabel?.lineBreakMode = .byWordWrapping
         btn4.titleLabel?.textAlignment = .center
-        btn4.titleLabel?.font = .systemFont(ofSize: 12) // UIFont(name: YourfontName, size: 12)
+        btn4.titleLabel?.font = .systemFont(ofSize: textFontSize) // UIFont(name: YourfontName, size: 12)
         btn4.translatesAutoresizingMaskIntoConstraints = false
         btn4.isUserInteractionEnabled = true
         let tap4 = UITapGestureRecognizer(target: self, action: #selector(adNotInterestedClicked4))
@@ -306,22 +344,27 @@ class AdConsentUIView: UIView {
         
         // horizontal stackview 2
         let horizontalStackView2 = UIStackView()
-        horizontalStackView2.axis = .horizontal
+        horizontalStackView2.axis = self.isMediumRectangle ? .vertical : .horizontal
         horizontalStackView2.distribution = .fillEqually
         horizontalStackView2.alignment = .center
-        horizontalStackView2.spacing = 8.0
+        horizontalStackView2.spacing = self.isMediumRectangle ? 6.0 : 4.0
         horizontalStackView2.addArrangedSubview(btn1)
         horizontalStackView2.addArrangedSubview(btn2)
         horizontalStackView2.addArrangedSubview(btn3)
         horizontalStackView2.addArrangedSubview(btn4)
         horizontalStackView2.translatesAutoresizingMaskIntoConstraints = false
         
+        if isMediumRectangle {
+            btn1.topAnchor.constraint(equalTo: horizontalStackView2.topAnchor, constant: self.adViewFrame!.height * 0.1).isActive = true
+        }
+        
         consentView.addSubview(horizontalStackView2)
         
         horizontalStackView2.topAnchor.constraint(equalTo: consentView.topAnchor, constant: 0).isActive = true
-        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: 0).isActive = true
-        horizontalStackView2.leadingAnchor.constraint(equalTo: consentView.leadingAnchor, constant: 0).isActive = true
-        horizontalStackView2.trailingAnchor.constraint(equalTo: consentView.trailingAnchor, constant: 0).isActive = true
+        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: self.isMediumRectangle ?
+                                                        -self.adViewFrame!.height * 0.1 : 0).isActive = true
+        horizontalStackView2.leadingAnchor.constraint(equalTo: consentView.leadingAnchor, constant: 4).isActive = true
+        horizontalStackView2.trailingAnchor.constraint(equalTo: consentView.trailingAnchor, constant: -4).isActive = true
         
         
         consentView.frame = adViewFrame!
@@ -331,18 +374,29 @@ class AdConsentUIView: UIView {
     // load feedback
     private func loadAdConsentFeedback(){
         let consentView: UIView = UIView()
-        consentView.backgroundColor = UIColor(hexString: "#F2F2F2")
+        consentView.frame = CGRect(x: 0.0, y: 0.0, width: self.adViewSize!.width, height: self.adViewSize!.height)
+        consentView.backgroundColor = self.greyBackgroundColor
         
         let titleView = UILabel()
-        titleView.text = "Thank you for reporting this to us.\n Your feedback will help us improve.\n This ad by doceree will now be closed."
-        titleView.font = titleView.font.withSize(12)
-        titleView.textColor = UIColor(hexString: "#000000")
-        titleView.frame = CGRect(x: consentView.center.x, y: consentView.center.y, width: titleView.intrinsicContentSize.width, height: titleView.intrinsicContentSize.height)
-        titleView.textAlignment = .center
+        titleView.text = "Thank you for reporting this to us. \nYour feedback will help us improve. \nThis ad by doceree will now be closed."
         
+        titleView.font = titleView.font.withSize(textFontSize12)
+        titleView.textColor = self.blackColor
+        titleView.frame = consentView.frame
+        titleView.center.x = consentView.center.x
+        titleView.center.y = consentView.center.y
+        titleView.textAlignment = .center
+        titleView.lineBreakMode = .byWordWrapping
+        titleView.numberOfLines = 3
         consentView.addSubview(titleView)
         consentView.frame = adViewFrame!
         rootViewController?.view.addSubview(consentView)
+        
+        UIView.animate(withDuration: 3, delay: 0.5, options: .curveEaseIn, animations: {
+            consentView.alpha = 0
+        }) { _ in
+            self.removeFromSuperview()
+        }
     }
     
     @objc func whyThisClicked(_ sender: UITapGestureRecognizer){
@@ -365,9 +419,11 @@ class AdConsentUIView: UIView {
     }
     
     @objc func adCoveringContentClicked(_ sender: UITapGestureRecognizer){
+        loadAdConsentFeedback()
     }
     
     @objc func adWasInappropriateClicked(_ sender: UITapGestureRecognizer){
+        loadAdConsentFeedback()
     }
     
     @objc func adNotInterestedClicked(_ sender: UITapGestureRecognizer){
@@ -375,23 +431,51 @@ class AdConsentUIView: UIView {
     }
     
     @objc func adNotInterestedClicked1(_ sender: UITapGestureRecognizer){
+        loadAdConsentFeedback()
     }
     
     @objc func adNotInterestedClicked2(_ sender: UITapGestureRecognizer){
+        loadAdConsentFeedback()
     }
     
     @objc func adNotInterestedClicked3(_ sender: UITapGestureRecognizer){
+        loadAdConsentFeedback()
     }
     
     @objc func adNotInterestedClicked4(_ sender: UITapGestureRecognizer){
+        loadAdConsentFeedback()
     }
     
-    private func getLayoutOrientation(var adSize: AdSize){
+    private func getAdTypeBySize(adSize: AdSize) -> AdType{
+        let width: Int = Int(adSize.width)
+        let height: Int = Int(adSize.height)
+        let dimens: String = "\(width)x\(height)"
+        switch dimens{
+        case "320x50":
+            return AdType.BANNER
+        case "300x250":
+            return AdType.MEDIUMRECTANGLE
+        case "320x100":
+            return AdType.LARGEBANNER
+        case "468x60":
+            return AdType.FULLSIZE
+        case "728x90":
+            return AdType.LEADERBOARD
+        default:
+            return AdType.INVALID
+        }
     }
     
     // MARK: Horizontal Containers
     
     // MARK: Vertical Containers
     
+    enum AdType{
+        case BANNER
+        case FULLSIZE
+        case MEDIUMRECTANGLE
+        case LEADERBOARD
+        case LARGEBANNER
+        case INVALID
+    }
 }
-
