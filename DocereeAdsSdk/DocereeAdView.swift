@@ -137,6 +137,8 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                     do {
                         let adResponseData: AdResponseForPlatform = try decoder.decode(AdResponseForPlatform.self, from: data)
                         let imageUrl = adResponseData.sourceURL
+                        self.cbId = adResponseData.CBID?.components(separatedBy: "_")[0]
+                        self.docereeAdUnitId = adResponseData.DIVID!
                         self.ctaLink = adResponseData.ctaLink
                         if !isRichMediaAd{
                             if (imageUrl == nil || imageUrl?.count == 0) {

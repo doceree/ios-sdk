@@ -162,3 +162,10 @@ internal enum QueryParamsForGetImage: String {
     case platformType = "platformType"
     case appKey = "appKey"
 }
+
+internal enum AdBlockService: String{
+    case advertiserCampID = "advertiserCampID"
+    case publisherACSID = "publisherACSID"
+    case blockLevel = "blockLevel"
+    case platformUid = "platformUid"
+}

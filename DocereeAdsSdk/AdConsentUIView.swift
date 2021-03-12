@@ -40,6 +40,9 @@ class AdConsentUIView: UIView {
         return backgroundColor
     }()
     
+    private var adConsentBlockLevel1 = [String]()
+    private var adConsentBlockLevel2 = [String]()
+    
     var isMediumRectangle: Bool = false
     var isBanner: Bool = false
     
@@ -226,6 +229,10 @@ class AdConsentUIView: UIView {
         let buttonHeight: CGFloat = self.adViewFrame!.height * 0.8
         let buttonLabelFontSize: CGFloat = self.isBanner ? textFontSize10 : textFontSize12
         
+        adConsentBlockLevel1 = [String]()
+        adConsentBlockLevel1.append("Ad is covering the content of the website.")
+        adConsentBlockLevel1.append("Ad was inappropriate.")
+        
         let btnAdCoveringContent = UIButton()
         btnAdCoveringContent.setTitle("Ad is covering the content of the website.", for: .normal)
         btnAdCoveringContent.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
@@ -319,6 +326,12 @@ class AdConsentUIView: UIView {
         let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.4
         let buttonHeight: CGFloat = self.adViewFrame!.height * 0.9
         let textFontSize: CGFloat = self.isBanner ? self.textFontSize8 : self.textFontSize12
+        
+        adConsentBlockLevel2 = [String]()
+        adConsentBlockLevel2.append("I'm not interested in seeing ads for this product.")
+        adConsentBlockLevel2.append("I'm not interested in seeing ads for this brand.")
+        adConsentBlockLevel2.append("I'm not interested in seeing ads for this category.")
+        adConsentBlockLevel2.append("I'm not interested in seeing ads from pharmaceutical brands.")
         
         let btn1 = UIButton()
         btn1.setTitle("I'm not interested\n in seeing ads for this product.", for: .normal)
@@ -420,7 +433,7 @@ class AdConsentUIView: UIView {
     }
     
     // load feedback
-    private func loadAdConsentFeedback(){
+    private func loadAdConsentFeedback(_ adblockLevel: String){
         self.removeAllViews()
         let consentView: UIView = UIView()
         consentView.frame = CGRect(x: 0.0, y: 0.0, width: self.adViewSize!.width, height: self.adViewSize!.height)
@@ -458,8 +471,11 @@ class AdConsentUIView: UIView {
         
         UIView.animate(withDuration: 3, delay: 0.5, options: .curveEaseIn, animations: {
             consentView.alpha = 0
-        }) { _ in
+        }) { [self] _ in
             self.docereeAdView?.refresh()
+            if let plaformUid = NSKeyedUnarchiver.unarchiveObject(withFile: AdResponseForPlatform.ArchivingUrl.path) as? String{
+                callAdBlockService(self.docereeAdView!.cbId!, adblockLevel, self.docereeAdView!.docereeAdUnitId, plaformUid)
+            }
         }
     }
     
@@ -496,11 +512,11 @@ class AdConsentUIView: UIView {
     }
     
     @objc func adCoveringContentClicked(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback()
+        loadAdConsentFeedback(self.adConsentBlockLevel1[0])
     }
     
     @objc func adWasInappropriateClicked(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback()
+        loadAdConsentFeedback(self.adConsentBlockLevel1[1])
     }
     
     @objc func adNotInterestedClicked(_ sender: UITapGestureRecognizer){
@@ -508,19 +524,24 @@ class AdConsentUIView: UIView {
     }
     
     @objc func adNotInterestedClicked1(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback()
+        loadAdConsentFeedback(self.adConsentBlockLevel2[0])
     }
     
     @objc func adNotInterestedClicked2(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback()
+        loadAdConsentFeedback(self.adConsentBlockLevel2[1])
     }
     
     @objc func adNotInterestedClicked3(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback()
+        loadAdConsentFeedback(self.adConsentBlockLevel2[2])
     }
     
     @objc func adNotInterestedClicked4(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback()
+        loadAdConsentFeedback(self.adConsentBlockLevel2[3])
+    }
+    
+    private func callAdBlockService(_ advertiserCampId: String?, _ blockLevel: String?, _ publisherACSID: String?, _ platformuid: String?){
+        let restManager = RestManager()
+        restManager.sendAdBlockRequest(advertiserCampId, blockLevel, platformuid, publisherACSID)
     }
     
     private func getAdTypeBySize(adSize: AdSize) -> AdType{

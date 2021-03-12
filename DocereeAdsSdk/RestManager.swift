@@ -263,40 +263,43 @@ public final class RestManager{
         //        DataController.shared.save(newplatformuid: newPlatormuid)
     }
     
-//    internal func sendAnalyticsEvent(_ type: String, _ slotId: String, _ cbId: String){
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
-//        dateFormatter.timeZone = NSTimeZone(name: "GMT") as TimeZone?
-//        let timeStamp = dateFormatter.string(from: Date())
-//        let ua: String = UAString.init().UAString()
-//        self.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
-//        self.requestHttpHeaders.add(value: UAString.init().UAString(), forKey: Header.header_user_agent.rawValue)
-//        self.httpBodyParameters.add(value: type, forKey: AdAnalytics.typeOfEvent.rawValue)
-//        self.httpBodyParameters.add(value: slotId, forKey: AdAnalytics.publisherACSID.rawValue)
-//        self.httpBodyParameters.add(value: cbId, forKey: AdAnalytics.advertiserCampID.rawValue)
-//        self.httpBodyParameters.add(value: timeStamp, forKey: AdAnalytics.dateInUTC.rawValue)
-//        let body = httpBodyParameters.allValues()
-//        let config = URLSessionConfiguration.default
-//        let session = URLSession(configuration: config)
-//        var components = URLComponents()
-//        components.scheme = "https"
-//        components.host = getHost(type: EnvironmentType.Dev)
-//        components.path = getPath(methodName: Methods.Analytics)
-//        let analyticsEndpoint: URL = components.url!
-//        var request: URLRequest = URLRequest(url: analyticsEndpoint)
-//        request.setValue(ua, forHTTPHeaderField: Header.header_user_agent.rawValue)
-//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-//        request.httpMethod = HttpMethod.post.rawValue
-//        let jsonData: Data
-//        do {
-//            jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
-//            request.httpBody = jsonData
-//        } catch{
-//            return
-//        }
-//        let task = session.dataTask(with: request)
-//        task.resume()
-//    }
+    internal func sendAdBlockRequest(_ advertiserCampID: String?, _ blockLevel: String?, _ platformUid: String?, _ publisherACSID: String?){
+        if ((advertiserCampID ?? "").isEmpty || (blockLevel ?? "").isEmpty || (platformUid ?? "").isEmpty || (publisherACSID ?? "").isEmpty) {
+            return
+        }
+        let ua: String = UAString.init().UAString()
+        self.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
+        self.requestHttpHeaders.add(value: UAString.init().UAString(), forKey: Header.header_user_agent.rawValue)
+        self.httpBodyParameters.add(value: advertiserCampID!, forKey: AdBlockService.advertiserCampID.rawValue)
+        self.httpBodyParameters.add(value: blockLevel!, forKey: AdBlockService.blockLevel.rawValue)
+        self.httpBodyParameters.add(value: platformUid!, forKey: AdBlockService.platformUid.rawValue)
+        self.httpBodyParameters.add(value: publisherACSID!, forKey: AdBlockService.publisherACSID.rawValue)
+        let body = httpBodyParameters.allValues()
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = getHost(type: EnvironmentType.Dev)
+        components.path = getPath(methodName: Methods.AdBlock)
+        let analyticsEndpoint: URL = components.url!
+        var request: URLRequest = URLRequest(url: analyticsEndpoint)
+        request.setValue(ua, forHTTPHeaderField: Header.header_user_agent.rawValue)
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = HttpMethod.post.rawValue
+        let jsonData: Data
+        do {
+            jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
+            request.httpBody = jsonData
+        } catch{
+            return
+        }
+        let task = session.dataTask(with: request){(data, response, error) in
+            guard let data = data else { return }
+            let urlResponse = response as! HTTPURLResponse
+            print(urlResponse.statusCode)
+        }
+        task.resume()
+    }
     
     private func getIdentifierForAdvertising() -> String?{
         if ASIdentifierManager.shared().isAdvertisingTrackingEnabled{
