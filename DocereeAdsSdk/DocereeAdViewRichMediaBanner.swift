@@ -26,6 +26,13 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
     private var docereeAdView: DocereeAdView?
     private var frame1: CGRect?
     
+    var consentUV: AdConsentUIView?
+    
+    var crossImageView: UIImageView?
+    var infoImageView: UIImageView?
+    let iconWidth = 13
+    let iconHeight = 13
+    
     // MARK: desired size for ads
     private var size: AdSize = Banner()
     
@@ -223,6 +230,66 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
     private func addAsNormalChild(to parent: UIViewController, frame: CGRect){
         view.frame = frame
         parent.view.addSubview(view)
+        setupConsentIcons()
+    }
+    
+    private func setupConsentIcons() {
+        let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
+            
+        self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))
+        crossImageView!.frame = CGRect(x: Int(size.width) - iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
+        crossImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
+        self.mraidView.addSubview(crossImageView!)
+        crossImageView!.isUserInteractionEnabled = true
+        let tapOnCrossButton = UITapGestureRecognizer(target: self, action: #selector(openAdConsentView))
+        crossImageView!.addGestureRecognizer(tapOnCrossButton)
+        
+        self.infoImageView = UIImageView(image: UIImage(systemName: "info.circle", withConfiguration: lightConfiguration))
+        infoImageView!.frame = CGRect(x: Int(size.width) - 2*iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
+        infoImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
+        self.mraidView.addSubview(infoImageView!)
+        infoImageView!.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(startLabelAnimation))
+        infoImageView!.addGestureRecognizer(tap)
+    }
+    
+    @objc func startLabelAnimation(_ sender: UITapGestureRecognizer){
+        
+        let xCoords = CGFloat(0)
+        let yCoords = CGFloat(self.infoImageView!.frame.origin.y)
+        
+        self.infoImageView!.layoutIfNeeded()
+        let placeHolderView = UILabel()
+        placeHolderView.text = "Ads by doceree"
+        placeHolderView.font = placeHolderView.font.withSize(9)
+        placeHolderView.textColor = UIColor(hexString: "#6C40F7")
+        placeHolderView.frame = CGRect(x: xCoords, y: yCoords, width: 0, height: (self.infoImageView?.frame.height)!)
+        self.infoImageView!.addSubview(placeHolderView)
+        placeHolderView.isUserInteractionEnabled = true
+        
+        UIView.animate(withDuration: 2.0, animations: { [self] in
+            placeHolderView.backgroundColor = UIColor(hexString: "#F2F2F2")
+            placeHolderView.frame = CGRect(x: xCoords, y: yCoords, width: -placeHolderView.intrinsicContentSize.width, height: (self.infoImageView?.frame.height)!)
+        }, completion: { (finished: Bool) in
+            let tap = UITapGestureRecognizer(target: self, action: #selector(self.openAdConsentView))
+            self.infoImageView?.addGestureRecognizer(tap)
+            placeHolderView.removeFromSuperview()
+            self.openAdConsent()
+        })
+    }
+    
+    @objc func openAdConsentView(_ sender: UITapGestureRecognizer){
+//         let consentVC = AdConsentViewController()
+//        consentVC.initialize(parentViewController: self.rootViewController!, adsize: self.adSize!, frame: self.frame)
+        openAdConsent()
+    }
+    
+    private func openAdConsent(){
+        consentUV = AdConsentUIView(with: self.size, frame: frame1!, rootVC: self, adView: self.docereeAdView, isRichMedia: true)
+        self.mraidView.removeFromSuperview()
+        self.view.addSubview(consentUV!)
+//        self.adImageView.addSubview(consentUV!)
+//        self.addSubview(consentUV!)
     }
     
     private func addAsChild(to parent:UIViewController, frame:CGRect){

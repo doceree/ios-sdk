@@ -147,6 +147,7 @@ internal enum TypeOfEvent: String{
 internal enum Header: String{
     case header_user_agent = "User-Agent"
     case header_advertising_id = "doceree-device-id"
+    case is_vendor_id = "is_doceree_iOS_sdk_vendor_id"
     case header_is_ad_tracking_enabled = "is-ad-tracking-enabled"
     case header_app_name = "app-name"
     case header_app_version = "app-version"

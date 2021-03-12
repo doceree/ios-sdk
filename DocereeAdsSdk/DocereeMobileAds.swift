@@ -14,6 +14,7 @@ import OSLog
 public final class DocereeMobileAds{
     
     var baseUrl: URL?
+    internal static var trackingStatus: String?
     
     private static var sharedNetworkManager: DocereeMobileAds = {
         var docereeMobileAds = DocereeMobileAds(baseUrl: Api.baseURL)
@@ -44,17 +45,22 @@ public final class DocereeMobileAds{
             ATTrackingManager.requestTrackingAuthorization{ (status) in
                 switch status{
                 case .authorized:
+                    DocereeMobileAds.trackingStatus = "authorized"
                     os_log("authorized", log: .default, type: .error)
                 case .denied:
+                    DocereeMobileAds.trackingStatus = "denied"
                     os_log("denied", log: .default, type: .error)
                     return
                 case .notDetermined:
+                    DocereeMobileAds.trackingStatus = "not determined"
                     os_log("not determined", log: .default, type: .error)
                     return
                 case .restricted:
+                    DocereeMobileAds.trackingStatus = "restricted"
                     os_log("restricted", log: .default, type: .error)
                     return
                 @unknown default:
+                    DocereeMobileAds.trackingStatus = "Unknown error"
                     os_log("Unknown error", log: .default, type: .error)
                     return
                 }

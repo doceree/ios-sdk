@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import WebKit
 
 class AdConsentUIView: UIView {
     
@@ -14,8 +15,10 @@ class AdConsentUIView: UIView {
     private var verticalStackView: UIStackView?
     private var consentView: UIView?
     
-    var docereeAdImageView: UIImageView?
     var docereeAdView: DocereeAdView?
+    var docereeWebView: WKWebView?
+    
+    var isRichMedia: Bool = false
     
     private lazy var purpleColor: UIColor = {
         let purpleColor = UIColor(hexString: "#6C40F7")
@@ -64,13 +67,13 @@ class AdConsentUIView: UIView {
 //        setUpLayout()
     }
     
-    convenience init?(with adSize: AdSize, frame: CGRect, rootVC: UIViewController, adImageView: UIImageView, adView: DocereeAdView){
+    convenience init?(with adSize: AdSize, frame: CGRect, rootVC: UIViewController, adView: DocereeAdView?, isRichMedia: Bool){
         self.init()
         adViewSize = adSize
         adViewFrame = frame
         rootViewController = rootVC
-        docereeAdImageView = adImageView
         docereeAdView = adView
+        self.isRichMedia = isRichMedia
         isMediumRectangle = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.MEDIUMRECTANGLE
         isBanner = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.BANNER
         loadConsentForm1()
@@ -196,7 +199,18 @@ class AdConsentUIView: UIView {
         verticalStackView!.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: 0).isActive = true
         
         consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+        
+        if (!self.isRichMedia) {
         self.docereeAdView!.addSubview(consentView!)
+        } else {
+//            self.docereeWebView!.addSubview(consentView!)
+
+            for v in rootViewController!.view.subviews{
+                v.removeFromSuperview()
+            }
+            consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+            self.rootViewController?.view.addSubview(consentView!)
+        }
 //        consentView!.frame = adViewFrame!
 //        rootViewController?.view.addSubview(consentView!)
     }
@@ -277,7 +291,19 @@ class AdConsentUIView: UIView {
         horizontalStackView2.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: -4).isActive = true
   
         consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+//        self.docereeAdView!.addSubview(consentView!)
+        
+        if (!self.isRichMedia) {
         self.docereeAdView!.addSubview(consentView!)
+        } else {
+//            self.docereeWebView!.addSubview(consentView!)
+
+            for v in rootViewController!.view.subviews{
+                v.removeFromSuperview()
+            }
+            consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+            self.rootViewController?.view.addSubview(consentView!)
+        }
 //        consentView!.frame = adViewFrame!
 //        rootViewController?.view.addSubview(consentView!)
     }
@@ -375,7 +401,20 @@ class AdConsentUIView: UIView {
         horizontalStackView2.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: -4).isActive = true
         
         consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+//        self.docereeAdView!.addSubview(consentView!)
+        
+        if (!self.isRichMedia) {
         self.docereeAdView!.addSubview(consentView!)
+        } else {
+//            self.docereeWebView!.addSubview(consentView!)
+
+            for v in rootViewController!.view.subviews{
+                v.removeFromSuperview()
+            }
+            consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+            self.rootViewController?.view.addSubview(consentView!)
+        }
+        
 //        consentView!.frame = adViewFrame!
 //        rootViewController?.view.addSubview(consentView!)
     }
@@ -403,7 +442,19 @@ class AdConsentUIView: UIView {
 //        consentView.frame = adViewFrame!
 //        rootViewController?.view.addSubview(consentView)
         consentView.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+//        self.docereeAdView!.addSubview(consentView)
+        
+        if (!self.isRichMedia) {
         self.docereeAdView!.addSubview(consentView)
+        } else {
+//            self.docereeWebView!.addSubview(consentView!)
+
+            for v in rootViewController!.view.subviews{
+                v.removeFromSuperview()
+            }
+            consentView.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+            self.rootViewController?.view.addSubview(consentView)
+        }
         
         UIView.animate(withDuration: 3, delay: 0.5, options: .curveEaseIn, animations: {
             consentView.alpha = 0

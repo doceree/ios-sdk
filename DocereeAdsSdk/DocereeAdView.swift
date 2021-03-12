@@ -30,6 +30,8 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     let iconWidth = 13
     let iconHeight = 13
     
+    var banner: DocereeAdViewRichMediaBanner?
+    
     @IBOutlet public weak var rootViewController: UIViewController?
     
     var adSize: AdSize?
@@ -167,12 +169,12 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                                         return
                                     }
                                     DispatchQueue.main.async {
-                                        let banner = DocereeAdViewRichMediaBanner()
+                                        self.banner = DocereeAdViewRichMediaBanner()
                                         //                                    banner.initialize(parentViewController:self.rootViewController!, position:"bottom-center", respectSafeArea:true, renderBodyOverride: true, size: self.adSize!, body: body)
                                         NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
                                         NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
                                         NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-                                        banner.initialize(parentViewController: self.rootViewController!, frame: self.frame, renderBodyOverride: false, size: self.adSize!, body: body, docereeAdView: self, delegate: self.delegate)
+                                        self.banner!.initialize(parentViewController: self.rootViewController!, frame: self.frame, renderBodyOverride: false, size: self.adSize!, body: body, docereeAdView: self, delegate: self.delegate)
                                         if self.delegate != nil{
                                             self.delegate?.docereeAdViewDidReceiveAd(self)
                                         }
@@ -239,7 +241,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     private func setupConsentIcons() {
         let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
-            
+        
         self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))
         crossImageView!.frame = CGRect(x: Int(adSize!.width) - iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
         crossImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
@@ -277,34 +279,37 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         }, completion: { (finished: Bool) in
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.openAdConsentView))
             self.infoImageView?.addGestureRecognizer(tap)
-            placeHolderView.addGestureRecognizer(tap)
-            placeHolderView.removeFromSuperview()
-            self.openAdConsent()
+            //            placeHolderView.removeFromSuperview()
+            //            self.openAdConsent()
         })
     }
     
     @objc func openAdConsentView(_ sender: UITapGestureRecognizer){
-//         let consentVC = AdConsentViewController()
-//        consentVC.initialize(parentViewController: self.rootViewController!, adsize: self.adSize!, frame: self.frame)
+        //         let consentVC = AdConsentViewController()
+        //        consentVC.initialize(parentViewController: self.rootViewController!, adsize: self.adSize!, frame: self.frame)
         openAdConsent()
     }
     
     private func openAdConsent(){
-        consentUV = AdConsentUIView(with: self.adSize!, frame: self.frame, rootVC: self.rootViewController!, adImageView: self.adImageView, adView: self)
+        consentUV = AdConsentUIView(with: self.adSize!, frame: self.frame, rootVC: self.rootViewController!, adView: self, isRichMedia: false)
         self.adImageView.removeFromSuperview()
         self.addSubview(consentUV!)
-//        self.adImageView.addSubview(consentUV!)
-//        self.addSubview(consentUV!)
+        //        self.adImageView.addSubview(consentUV!)
+        //        self.addSubview(consentUV!)
     }
-        
+    
     public override class var requiresConstraintBasedLayout: Bool{
         return true
     }
     
     func removeAllViews(){
-        print("removing views")
-        for v in self.subviews{
-            v.removeFromSuperview()
+        DispatchQueue.main.async {
+            for v in self.subviews{
+                v.removeFromSuperview()
+            }
+            if(self.banner != nil){
+                self.banner?.removeFromParent()
+            }
         }
     }
     
@@ -415,9 +420,9 @@ extension UIImage {
     
     public class func gifImageWithURL(_ gifUrl:String) -> UIImage? {
         guard let bundleURL:URL? = URL(string: gifUrl)
-            else {
-                //                print("image named \"\(gifUrl)\" doesn't exist")
-                return nil
+        else {
+            //                print("image named \"\(gifUrl)\" doesn't exist")
+            return nil
         }
         guard let imageData = try? Data(contentsOf: bundleURL!) else {
             //            print("image named \"\(gifUrl)\" into NSData")
@@ -429,9 +434,9 @@ extension UIImage {
     
     public class func gifImageWithName(_ name: String) -> UIImage? {
         guard let bundleURL = Bundle.main
-            .url(forResource: name, withExtension: "gif") else {
-                //                print("SwiftGif: This image named \"\(name)\" does not exist")
-                return nil
+                .url(forResource: name, withExtension: "gif") else {
+            //                print("SwiftGif: This image named \"\(name)\" does not exist")
+            return nil
         }
         guard let imageData = try? Data(contentsOf: bundleURL) else {
             //            print("SwiftGif: Cannot turn image named \"\(name)\" into NSData")

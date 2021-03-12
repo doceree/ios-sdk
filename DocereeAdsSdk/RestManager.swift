@@ -21,6 +21,7 @@ public final class RestManager{
     var httpBody: Data?
     var loggingEnabled: Bool = false
     var isPlatformUidPresent: Bool = false
+    var isVendorId: Bool = false
         
     // MARK: Private functions
     private func addUrlQueryParameters(url: URL, urlQueryParameters: RestEntity) -> URL{
@@ -100,6 +101,10 @@ public final class RestManager{
             var sourceUrl: String?
             var loggedInUser = NSKeyedUnarchiver.unarchiveObject(withFile: Hcp.ArchivingUrl.path) as? Hcp
             var isAdRichMedia: Bool
+            
+            let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
+            let frameWorkVersion = bundle.infoDictionary![kCFBundleVersionKey as String] as! String
+            
             //        var loggedInUser = DataController.shared.getLoggedInUser()
             let jsonEncoder = JSONEncoder()
             jsonEncoder.outputFormatting = .prettyPrinted
@@ -110,23 +115,39 @@ public final class RestManager{
             let json_data = try? jsonEncoder.encode(json_dict)
             let json_string = String(data: data, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "")
             var ua = UAString.init().UAString()
+            
+            //header
             self.requestHttpHeaders.add(value: ua, forKey: Header.header_user_agent.rawValue)
             self.requestHttpHeaders.add(value: advertisementId!, forKey: Header.header_advertising_id.rawValue)
+            self.requestHttpHeaders.add(value: self.isVendorId ? "1" : "0", forKey: Header.is_vendor_id.rawValue)
+            self.requestHttpHeaders.add(value: DocereeMobileAds.trackingStatus!, forKey: Header.header_is_ad_tracking_enabled.rawValue)
+            self.requestHttpHeaders.add(value: Bundle.main.displayName!, forKey: Header.header_app_name.rawValue)
+            self.requestHttpHeaders.add(value: Bundle.main.bundleIdentifier!, forKey: Header.header_app_bundle.rawValue)
+            self.requestHttpHeaders.add(value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String, forKey: Header.header_app_version.rawValue)
+            self.requestHttpHeaders.add(value: frameWorkVersion, forKey: Header.header_lib_version.rawValue)
+            
+            // query params
             self.urlQueryParameters.add(value: appKey, forKey: QueryParamsForGetImage.appKey.rawValue) // DocereeAdsIdentifier
             self.urlQueryParameters.add(value: slotId, forKey: QueryParamsForGetImage.id.rawValue)
             self.urlQueryParameters.add(value: size, forKey: QueryParamsForGetImage.size.rawValue)
             self.urlQueryParameters.add(value: "mobileApp", forKey: QueryParamsForGetImage.platformType.rawValue)
+
             if let platformuid = NSKeyedUnarchiver.unarchiveObject(withFile: AdResponseForPlatform.ArchivingUrl.path) as? String {
                 //        if platformuid != nil {
                 //        let platformuid = DataController.shared.getPlatformuid()
                 //        if platformuid != nil {
-                var data: NSDictionary
+                var data: Dictionary<String, String?>
                 if loggedInUser?.npi != nil {
+                    data = Dictionary()
                     data = ["platformUid": platformuid]
                 } else {
+                    data = Dictionary()
                     data = ["platformUid": platformuid,
                             "city": loggedInUser?.city,
                             "specialization": loggedInUser?.specialization,]
+//                    data.setValue(platformuid, forKey: "platformUid")
+//                    data.setValue(loggedInUser?.city, forKey: "city")
+//                    data.setValue(loggedInUser?.specialization, forKey: "specialization")
                 }
                 let jsonData = try? JSONSerialization.data(withJSONObject: data, options: [])
                 let jsonString = String(data: jsonData!, encoding: .utf8)?.toBase64() // encode to base64
@@ -276,13 +297,15 @@ public final class RestManager{
 //        let task = session.dataTask(with: request)
 //        task.resume()
 //    }
-}
-
-private func getIdentifierForAdvertising() -> String?{
-    if ASIdentifierManager.shared().isAdvertisingTrackingEnabled{
-        return ASIdentifierManager.shared().advertisingIdentifier.uuidString
-    } else {
-        return nil
+    
+    private func getIdentifierForAdvertising() -> String?{
+        if ASIdentifierManager.shared().isAdvertisingTrackingEnabled{
+            self.isVendorId = false
+            return ASIdentifierManager.shared().advertisingIdentifier.uuidString
+        } else {
+            self.isVendorId = true
+            return UIDevice.current.identifierForVendor?.uuidString
+        }
     }
 }
 
@@ -362,8 +385,8 @@ private func getPath(methodName: Methods) -> String{
     switch methodName{
     case .GetImage:
         return "/v1/adrequest"
-    case .Analytics:
-        return "/render/saveDetail"
+    case .AdBlock:
+        return "/v1/saveadblockinfo"
     }
 }
 
@@ -376,7 +399,7 @@ enum EnvironmentType{
 
 enum Methods{
     case GetImage
-    case Analytics
+    case AdBlock
 }
 
 extension DocereeAdRequestError: LocalizedError{
@@ -414,5 +437,21 @@ extension String{
     
     func toBase64() -> String?{
         return Data(self.utf8).base64EncodedString()
+    }
+}
+
+extension Bundle {
+    // Name of the app - title under the icon.
+    var displayName: String? {
+        return object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ??
+            object(forInfoDictionaryKey: "CFBundleName") as? String
+    }
+    
+    var releaseVersionNumber: String? {
+        return self.infoDictionary?["CFBundleShortVersionString"] as? String
+    }
+    
+    var buildVersionNumber: String? {
+        return self.infoDictionary?["CFBundleVersion"] as? String
     }
 }
