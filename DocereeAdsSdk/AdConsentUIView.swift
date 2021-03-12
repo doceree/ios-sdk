@@ -11,13 +11,11 @@ import UIKit
 class AdConsentUIView: UIView {
     
     // MARK: private vars
-    private var form1: UIView?
-    private var form2: UIView?
-    private var form3: UIView?
-
-    private var horizontalStackView: UIStackView?
     private var verticalStackView: UIStackView?
+    private var consentView: UIView?
     
+    var docereeAdImageView: UIImageView?
+    var docereeAdView: DocereeAdView?
     
     private lazy var purpleColor: UIColor = {
         let purpleColor = UIColor(hexString: "#6C40F7")
@@ -66,15 +64,22 @@ class AdConsentUIView: UIView {
 //        setUpLayout()
     }
     
-    convenience init?(with adSize: AdSize, frame: CGRect, rootVC: UIViewController){
+    convenience init?(with adSize: AdSize, frame: CGRect, rootVC: UIViewController, adImageView: UIImageView, adView: DocereeAdView){
         self.init()
         adViewSize = adSize
         adViewFrame = frame
         rootViewController = rootVC
+        docereeAdImageView = adImageView
+        docereeAdView = adView
         isMediumRectangle = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.MEDIUMRECTANGLE
         isBanner = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.BANNER
         loadConsentForm1()
     }
+    
+//    private convenience init(with adViewSize: AdSize, frame: CGRect){
+//        self.init(frame: CGRect(x: .zero, y: .zero, width: (adViewSize.width), height: (adViewSize.height)))
+//        loadConsentForm1()
+//    }
         
     // MARK: Initialize AdConsentUIView
     
@@ -86,7 +91,7 @@ class AdConsentUIView: UIView {
     private func loadConsentForm1(){
         // load back button
         
-        let consentView: UIView = UIView()
+        consentView = UIView()
         let iconSize: CGFloat = 15.0
         let titleHeight: CGFloat = 15.0
         
@@ -94,7 +99,7 @@ class AdConsentUIView: UIView {
         let buttonHeight: CGFloat = isMediumRectangle ? self.adViewFrame!.height * 0.2 : self.adViewFrame!.height/2
         let buttonLabelFontSize: CGFloat = textFontSize12
         
-        consentView.backgroundColor = self.greyBackgroundColor
+        consentView!.backgroundColor = self.greyBackgroundColor
 //        self.parent?.view.addSubview(consentView)
         
         let lightConfiguration = UIImage.SymbolConfiguration(pointSize: iconSize, weight: .light, scale: .small)
@@ -125,7 +130,7 @@ class AdConsentUIView: UIView {
         horizontalStackView1.addArrangedSubview(titleView)
         horizontalStackView1.translatesAutoresizingMaskIntoConstraints = false
         
-        consentView.addSubview(horizontalStackView1)
+        consentView!.addSubview(horizontalStackView1)
         
         let lightConfigurationWithSmallScale = UIImage.SymbolConfiguration(pointSize: 13, weight: .light, scale: .small)
         
@@ -183,24 +188,25 @@ class AdConsentUIView: UIView {
         verticalStackView?.addArrangedSubview(horizontalStackView2)
         //        verticalStackView!.addArrangedSubview(firstLineStackView)
         
-        consentView.addSubview(verticalStackView!)
+        consentView!.addSubview(verticalStackView!)
         
-        verticalStackView!.topAnchor.constraint(equalTo: consentView.topAnchor, constant: 0).isActive = true
-        verticalStackView!.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: self.isMediumRectangle ? -self.adViewFrame!.height * 0.25 : 0).isActive = true
-        verticalStackView!.leadingAnchor.constraint(equalTo: consentView.leadingAnchor, constant: 0).isActive = true
-        verticalStackView!.trailingAnchor.constraint(equalTo: consentView.trailingAnchor, constant: 0).isActive = true
+        verticalStackView!.topAnchor.constraint(equalTo: consentView!.topAnchor, constant: 0).isActive = true
+        verticalStackView!.bottomAnchor.constraint(equalTo: consentView!.bottomAnchor, constant: self.isMediumRectangle ? -self.adViewFrame!.height * 0.25 : 0).isActive = true
+        verticalStackView!.leadingAnchor.constraint(equalTo: consentView!.leadingAnchor, constant: 0).isActive = true
+        verticalStackView!.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: 0).isActive = true
         
-        
-        consentView.frame = adViewFrame!
-        rootViewController?.view.addSubview(consentView)
+        consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+        self.docereeAdView!.addSubview(consentView!)
+//        consentView!.frame = adViewFrame!
+//        rootViewController?.view.addSubview(consentView!)
     }
     
     // MARK: Load Consent form2
     private func loadConsentForm2(){
         // load back button
         
-        let consentView: UIView = UIView()
-        consentView.backgroundColor = self.greyBackgroundColor
+        consentView = UIView()
+        consentView!.backgroundColor = self.greyBackgroundColor
         
         let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.3
         let buttonHeight: CGFloat = self.adViewFrame!.height * 0.8
@@ -263,23 +269,25 @@ class AdConsentUIView: UIView {
             btnAdCoveringContent.topAnchor.constraint(equalTo: horizontalStackView2.topAnchor, constant: self.adViewFrame!.height * 0.2).isActive = true
         }
         
-        consentView.addSubview(horizontalStackView2)
+        consentView!.addSubview(horizontalStackView2)
         
-        horizontalStackView2.topAnchor.constraint(equalTo: consentView.topAnchor, constant: 0).isActive = true
-        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: self.isMediumRectangle ? -self.adViewFrame!.height * 0.2 : 0).isActive = true
-        horizontalStackView2.leadingAnchor.constraint(equalTo: consentView.leadingAnchor, constant: 4).isActive = true
-        horizontalStackView2.trailingAnchor.constraint(equalTo: consentView.trailingAnchor, constant: -4).isActive = true
-    
-        consentView.frame = adViewFrame!
-        rootViewController?.view.addSubview(consentView)
+        horizontalStackView2.topAnchor.constraint(equalTo: consentView!.topAnchor, constant: 0).isActive = true
+        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView!.bottomAnchor, constant: self.isMediumRectangle ? -self.adViewFrame!.height * 0.2 : 0).isActive = true
+        horizontalStackView2.leadingAnchor.constraint(equalTo: consentView!.leadingAnchor, constant: 4).isActive = true
+        horizontalStackView2.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: -4).isActive = true
+  
+        consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+        self.docereeAdView!.addSubview(consentView!)
+//        consentView!.frame = adViewFrame!
+//        rootViewController?.view.addSubview(consentView!)
     }
     
     // MARK: Load Consent form3
     private func loadConsentForm3(){
         // load back button
         
-        let consentView: UIView = UIView()
-        consentView.backgroundColor = self.greyBackgroundColor
+        consentView = UIView()
+        consentView!.backgroundColor = self.greyBackgroundColor
 //        self.parent?.view.addSubview(consentView)
         
         let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.4
@@ -358,21 +366,23 @@ class AdConsentUIView: UIView {
             btn1.topAnchor.constraint(equalTo: horizontalStackView2.topAnchor, constant: self.adViewFrame!.height * 0.1).isActive = true
         }
         
-        consentView.addSubview(horizontalStackView2)
+        consentView!.addSubview(horizontalStackView2)
         
-        horizontalStackView2.topAnchor.constraint(equalTo: consentView.topAnchor, constant: 0).isActive = true
-        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView.bottomAnchor, constant: self.isMediumRectangle ?
+        horizontalStackView2.topAnchor.constraint(equalTo: consentView!.topAnchor, constant: 0).isActive = true
+        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView!.bottomAnchor, constant: self.isMediumRectangle ?
                                                         -self.adViewFrame!.height * 0.1 : 0).isActive = true
-        horizontalStackView2.leadingAnchor.constraint(equalTo: consentView.leadingAnchor, constant: 4).isActive = true
-        horizontalStackView2.trailingAnchor.constraint(equalTo: consentView.trailingAnchor, constant: -4).isActive = true
+        horizontalStackView2.leadingAnchor.constraint(equalTo: consentView!.leadingAnchor, constant: 4).isActive = true
+        horizontalStackView2.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: -4).isActive = true
         
-        
-        consentView.frame = adViewFrame!
-        rootViewController?.view.addSubview(consentView)
+        consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+        self.docereeAdView!.addSubview(consentView!)
+//        consentView!.frame = adViewFrame!
+//        rootViewController?.view.addSubview(consentView!)
     }
     
     // load feedback
     private func loadAdConsentFeedback(){
+        self.removeAllViews()
         let consentView: UIView = UIView()
         consentView.frame = CGRect(x: 0.0, y: 0.0, width: self.adViewSize!.width, height: self.adViewSize!.height)
         consentView.backgroundColor = self.greyBackgroundColor
@@ -389,13 +399,16 @@ class AdConsentUIView: UIView {
         titleView.lineBreakMode = .byWordWrapping
         titleView.numberOfLines = 3
         consentView.addSubview(titleView)
-        consentView.frame = adViewFrame!
-        rootViewController?.view.addSubview(consentView)
+       
+//        consentView.frame = adViewFrame!
+//        rootViewController?.view.addSubview(consentView)
+        consentView.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
+        self.docereeAdView!.addSubview(consentView)
         
         UIView.animate(withDuration: 3, delay: 0.5, options: .curveEaseIn, animations: {
             consentView.alpha = 0
         }) { _ in
-            self.removeFromSuperview()
+            self.docereeAdView?.refresh()
         }
     }
     
@@ -415,7 +428,20 @@ class AdConsentUIView: UIView {
     
     @objc func backButtonClicked(_ sender: UITapGestureRecognizer){
         // back button pressed
+        self.docereeAdView?.refresh()
         // remove this view and refresh ad
+    }
+    
+    private func removeAllViews(){
+        for v in self.consentView!.subviews{
+            v.removeFromSuperview()
+        }
+    }
+    
+    private func refreshAdView(){
+        self.docereeAdView?.removeFromSuperview()
+//        self.docereeAdView?.removeAllViews()
+//        self.docereeAdView?.refresh()
     }
     
     @objc func adCoveringContentClicked(_ sender: UITapGestureRecognizer){

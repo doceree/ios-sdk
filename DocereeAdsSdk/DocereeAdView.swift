@@ -23,6 +23,8 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     var countDown = 30
     private var docereeAdRequest: DocereeAdRequest?
     
+    var consentUV: AdConsentUIView?
+    
     var crossImageView: UIImageView?
     var infoImageView: UIImageView?
     let iconWidth = 13
@@ -142,6 +144,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                                 NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
                                 NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
                                 NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+                                self.addSubview(self.adImageView)
                                 let imageUrl = NSURL(string: (adResponseData.sourceURL)!)
                                 self.handleImageRendering(of: imageUrl)
                                 if self.delegate != nil{
@@ -177,16 +180,20 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                                     
                                 } catch{
                                     self.delegate?.docereeAdView(self, didFailToReceiveAdWithError: DocereeAdRequestError.failedToCreateRequest)
+                                    self.removeAllViews()
                                 }
                             } else {
                                 self.delegate?.docereeAdView(self, didFailToReceiveAdWithError: DocereeAdRequestError.failedToCreateRequest)
+                                self.removeAllViews()
                             }
                         }
                     } catch{
                         self.delegate?.docereeAdView(self, didFailToReceiveAdWithError: DocereeAdRequestError.failedToCreateRequest)
+                        self.removeAllViews()
                     }
                 } else {
                     self.delegate?.docereeAdView(self, didFailToReceiveAdWithError: DocereeAdRequestError.failedToCreateRequest)
+                    self.removeAllViews()
                 }
             }
         })
@@ -234,7 +241,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
             
         self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))
-        crossImageView!.frame = CGRect(x: Int(adSize!.width) - iconWidth, y: 0, width: iconWidth, height: iconHeight)
+        crossImageView!.frame = CGRect(x: Int(adSize!.width) - iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
         crossImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
         self.adImageView.addSubview(crossImageView!)
         crossImageView!.isUserInteractionEnabled = true
@@ -242,7 +249,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         crossImageView!.addGestureRecognizer(tapOnCrossButton)
         
         self.infoImageView = UIImageView(image: UIImage(systemName: "info.circle", withConfiguration: lightConfiguration))
-        infoImageView!.frame = CGRect(x: Int(adSize!.width) - 2*iconWidth, y: 0, width: iconWidth, height: iconHeight)
+        infoImageView!.frame = CGRect(x: Int(adSize!.width) - 2*iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
         infoImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
         self.adImageView.addSubview(infoImageView!)
         infoImageView!.isUserInteractionEnabled = true
@@ -262,32 +269,53 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         placeHolderView.textColor = UIColor(hexString: "#6C40F7")
         placeHolderView.frame = CGRect(x: xCoords, y: yCoords, width: 0, height: (self.infoImageView?.frame.height)!)
         self.infoImageView!.addSubview(placeHolderView)
+        placeHolderView.isUserInteractionEnabled = true
         
         UIView.animate(withDuration: 1.0, animations: { [self] in
             placeHolderView.backgroundColor = UIColor(hexString: "#F2F2F2")
             placeHolderView.frame = CGRect(x: xCoords, y: yCoords, width: -placeHolderView.intrinsicContentSize.width, height: (self.infoImageView?.frame.height)!)
+        }, completion: { (finished: Bool) in
+            let tap = UITapGestureRecognizer(target: self, action: #selector(self.openAdConsentView))
+            self.infoImageView?.addGestureRecognizer(tap)
+            placeHolderView.addGestureRecognizer(tap)
+            placeHolderView.removeFromSuperview()
+            self.openAdConsent()
         })
     }
     
     @objc func openAdConsentView(_ sender: UITapGestureRecognizer){
 //         let consentVC = AdConsentViewController()
 //        consentVC.initialize(parentViewController: self.rootViewController!, adsize: self.adSize!, frame: self.frame)
-        let consentUV = AdConsentUIView(with: self.adSize!, frame: self.frame, rootVC: self.rootViewController!)
-        self.adImageView.addSubview(consentUV!)
+        openAdConsent()
     }
     
+    private func openAdConsent(){
+        consentUV = AdConsentUIView(with: self.adSize!, frame: self.frame, rootVC: self.rootViewController!, adImageView: self.adImageView, adView: self)
+        self.adImageView.removeFromSuperview()
+        self.addSubview(consentUV!)
+//        self.adImageView.addSubview(consentUV!)
+//        self.addSubview(consentUV!)
+    }
+        
     public override class var requiresConstraintBasedLayout: Bool{
         return true
     }
     
-    
+    func removeAllViews(){
+        print("removing views")
+        for v in self.subviews{
+            v.removeFromSuperview()
+        }
+    }
     
     //Mark: Action method
     @objc func onImageTouched(_ sender: UITapGestureRecognizer){
         DocereeAdView.self.didLeaveAd = true
         let url = URL(string: ctaLink!)
         if url != nil && UIApplication.shared.canOpenURL(url!){
+            AdsRefreshCountdownTimer.shared.stopRefresh()
             UIApplication.shared.openURL(url!)
+            self.removeAllViews()
         }
     }
     
@@ -357,6 +385,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     func refresh(){
+        self.removeAllViews()
         if docereeAdRequest != nil {
             load(self.docereeAdRequest!)
         }
