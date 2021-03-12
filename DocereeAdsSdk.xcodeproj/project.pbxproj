@@ -26,7 +26,6 @@
 		566465E424F7C74200FDFACE /* MRAIDUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465D324F7C74200FDFACE /* MRAIDUtilities.swift */; };
 		566465E524F7C74200FDFACE /* MRAIDHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465D424F7C74200FDFACE /* MRAIDHandler.swift */; };
 		566465E624F7C74200FDFACE /* DocereeAdRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465D524F7C74200FDFACE /* DocereeAdRequest.swift */; };
-		56843F6425F116B900811ECD /* AdConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56843F6325F116B900811ECD /* AdConsentViewController.swift */; };
 		56CEDBBD2510BD29001152D6 /* AdsRefreshCountdownTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */; };
 /* End PBXBuildFile section */
 
@@ -52,7 +51,6 @@
 		566465D324F7C74200FDFACE /* MRAIDUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MRAIDUtilities.swift; sourceTree = "<group>"; };
 		566465D424F7C74200FDFACE /* MRAIDHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MRAIDHandler.swift; sourceTree = "<group>"; };
 		566465D524F7C74200FDFACE /* DocereeAdRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocereeAdRequest.swift; sourceTree = "<group>"; };
-		56843F6325F116B900811ECD /* AdConsentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdConsentViewController.swift; sourceTree = "<group>"; };
 		56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsRefreshCountdownTimer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -106,7 +104,6 @@
 				566465BD24F7C72300FDFACE /* DocereeAdsSdk.h */,
 				566465BE24F7C72300FDFACE /* Info.plist */,
 				56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */,
-				56843F6325F116B900811ECD /* AdConsentViewController.swift */,
 				5660E01C25F792B900838E56 /* AdConsentUIView.swift */,
 			);
 			path = DocereeAdsSdk;
@@ -205,7 +202,6 @@
 				566465DC24F7C74200FDFACE /* MRAIDDelegate.swift in Sources */,
 				566465D924F7C74200FDFACE /* UAString.swift in Sources */,
 				5660E01D25F792B900838E56 /* AdConsentUIView.swift in Sources */,
-				56843F6425F116B900811ECD /* AdConsentViewController.swift in Sources */,
 				566465E124F7C74200FDFACE /* DocereeAdViewRichMediaBanner.swift in Sources */,
 				566465E024F7C74200FDFACE /* DocereeRequestError.swift in Sources */,
 				566465E624F7C74200FDFACE /* DocereeAdRequest.swift in Sources */,

@@ -45,6 +45,7 @@ class AdConsentUIView: UIView {
     
     var isMediumRectangle: Bool = false
     var isBanner: Bool = false
+    var isLeaderboard: Bool = false
     
     private var textFontSize12: CGFloat = 12.0
     private var textFontSize9: CGFloat = 9.0
@@ -79,6 +80,7 @@ class AdConsentUIView: UIView {
         self.isRichMedia = isRichMedia
         isMediumRectangle = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.MEDIUMRECTANGLE
         isBanner = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.BANNER
+        isLeaderboard = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.LEADERBOARD
         loadConsentForm1()
     }
     
@@ -286,16 +288,19 @@ class AdConsentUIView: UIView {
         horizontalStackView2.addArrangedSubview(btnAdNotInterested)
         horizontalStackView2.translatesAutoresizingMaskIntoConstraints = false
         
+        let verticalConstraintConstant: CGFloat
+        let horizontalConstraintConstant: CGFloat
+        
         if isMediumRectangle {
             btnAdCoveringContent.topAnchor.constraint(equalTo: horizontalStackView2.topAnchor, constant: self.adViewFrame!.height * 0.2).isActive = true
         }
         
         consentView!.addSubview(horizontalStackView2)
         
-        horizontalStackView2.topAnchor.constraint(equalTo: consentView!.topAnchor, constant: 0).isActive = true
-        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView!.bottomAnchor, constant: self.isMediumRectangle ? -self.adViewFrame!.height * 0.2 : 0).isActive = true
-        horizontalStackView2.leadingAnchor.constraint(equalTo: consentView!.leadingAnchor, constant: 4).isActive = true
-        horizontalStackView2.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: -4).isActive = true
+        horizontalStackView2.topAnchor.constraint(equalTo: consentView!.topAnchor, constant: self.isLeaderboard ? self.adViewFrame!.height * 0.2 : 0).isActive = true
+        horizontalStackView2.bottomAnchor.constraint(equalTo: consentView!.bottomAnchor, constant: (self.isMediumRectangle || self.isLeaderboard) ? -self.adViewFrame!.height * 0.2 : 0).isActive = true
+        horizontalStackView2.leadingAnchor.constraint(equalTo: consentView!.leadingAnchor, constant: self.isLeaderboard ? 32 :  4).isActive = true
+        horizontalStackView2.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: self.isLeaderboard ? -32 : -4).isActive = true
   
         consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
 //        self.docereeAdView!.addSubview(consentView!)
