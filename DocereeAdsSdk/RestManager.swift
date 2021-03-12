@@ -302,7 +302,15 @@ public final class RestManager{
     }
     
     private func getIdentifierForAdvertising() -> String?{
-        if ASIdentifierManager.shared().isAdvertisingTrackingEnabled{
+        var isIDFAAvailable = false
+        if (DocereeMobileAds.trackingStatus != nil){
+            if DocereeMobileAds.trackingStatus == "authorized" {
+                isIDFAAvailable = true
+            }
+        } else {
+            isIDFAAvailable = false
+        }
+        if ASIdentifierManager.shared().isAdvertisingTrackingEnabled && isIDFAAvailable{
             self.isVendorId = false
             return ASIdentifierManager.shared().advertisingIdentifier.uuidString
         } else {
