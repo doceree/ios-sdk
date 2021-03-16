@@ -51,7 +51,7 @@ public class MRAIDHandler : NSObject, WKUIDelegate, WKNavigationDelegate {
                         decisionHandler(.allow)
                     }
                     return
-                }else if (url!.absoluteString.range(of:"mraid://") != nil){
+                } else if (url!.absoluteString.range(of:"mraid://") != nil){
                     let rangeMRAID = url!.absoluteString.range(of:"mraid://")
                     let rangeQueryString = url!.absoluteString.range(of:"?args=")
                     var endpoint = ""

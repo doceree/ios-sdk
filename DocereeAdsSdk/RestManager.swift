@@ -117,6 +117,7 @@ public final class RestManager{
             var ua = UAString.init().UAString()
             
             //header
+//            self.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
             self.requestHttpHeaders.add(value: ua, forKey: Header.header_user_agent.rawValue)
             self.requestHttpHeaders.add(value: advertisementId!, forKey: Header.header_advertising_id.rawValue)
             self.requestHttpHeaders.add(value: self.isVendorId ? "1" : "0", forKey: Header.is_vendor_id.rawValue)
@@ -161,7 +162,7 @@ public final class RestManager{
             let session = URLSession(configuration: config)
             var components = URLComponents()
             components.scheme = "https"
-            components.host = getHost(type: EnvironmentType.Dev)
+            components.host = getHost(type: EnvironmentType.Qa)
             components.path = getPath(methodName: Methods.GetImage)
             var queryItems: [URLQueryItem] = []
             for (key, value) in self.urlQueryParameters.allValues(){
@@ -171,6 +172,12 @@ public final class RestManager{
             var urlRequest = URLRequest(url: (components.url)!)
             //        urlRequest.setValue(ua, forHTTPHeaderField: Header.header_user_agent.rawValue)
             //        urlRequest.setValue(advertisementId, forHTTPHeaderField: Header.header_advertising_id.rawValue)
+            
+            // set headers
+            for header in requestHttpHeaders.allValues() {
+                urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
+            }
+            
             urlRequest.httpMethod = HttpMethod.get.rawValue
             let task = session.dataTask(with: urlRequest) {(data, response, error) in
                 guard let data = data else { return }
@@ -248,13 +255,25 @@ public final class RestManager{
 //    }
         
     func sendAdImpression(impressionUrl: String){
-        var updatedUrl: String? = impressionUrl
+        let updatedUrl: String? = impressionUrl
         let url: URL = URL(string: updatedUrl!)!
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = HttpMethod.get.rawValue
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
-        let task = session.dataTask(with: urlRequest)
+        
+        if (self.requestHttpHeaders != nil) {
+            // set headers
+            for header in requestHttpHeaders.allValues() {
+                urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
+            }
+        }
+        
+        let task = session.dataTask(with: urlRequest){ (data, response, error) in
+            guard let data = data else { return }
+            let urlResponse = response as! HTTPURLResponse
+            print("impression sent. Http Status code is \(urlResponse.statusCode)")
+        }
         task.resume()
     }
     
@@ -268,23 +287,33 @@ public final class RestManager{
             return
         }
         let ua: String = UAString.init().UAString()
+        // headers
         self.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
         self.requestHttpHeaders.add(value: UAString.init().UAString(), forKey: Header.header_user_agent.rawValue)
+        
+        // query params
         self.httpBodyParameters.add(value: advertiserCampID!, forKey: AdBlockService.advertiserCampID.rawValue)
         self.httpBodyParameters.add(value: blockLevel!, forKey: AdBlockService.blockLevel.rawValue)
         self.httpBodyParameters.add(value: platformUid!, forKey: AdBlockService.platformUid.rawValue)
         self.httpBodyParameters.add(value: publisherACSID!, forKey: AdBlockService.publisherACSID.rawValue)
+        
         let body = httpBodyParameters.allValues()
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
         var components = URLComponents()
         components.scheme = "https"
-        components.host = getHost(type: EnvironmentType.Dev)
+        components.host = getHost(type: EnvironmentType.Qa)
         components.path = getPath(methodName: Methods.AdBlock)
         let analyticsEndpoint: URL = components.url!
         var request: URLRequest = URLRequest(url: analyticsEndpoint)
         request.setValue(ua, forHTTPHeaderField: Header.header_user_agent.rawValue)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // set headers
+        for header in requestHttpHeaders.allValues() {
+            request.setValue(header.value, forHTTPHeaderField: header.key)
+        }
+        
         request.httpMethod = HttpMethod.post.rawValue
         let jsonData: Data
         do {

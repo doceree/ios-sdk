@@ -127,19 +127,28 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             let width: Int = Int((self.adSize?.getAdSize().width)!)
             let height: Int = Int((self.adSize?.getAdSize().height)!)
             let size = "\(width)x\(height)"
-            if UIDevice.current.userInterfaceIdiom == .phone && (self.adSize?.getAdSizeName() == "LEADERBOARD" || self.adSize?.getAdSizeName() == "FULLBANNER"){
-                os_log("Invalid Request. Ad size will not fit on screen", log: .default, type: .error)
-                return
-            }
+            // MARK : uncomment after QA
+//            if UIDevice.current.userInterfaceIdiom == .phone && (self.adSize?.getAdSizeName() == "LEADERBOARD" || self.adSize?.getAdSizeName() == "FULLBANNER"){
+//                os_log("Invalid Request. Ad size will not fit on screen", log: .default, type: .error)
+//                return
+//            }
             docereeAdRequest.requestAd(self.docereeAdUnitId, size){ (results, isRichMediaAd) in
                 if let data = results.data {
                     let decoder = JSONDecoder()
                     do {
                         let adResponseData: AdResponseForPlatform = try decoder.decode(AdResponseForPlatform.self, from: data)
+                        if (adResponseData.sourceURL ?? "").isEmpty{
+                            self.removeAllViews()
+                            return
+                        }
                         let imageUrl = adResponseData.sourceURL
                         self.cbId = adResponseData.CBID?.components(separatedBy: "_")[0]
                         self.docereeAdUnitId = adResponseData.DIVID!
                         self.ctaLink = adResponseData.ctaLink
+                        let isImpressionLinkNullOrEmpty: Bool = (adResponseData.impressionLink ?? "").isEmpty
+                        if (!isImpressionLinkNullOrEmpty) {
+                            docereeAdRequest.sendImpression(impressionUrl: adResponseData.impressionLink!)
+                        }
                         if !isRichMediaAd{
                             if (imageUrl == nil || imageUrl?.count == 0) {
                                 return
@@ -206,6 +215,11 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             self.refresh()
         }
     }
+    
+//    public override func layoutSubviews() {
+//        super.layoutSubviews()
+//        self.frame.size = CGSize(width: self.adSize!.width, height: self.adSize!.height)
+//    }
     
     //MARK: Private methods
     
@@ -310,7 +324,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                 v.removeFromSuperview()
             }
             if(self.banner != nil){
-                self.banner?.removeFromParent()
+                self.banner?.view.removeFromSuperview()
             }
         }
     }

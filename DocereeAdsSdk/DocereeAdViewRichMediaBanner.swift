@@ -88,6 +88,7 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
 //        print("loaded")
         NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.setObserver(observer: self, selector: #selector(self.appMovedToForeground), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.setObserver(observer: self, selector: #selector(self.onViewRotate), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
@@ -103,6 +104,20 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
         self.didLeaveApplication = false
         self.removeFromParent()
         self.addAsNormalChild(to: self.parentController, frame: frame1!)
+    }
+    
+//    public override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        self.view.frame.size = CGSize(width: self.size.width, height: self.size.height)
+//   }
+    
+    @objc func onViewRotate(){
+        print("rotated")
+        self.view.frame.size = CGSize(width: self.size.width, height: self.size.height)
+    }
+    
+    deinit {
+        self.view.removeFromSuperview()
     }
     
     //MARK: creating WkWebViewConfiguration here
