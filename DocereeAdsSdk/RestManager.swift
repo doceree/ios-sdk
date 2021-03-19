@@ -211,48 +211,6 @@ public final class RestManager{
             os_log("Unknown error", log: .default, type: .error)
         }
     }
-    
-//    internal func hitAdButlerService(fID: String, sID: String, size: String, subcampaignId: String, p1: String, p2: String,
-//                                     click: String, completion: @escaping(_ results: Results, _ isRichMedia: Bool) -> Void){
-//        var isRichMedia: Bool = false
-//        let config = URLSessionConfiguration.default
-//        let session = URLSession(configuration: config)
-//        var components = URLComponents()
-//        components.scheme = "https"
-//        components.host = getHost(type: EnvironmentType.AdButler)
-//        components.path = getPath(methodName: Methods.ServedByAdButler)
-//        components.path = components.path
-//            .stringAppendingPathComponent(path: ";ID=\(fID);size=\(size);setID=\(sID);type=json;kw=\(subcampaignId);customParam1=\(p1);customParam2=\(p2)")
-//        components.percentEncodedPath = components.percentEncodedPath.removingPercentEncoding!
-////        print("Adbutler request \(components.url)")
-//        var urlRequest = URLRequest(url: (components.url)!)
-//        urlRequest.httpMethod = HttpMethod.get.rawValue
-//        let task = session.dataTask(with: urlRequest) {(data, response, error) in
-//            guard let data = data else { return }
-//            let response = response as! HTTPURLResponse
-//            if response.statusCode == 200{
-//                do {
-//                    let adbutlerResponse: ResponseAdButler = try JSONDecoder().decode(ResponseAdButler.self, from: data)
-//                    if adbutlerResponse.status != ResponseAdButler.ResponseStatus(rawValue: ResponseAdButler.ResponseStatus.SUCCESS.rawValue){
-//                        return
-//                    }
-//                    if adbutlerResponse.placements?.placement_1?.body != nil && !((adbutlerResponse.placements?.placement_1?.body!.isEmpty)!) {
-//                        isRichMedia = true
-//                    }
-//                    RestManager.self.temp1 = p1
-//                    RestManager.self.temp2 = p2
-//                    RestManager.self.tempClick = click
-//                    RestManager.self.tempPlacement1 = adbutlerResponse.placements?.placement_1
-//                    self.trackPixelApi(p1: p1, p2: p2, click: click, placement1: (adbutlerResponse.placements?.placement_1)!, isClickTracking: false)
-//                    completion(Results(withData: data as Data?, response: response , error: nil), isRichMedia)
-//                } catch{
-//                }
-//            } else {
-//                completion(Results(withData: nil, response: response as! HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), false)
-//            }
-//        }
-//        task.resume()
-//    }
         
     func sendAdImpression(impressionUrl: String){
         let updatedUrl: String? = impressionUrl
