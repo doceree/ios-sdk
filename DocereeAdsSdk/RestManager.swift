@@ -260,10 +260,10 @@ public final class RestManager{
         let session = URLSession(configuration: config)
         var components = URLComponents()
         components.scheme = "https"
-        components.host = getHost(type: EnvironmentType.Qa)
+        components.host = getDocTrackerHost(type: EnvironmentType.Qa)
         components.path = getPath(methodName: Methods.AdBlock)
-        let analyticsEndpoint: URL = components.url!
-        var request: URLRequest = URLRequest(url: analyticsEndpoint)
+        let adBlockEndPoint: URL = components.url!
+        var request: URLRequest = URLRequest(url: adBlockEndPoint)
         request.setValue(ua, forHTTPHeaderField: Header.header_user_agent.rawValue)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -371,11 +371,24 @@ private func getHost(type: EnvironmentType) -> String?{
     case .Dev:
         return "dev-bidder.doceree.com"
     case .Local:
-        return "10.0.3.2:8085"
+        return "10.0.3.2"
     case .Qa:
         return "qa-bidder.doceree.com"
     case .Prod:
         return "bidder.doceree.com"
+    }
+}
+
+private func getDocTrackerHost(type: EnvironmentType) -> String?{
+    switch type{
+    case .Dev:
+        return "dev-tracking.doceree.com"
+    case .Local:
+        return "10.0.3.2"
+    case .Qa:
+        return "qa-tracking.doceree.com"
+    case .Prod:
+        return "tracking.doceree.com"
     }
 }
 
@@ -384,7 +397,7 @@ private func getPath(methodName: Methods) -> String{
     case .GetImage:
         return "/v1/adrequest"
     case .AdBlock:
-        return "/v1/saveadblockinfo"
+        return "/saveadblockinfo"
     }
 }
 
