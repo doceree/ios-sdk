@@ -40,8 +40,8 @@ class AdConsentUIView: UIView {
         return backgroundColor
     }()
     
-    private var adConsentBlockLevel1 = [String: String]()
-    private var adConsentBlockLevel2 = [String: String]()
+//    private var adConsentBlockLevel1 = [String: String]()
+//    private var adConsentBlockLevel2 = [String: String]()
     
     var isMediumRectangle: Bool = false
     var isBanner: Bool = false
@@ -231,11 +231,6 @@ class AdConsentUIView: UIView {
         let buttonHeight: CGFloat = self.adViewFrame!.height * 0.8
         let buttonLabelFontSize: CGFloat = self.isBanner ? textFontSize10 : textFontSize12
         
-        adConsentBlockLevel1 = [String: String]()
-        adConsentBlockLevel1 = ["Ad is covering the content of the website.":"overlappingAd", "Ad was inappropriate.":"inappropriateAd"]
-//        adConsentBlockLevel1.append("Ad is covering the content of the website.")
-//        adConsentBlockLevel1.append("Ad was inappropriate.")
-        
         let btnAdCoveringContent = UIButton()
         btnAdCoveringContent.setTitle("Ad is covering the content of the website.", for: .normal)
         btnAdCoveringContent.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
@@ -332,17 +327,7 @@ class AdConsentUIView: UIView {
         let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.4
         let buttonHeight: CGFloat = self.adViewFrame!.height * 0.9
         let textFontSize: CGFloat = self.isBanner ? self.textFontSize8 : self.textFontSize12
-        
-        adConsentBlockLevel2 = [String: String]()
-        adConsentBlockLevel2 = ["I'm not interested in seeing ads for this product": "notInterestedInCampaign",
-                                "I'm not interested in seeing ads for this brand.": "notInterestedInBrand",
-                                "I'm not interested in seeing ads for this category.": "notInterestedInBrandType",
-                                "I'm not interested in seeing ads from pharmaceutical brands.": "notInterestedInClientType"]
-//        adConsentBlockLevel2.append("I'm not interested in seeing ads for this product.")
-//        adConsentBlockLevel2.append("I'm not interested in seeing ads for this brand.")
-//        adConsentBlockLevel2.append("I'm not interested in seeing ads for this category.")
-//        adConsentBlockLevel2.append("I'm not interested in seeing ads from pharmaceutical brands.")
-        
+                
         let btn1 = UIButton()
         btn1.setTitle("I'm not interested\n in seeing ads for this product.", for: .normal)
         btn1.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
@@ -522,11 +507,11 @@ class AdConsentUIView: UIView {
     }
     
     @objc func adCoveringContentClicked(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback(Array(self.adConsentBlockLevel1.values)[0])
+        loadAdConsentFeedback(BlockLevel.AdCoveringContent.info.blockLevelCode)
     }
     
     @objc func adWasInappropriateClicked(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback(Array(self.adConsentBlockLevel1.values)[1])
+        loadAdConsentFeedback(BlockLevel.AdWasInappropriate.info.blockLevelCode)
     }
     
     @objc func adNotInterestedClicked(_ sender: UITapGestureRecognizer){
@@ -534,19 +519,19 @@ class AdConsentUIView: UIView {
     }
     
     @objc func adNotInterestedClicked1(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback(Array(self.adConsentBlockLevel2.values)[0])
+        loadAdConsentFeedback(BlockLevel.NotInterestedInCampaign.info.blockLevelCode)
     }
     
     @objc func adNotInterestedClicked2(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback(Array(self.adConsentBlockLevel2.values)[1])
+        loadAdConsentFeedback(BlockLevel.NotInterestedInBrand.info.blockLevelCode)
     }
     
     @objc func adNotInterestedClicked3(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback(Array(self.adConsentBlockLevel2.values)[2])
+        loadAdConsentFeedback(BlockLevel.NotInterestedInBrandType.info.blockLevelCode)
     }
     
     @objc func adNotInterestedClicked4(_ sender: UITapGestureRecognizer){
-        loadAdConsentFeedback(Array(self.adConsentBlockLevel2.values)[3])
+        loadAdConsentFeedback(BlockLevel.NotInterestedInClientType.info.blockLevelCode)
     }
     
     private func callAdBlockService(_ advertiserCampId: String?, _ blockLevel: String?, _ publisherACSID: String?, _ platformuid: String?){
@@ -585,5 +570,31 @@ class AdConsentUIView: UIView {
         case LEADERBOARD
         case LARGEBANNER
         case INVALID
+    }
+    
+    enum BlockLevel{
+        case AdCoveringContent
+        case AdWasInappropriate
+        case NotInterestedInCampaign
+        case NotInterestedInBrand
+        case NotInterestedInBrandType
+        case NotInterestedInClientType
+        
+        var info: (blockLevelCode: String, blockLevelDesc: String){
+            switch self{
+            case .AdCoveringContent:
+                return ("overlappingAd", "Ad is covering the content of the website.")
+            case .AdWasInappropriate:
+                return ("inappropriateAd", "Ad was inappropriate.")
+            case .NotInterestedInCampaign:
+                return ("notInterestedInCampaign", "I'm not interested in seeing ads for this product")
+            case .NotInterestedInBrand:
+                return ("notInterestedInBrand", "I'm not interested in seeing ads for this brand.")
+            case .NotInterestedInBrandType:
+                return ("notInterestedInBrandType", "I'm not interested in seeing ads for this category.")
+            case .NotInterestedInClientType:
+                return ("notInterestedInClientType", "I'm not interested in seeing ads from pharmaceutical brands.")
+            }
+        }
     }
 }

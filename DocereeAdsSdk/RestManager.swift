@@ -170,8 +170,6 @@ public final class RestManager{
             }
             components.queryItems = queryItems
             var urlRequest = URLRequest(url: (components.url)!)
-            //        urlRequest.setValue(ua, forHTTPHeaderField: Header.header_user_agent.rawValue)
-            //        urlRequest.setValue(advertisementId, forHTTPHeaderField: Header.header_advertising_id.rawValue)
             
             // set headers
             for header in requestHttpHeaders.allValues() {
@@ -256,6 +254,7 @@ public final class RestManager{
         self.httpBodyParameters.add(value: publisherACSID!, forKey: AdBlockService.publisherACSID.rawValue)
         
         let body = httpBodyParameters.allValues()
+        print("AdBlock request passed is \(body)")
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
         var components = URLComponents()

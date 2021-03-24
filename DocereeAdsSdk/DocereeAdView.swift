@@ -295,8 +295,8 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         }, completion: { (finished: Bool) in
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.openAdConsentView))
             self.infoImageView?.addGestureRecognizer(tap)
-            //            placeHolderView.removeFromSuperview()
-            //            self.openAdConsent()
+                        placeHolderView.removeFromSuperview()
+                        self.openAdConsent()
         })
     }
     
