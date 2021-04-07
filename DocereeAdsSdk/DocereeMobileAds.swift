@@ -7,14 +7,18 @@
 //
 
 import Foundation
+#if canImport(AdSupport) && canImport(AppTrackingTransparency)
 import AppTrackingTransparency
 import AdSupport
+#endif
+#if canImport(OSLog)
 import OSLog
+#endif
 
 public final class DocereeMobileAds{
     
     var baseUrl: URL?
-    internal static var trackingStatus: String?
+    internal static var trackingStatus: String = "not determined"
     
     private static var sharedNetworkManager: DocereeMobileAds = {
         var docereeMobileAds = DocereeMobileAds(baseUrl: Api.baseURL)
@@ -27,7 +31,7 @@ public final class DocereeMobileAds{
     
     public static func login(with hcp: Hcp){
         NSKeyedArchiver.archiveRootObject(hcp, toFile: Hcp.ArchivingUrl.path)
-//        DataController.shared.save(hcp: hcp)
+        //        DataController.shared.save(hcp: hcp)
     }
     
     public class func shared() -> DocereeMobileAds{
@@ -37,11 +41,12 @@ public final class DocereeMobileAds{
     public typealias CompletionHandler = ((_ completionStatus:Any?) -> Void)?
     
     public func start(completionHandler: CompletionHandler){
-
+        
         let obj: Any? = CompletionStatus.Loading
         (obj)
         
         if #available(iOS 14, *) {
+            #if canImport(AdSupport) && canImport(AppTrackingTransparency)
             ATTrackingManager.requestTrackingAuthorization{ (status) in
                 switch status{
                 case .authorized:
@@ -65,6 +70,7 @@ public final class DocereeMobileAds{
                     return
                 }
             }
+            #endif
         }
     }
     

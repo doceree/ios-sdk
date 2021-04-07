@@ -1,6 +1,6 @@
 //
 //  RestManager.swift
-//  iosadslibrarydemo
+//  iosadslibrary
 //
 //  Created by dushyant pawar on 23/04/20.
 //  Copyright © 2020 dushyant pawar. All rights reserved.
@@ -8,8 +8,10 @@
 import Foundation
 import UIKit
 import os.log
+#if canImport(AdSupport) && canImport(AppTrackingTransparency)
 import AdSupport
 import AppTrackingTransparency
+#endif
 import AdSupport
 import CommonCrypto
 
@@ -22,7 +24,7 @@ public final class RestManager{
     var loggingEnabled: Bool = false
     var isPlatformUidPresent: Bool = false
     var isVendorId: Bool = false
-        
+    
     // MARK: Private functions
     private func addUrlQueryParameters(url: URL, urlQueryParameters: RestEntity) -> URL{
         if urlQueryParameters.totalItems() > 0 {
@@ -117,11 +119,11 @@ public final class RestManager{
             var ua = UAString.init().UAString()
             
             //header
-//            self.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
+            //            self.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
             self.requestHttpHeaders.add(value: ua, forKey: Header.header_user_agent.rawValue)
             self.requestHttpHeaders.add(value: advertisementId!, forKey: Header.header_advertising_id.rawValue)
             self.requestHttpHeaders.add(value: self.isVendorId ? "1" : "0", forKey: Header.is_vendor_id.rawValue)
-            self.requestHttpHeaders.add(value: DocereeMobileAds.trackingStatus!, forKey: Header.header_is_ad_tracking_enabled.rawValue)
+            self.requestHttpHeaders.add(value: DocereeMobileAds.trackingStatus, forKey: Header.header_is_ad_tracking_enabled.rawValue)
             self.requestHttpHeaders.add(value: Bundle.main.displayName!, forKey: Header.header_app_name.rawValue)
             self.requestHttpHeaders.add(value: Bundle.main.bundleIdentifier!, forKey: Header.header_app_bundle.rawValue)
             self.requestHttpHeaders.add(value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String, forKey: Header.header_app_version.rawValue)
@@ -132,7 +134,7 @@ public final class RestManager{
             self.urlQueryParameters.add(value: slotId, forKey: QueryParamsForGetImage.id.rawValue)
             self.urlQueryParameters.add(value: size, forKey: QueryParamsForGetImage.size.rawValue)
             self.urlQueryParameters.add(value: "mobileApp", forKey: QueryParamsForGetImage.platformType.rawValue)
-
+            
             if let platformuid = NSKeyedUnarchiver.unarchiveObject(withFile: AdResponseForPlatform.ArchivingUrl.path) as? String {
                 //        if platformuid != nil {
                 //        let platformuid = DataController.shared.getPlatformuid()
@@ -146,9 +148,9 @@ public final class RestManager{
                     data = ["platformUid": platformuid,
                             "city": loggedInUser?.city,
                             "specialization": loggedInUser?.specialization,]
-//                    data.setValue(platformuid, forKey: "platformUid")
-//                    data.setValue(loggedInUser?.city, forKey: "city")
-//                    data.setValue(loggedInUser?.specialization, forKey: "specialization")
+                    //                    data.setValue(platformuid, forKey: "platformUid")
+                    //                    data.setValue(loggedInUser?.city, forKey: "city")
+                    //                    data.setValue(loggedInUser?.specialization, forKey: "specialization")
                 }
                 let jsonData = try? JSONSerialization.data(withJSONObject: data, options: [])
                 let jsonString = String(data: jsonData!, encoding: .utf8)?.toBase64() // encode to base64
@@ -162,7 +164,7 @@ public final class RestManager{
             let session = URLSession(configuration: config)
             var components = URLComponents()
             components.scheme = "https"
-            components.host = getHost(type: EnvironmentType.Qa)
+            components.host = getHost(type: EnvironmentType.Dev)
             components.path = getPath(methodName: Methods.GetImage)
             var queryItems: [URLQueryItem] = []
             for (key, value) in self.urlQueryParameters.allValues(){
@@ -209,7 +211,7 @@ public final class RestManager{
             os_log("Unknown error", log: .default, type: .error)
         }
     }
-        
+    
     func sendAdImpression(impressionUrl: String){
         let updatedUrl: String? = impressionUrl
         let url: URL = URL(string: updatedUrl!)!
@@ -259,7 +261,7 @@ public final class RestManager{
         let session = URLSession(configuration: config)
         var components = URLComponents()
         components.scheme = "https"
-        components.host = getDocTrackerHost(type: EnvironmentType.Qa)
+        components.host = getDocTrackerHost(type: EnvironmentType.Dev)
         components.path = getPath(methodName: Methods.AdBlock)
         let adBlockEndPoint: URL = components.url!
         var request: URLRequest = URLRequest(url: adBlockEndPoint)
@@ -288,20 +290,23 @@ public final class RestManager{
     }
     
     private func getIdentifierForAdvertising() -> String?{
-        var isIDFAAvailable = false
-        if (DocereeMobileAds.trackingStatus != nil){
-            if DocereeMobileAds.trackingStatus == "authorized" {
-                isIDFAAvailable = true
+        if #available(iOS 14, *){
+            if (DocereeMobileAds.trackingStatus == "authorized") {
+                self.isVendorId = false
+                return ASIdentifierManager.shared().advertisingIdentifier.uuidString
+            } else {
+                self.isVendorId = true
+                return UIDevice.current.identifierForVendor?.uuidString
             }
         } else {
-            isIDFAAvailable = false
-        }
-        if ASIdentifierManager.shared().isAdvertisingTrackingEnabled && isIDFAAvailable{
-            self.isVendorId = false
-            return ASIdentifierManager.shared().advertisingIdentifier.uuidString
-        } else {
-            self.isVendorId = true
-            return UIDevice.current.identifierForVendor?.uuidString
+            // Fallback to previous versions
+            if ASIdentifierManager.shared().isAdvertisingTrackingEnabled {
+                self.isVendorId = false
+                return ASIdentifierManager.shared().advertisingIdentifier.uuidString
+            } else {
+                self.isVendorId = true
+                return UIDevice.current.identifierForVendor?.uuidString
+            }
         }
     }
 }
