@@ -235,6 +235,7 @@ SWIFT_CLASS("_TtC13DocereeAdsSdk28DocereeAdViewRichMediaBanner")
 @interface DocereeAdViewRichMediaBanner : UIViewController <UINavigationControllerDelegate>
 - (void)viewDidLoad;
 - (void)viewDidDisappear:(BOOL)animated;
+- (void)viewDidLayoutSubviews;
 @property (nonatomic, readonly) BOOL prefersStatusBarHidden;
 @property (nonatomic, readonly) BOOL shouldAutorotate;
 @property (nonatomic, readonly) UIInterfaceOrientationMask supportedInterfaceOrientations;
@@ -525,6 +526,7 @@ SWIFT_CLASS("_TtC13DocereeAdsSdk28DocereeAdViewRichMediaBanner")
 @interface DocereeAdViewRichMediaBanner : UIViewController <UINavigationControllerDelegate>
 - (void)viewDidLoad;
 - (void)viewDidDisappear:(BOOL)animated;
+- (void)viewDidLayoutSubviews;
 @property (nonatomic, readonly) BOOL prefersStatusBarHidden;
 @property (nonatomic, readonly) BOOL shouldAutorotate;
 @property (nonatomic, readonly) UIInterfaceOrientationMask supportedInterfaceOrientations;

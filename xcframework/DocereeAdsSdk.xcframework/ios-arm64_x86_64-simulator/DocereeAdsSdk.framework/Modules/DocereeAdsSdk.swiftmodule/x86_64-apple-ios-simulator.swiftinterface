@@ -9,7 +9,6 @@ import EventKit
 import Foundation
 import ImageIO
 import JavaScriptCore
-import OSLog
 import Photos
 import SafariServices
 import Swift
@@ -207,6 +206,7 @@ public protocol MRAIDDelegate {
   public func initialize(parentViewController: UIKit.UIViewController, frame: CoreGraphics.CGRect, respectSafeArea: Swift.Bool = false, renderBodyOverride: Swift.Bool, size: DocereeAdsSdk.AdSize, body: Swift.String?, docereeAdView: DocereeAdsSdk.DocereeAdView?, delegate: DocereeAdsSdk.DocereeAdViewDelegate?)
   @objc override dynamic public func viewDidLoad()
   @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
+  @objc override dynamic public func viewDidLayoutSubviews()
   @objc deinit
   @objc override dynamic public var prefersStatusBarHidden: Swift.Bool {
     @objc get

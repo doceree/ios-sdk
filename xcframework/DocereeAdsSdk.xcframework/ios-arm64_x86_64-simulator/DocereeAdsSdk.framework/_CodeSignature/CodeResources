@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/DocereeAdsSdk-Swift.h</key>
 		<data>
-		PofD4EuOfjLY/RKc1V3MeYQ5D2M=
+		Rs/vPuzbDkY+chso7tbxHzyHmRg=
 		</data>
 		<key>Headers/DocereeAdsSdk.h</key>
 		<data>
@@ -14,7 +14,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		QZieZuaZeR37VjsrEoTNGp44Em0=
+		A120ObOQZbplY1zoBnFJxMgu238=
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -22,11 +22,11 @@
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		ck0HKfg4/oK+RF0h+1BdnhbH5As=
+		FL5jRs8s3H7I9CiCIe9lImktwi4=
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		a5A/pKR6xYyNggiL0Dp1J8MWovI=
+		wJs8LiETJbFN0EIFknr4Y3NPHAI=
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/arm64.swiftdoc</key>
 		<data>
@@ -34,11 +34,11 @@
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/arm64.swiftinterface</key>
 		<data>
-		ck0HKfg4/oK+RF0h+1BdnhbH5As=
+		FL5jRs8s3H7I9CiCIe9lImktwi4=
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/arm64.swiftmodule</key>
 		<data>
-		a5A/pKR6xYyNggiL0Dp1J8MWovI=
+		wJs8LiETJbFN0EIFknr4Y3NPHAI=
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -46,11 +46,11 @@
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		6pAFur+dFfFQKQ2WvftZmaWocUs=
+		Xk3LTyITMKKwXSlyj7O2yDGptgE=
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		MjRHDAYN4u8HICB6CcJJF64XQwk=
+		zHmxyZd7OICfbLuUNY/JhKWQ5fI=
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64.swiftdoc</key>
 		<data>
@@ -58,11 +58,11 @@
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64.swiftinterface</key>
 		<data>
-		6pAFur+dFfFQKQ2WvftZmaWocUs=
+		Xk3LTyITMKKwXSlyj7O2yDGptgE=
 		</data>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64.swiftmodule</key>
 		<data>
-		MjRHDAYN4u8HICB6CcJJF64XQwk=
+		zHmxyZd7OICfbLuUNY/JhKWQ5fI=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -75,7 +75,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			nXEwzHkwzIq/Zzc+birYoyFqp3PFoNExmvmGAgS/BJs=
+			1Jut2WgFsPEh7zWptijrLNFLHm+Ua0uWcGa6tK7cBd8=
 			</data>
 		</dict>
 		<key>Headers/DocereeAdsSdk.h</key>
@@ -96,14 +96,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			0pRzTiuTMD1wGtwDmsw3nC5GVyXZnvR9IxfKepx8ZOs=
+			Oqgu5X+aUru4iSToyHeExYgmPwua4V6Zi0Cx+9rIN5o=
 			</data>
 		</dict>
 		<key>Modules/DocereeAdsSdk.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			J4m6DjDWpM83Zs2gtlC4ruBFdBJVtAS0W+2YgG3oO20=
+			ruaz4VAag+34rTihMXVoz3Xs3aF6X69okST8y+6TOVY=
 			</data>
 		</dict>
 		<key>Modules/DocereeAdsSdk.swiftmodule/arm64.swiftdoc</key>
@@ -117,14 +117,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			0pRzTiuTMD1wGtwDmsw3nC5GVyXZnvR9IxfKepx8ZOs=
+			Oqgu5X+aUru4iSToyHeExYgmPwua4V6Zi0Cx+9rIN5o=
 			</data>
 		</dict>
 		<key>Modules/DocereeAdsSdk.swiftmodule/arm64.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			J4m6DjDWpM83Zs2gtlC4ruBFdBJVtAS0W+2YgG3oO20=
+			ruaz4VAag+34rTihMXVoz3Xs3aF6X69okST8y+6TOVY=
 			</data>
 		</dict>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -138,14 +138,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			rMhSk0y/IgILvK0fTqFwtm5/oqmHWcw6hIL91CNdDKo=
+			i4n2fWCTyfQDlegOMCcIO7ikwcCkzFA1H1+74BnR0lg=
 			</data>
 		</dict>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Pmn0tRP3PTmrgJrT0tZ/CPki/6qb9VB9j7Hylxs/bAs=
+			ocgXhvwAnnqyA8v70Y839X/6/tczPieZdqkjSDsy5ek=
 			</data>
 		</dict>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64.swiftdoc</key>
@@ -159,14 +159,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			rMhSk0y/IgILvK0fTqFwtm5/oqmHWcw6hIL91CNdDKo=
+			i4n2fWCTyfQDlegOMCcIO7ikwcCkzFA1H1+74BnR0lg=
 			</data>
 		</dict>
 		<key>Modules/DocereeAdsSdk.swiftmodule/x86_64.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Pmn0tRP3PTmrgJrT0tZ/CPki/6qb9VB9j7Hylxs/bAs=
+			ocgXhvwAnnqyA8v70Y839X/6/tczPieZdqkjSDsy5ek=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
