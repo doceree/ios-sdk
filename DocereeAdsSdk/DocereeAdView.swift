@@ -127,11 +127,11 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             let width: Int = Int((self.adSize?.getAdSize().width)!)
             let height: Int = Int((self.adSize?.getAdSize().height)!)
             let size = "\(width)x\(height)"
-            // MARK : uncomment after QA
-//            if UIDevice.current.userInterfaceIdiom == .phone && (self.adSize?.getAdSizeName() == "LEADERBOARD" || self.adSize?.getAdSizeName() == "FULLBANNER"){
-//                os_log("Invalid Request. Ad size will not fit on screen", log: .default, type: .error)
-//                return
-//            }
+            // MARK : size restriction for iPhones & iPads
+            if UIDevice.current.userInterfaceIdiom == .phone && (self.adSize?.getAdSizeName() == "LEADERBOARD" || self.adSize?.getAdSizeName() == "FULLBANNER"){
+                os_log("Invalid Request. Ad size will not fit on screen", log: .default, type: .error)
+                return
+            }
             docereeAdRequest.requestAd(self.docereeAdUnitId, size){ (results, isRichMediaAd) in
                 if let data = results.data {
                     let decoder = JSONDecoder()
