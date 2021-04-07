@@ -11,9 +11,6 @@ import Foundation
 import AppTrackingTransparency
 import AdSupport
 #endif
-#if canImport(OSLog)
-import OSLog
-#endif
 
 public final class DocereeMobileAds{
     
@@ -51,22 +48,22 @@ public final class DocereeMobileAds{
                 switch status{
                 case .authorized:
                     DocereeMobileAds.trackingStatus = "authorized"
-                    os_log("authorized", log: .default, type: .error)
+//                    os_log("authorized", log: .default, type: .error)
                 case .denied:
                     DocereeMobileAds.trackingStatus = "denied"
-                    os_log("denied", log: .default, type: .error)
+//                    os_log("denied", log: .default, type: .error)
                     return
                 case .notDetermined:
                     DocereeMobileAds.trackingStatus = "not determined"
-                    os_log("not determined", log: .default, type: .error)
+//                    os_log("not determined", log: .default, type: .error)
                     return
                 case .restricted:
                     DocereeMobileAds.trackingStatus = "restricted"
-                    os_log("restricted", log: .default, type: .error)
+//                    os_log("restricted", log: .default, type: .error)
                     return
                 @unknown default:
                     DocereeMobileAds.trackingStatus = "Unknown error"
-                    os_log("Unknown error", log: .default, type: .error)
+//                    os_log("Unknown error", log: .default, type: .error)
                     return
                 }
             }

@@ -106,13 +106,13 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
         self.addAsNormalChild(to: self.parentController, frame: frame1!)
     }
     
-//    public override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        self.view.frame.size = CGSize(width: self.size.width, height: self.size.height)
-//   }
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.view.frame.size = CGSize(width: self.size.width, height: self.size.height)
+   }
     
     @objc func onViewRotate(){
-        print("rotated")
+//        print("rotated")
         self.view.frame.size = CGSize(width: self.size.width, height: self.size.height)
     }
     

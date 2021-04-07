@@ -229,8 +229,8 @@ public final class RestManager{
         
         let task = session.dataTask(with: urlRequest){ (data, response, error) in
             guard let data = data else { return }
-            let urlResponse = response as! HTTPURLResponse
-            print("impression sent. Http Status code is \(urlResponse.statusCode)")
+            _ = response as! HTTPURLResponse
+//            print("impression sent. Http Status code is \(urlResponse.statusCode)")
         }
         task.resume()
     }
@@ -256,7 +256,7 @@ public final class RestManager{
         self.httpBodyParameters.add(value: publisherACSID!, forKey: AdBlockService.publisherACSID.rawValue)
         
         let body = httpBodyParameters.allValues()
-        print("AdBlock request passed is \(body)")
+//        print("AdBlock request passed is \(body)")
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
         var components = URLComponents()
@@ -282,9 +282,9 @@ public final class RestManager{
             return
         }
         let task = session.dataTask(with: request){(data, response, error) in
-            guard let data = data else { return }
-            let urlResponse = response as! HTTPURLResponse
-            print(urlResponse.statusCode)
+            guard data != nil else { return }
+            _ = response as! HTTPURLResponse
+//            print(urlResponse.statusCode)
         }
         task.resume()
     }
