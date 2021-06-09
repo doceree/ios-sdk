@@ -249,9 +249,16 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
     }
     
     private func setupConsentIcons() {
-        let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
-            
-        self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))
+        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
+        
+        if #available(iOS 13.0, *) {
+            let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
+            self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))
+        } else {
+            // Fallback on earlier versions
+            self.crossImageView = UIImageView(image: UIImage(named: "xmark.square", in: bundle, compatibleWith: nil))
+        }
+    
         crossImageView!.frame = CGRect(x: Int(size.width) - iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
         crossImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
         self.mraidView.addSubview(crossImageView!)
@@ -259,7 +266,13 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
         let tapOnCrossButton = UITapGestureRecognizer(target: self, action: #selector(openAdConsentView))
         crossImageView!.addGestureRecognizer(tapOnCrossButton)
         
-        self.infoImageView = UIImageView(image: UIImage(systemName: "info.circle", withConfiguration: lightConfiguration))
+        if #available(iOS 13.0, *) {
+            let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
+            self.infoImageView = UIImageView(image: UIImage(systemName: "info.circle", withConfiguration: lightConfiguration))
+        } else {
+            // Fallback on earlier versions
+            self.infoImageView = UIImageView(image: UIImage(named: "info.circle", in: bundle, compatibleWith: nil))
+        }
         infoImageView!.frame = CGRect(x: Int(size.width) - 2*iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
         infoImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
         self.mraidView.addSubview(infoImageView!)

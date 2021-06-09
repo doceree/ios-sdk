@@ -14,6 +14,8 @@ class AdConsentUIView: UIView {
     // MARK: private vars
     private var verticalStackView: UIStackView?
     private var consentView: UIView?
+    private var backButtonUIImageView: UIImageView?
+    private var infoImage: UIImage?
     
     var docereeAdView: DocereeAdView?
     var docereeWebView: WKWebView?
@@ -97,6 +99,7 @@ class AdConsentUIView: UIView {
     
     // MARK: Load Consent form1
     private func loadConsentForm1(){
+        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
         // load back button
         
         consentView = UIView()
@@ -109,16 +112,26 @@ class AdConsentUIView: UIView {
         
         consentView!.backgroundColor = self.greyBackgroundColor
 //        self.parent?.view.addSubview(consentView)
+
+        var backArrowUIImage: UIImage? = UIImage()
         
-        let lightConfiguration = UIImage.SymbolConfiguration(pointSize: iconSize, weight: .light, scale: .small)
-        let backButtonUIImageView: UIImageView = UIImageView(image: UIImage(systemName: "arrow.backward", withConfiguration: lightConfiguration))
-        backButtonUIImageView.contentMode = .scaleAspectFit
-        backButtonUIImageView.tintColor = self.purpleColor
-        backButtonUIImageView.widthAnchor.constraint(equalToConstant: iconSize).isActive = true
-        backButtonUIImageView.heightAnchor.constraint(equalToConstant: iconSize).isActive = true
-        backButtonUIImageView.isUserInteractionEnabled = true
+        if #available(iOS 13.0, *) {
+            let lightConfiguration = UIImage.SymbolConfiguration(pointSize: iconSize, weight: .light, scale: .small)
+            self.backButtonUIImageView = UIImageView(image: UIImage(systemName: "arrow.backward", withConfiguration: lightConfiguration))
+        } else {
+            // Fallback on earlier versions
+
+            backArrowUIImage = backArrowUIImage!.resizeImage(image: UIImage(named: "backarrow", in: bundle, compatibleWith: nil)!, targetSize: CGSize(width: iconSize, height: iconSize))!
+//            self.backButtonUIImageView = UIImageView(image: UIImage(named: "backarrow", in: bundle, compatibleWith: nil))
+            self.backButtonUIImageView = UIImageView(image: backArrowUIImage)
+        }
+        backButtonUIImageView!.contentMode = .scaleAspectFit
+        backButtonUIImageView!.tintColor = self.purpleColor
+        backButtonUIImageView!.widthAnchor.constraint(equalToConstant: iconSize).isActive = true
+        backButtonUIImageView!.heightAnchor.constraint(equalToConstant: iconSize).isActive = true
+        backButtonUIImageView!.isUserInteractionEnabled = true
         let backButtonUITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(backButtonClicked))
-        backButtonUIImageView.addGestureRecognizer(backButtonUITapGestureRecognizer)
+        backButtonUIImageView!.addGestureRecognizer(backButtonUITapGestureRecognizer)
         
         let titleView = UILabel()
         titleView.text = "Ads by doceree"
@@ -134,13 +147,11 @@ class AdConsentUIView: UIView {
         horizontalStackView1.distribution = UIStackView.Distribution.equalSpacing
         horizontalStackView1.alignment = .fill
         
-        horizontalStackView1.addArrangedSubview(backButtonUIImageView)
+        horizontalStackView1.addArrangedSubview(backButtonUIImageView!)
         horizontalStackView1.addArrangedSubview(titleView)
         horizontalStackView1.translatesAutoresizingMaskIntoConstraints = false
         
         consentView!.addSubview(horizontalStackView1)
-        
-        let lightConfigurationWithSmallScale = UIImage.SymbolConfiguration(pointSize: 13, weight: .light, scale: .small)
         
         let btnReportAd = UIButton()
         btnReportAd.setTitle("Report this Ad", for: .normal)
@@ -156,8 +167,16 @@ class AdConsentUIView: UIView {
         
         let btnWhyThisAd = UIButton()
         btnWhyThisAd.setTitle("Why this Ad?", for: .normal)
-        let infoImage = UIImage(systemName: "info.circle", withConfiguration: lightConfigurationWithSmallScale)
-        infoImage?.withTintColor(self.purpleColor)
+        if #available(iOS 13.0, *) {
+            let lightConfigurationWithSmallScale = UIImage.SymbolConfiguration(pointSize: 13, weight: .light, scale: .small)
+            infoImage = UIImage(systemName: "info.circle", withConfiguration: lightConfigurationWithSmallScale)!
+            infoImage!.withTintColor(self.purpleColor)
+        } else {
+            // Fallback on earlier versions
+//            infoImage = UIImage(named: "info", in: bundle, compatibleWith: nil)!.imageWithColor(UIColor.purple)!
+            infoImage = infoImage?.resizeImage(image: UIImage(named: "info", in: bundle, compatibleWith: nil)!.imageWithColor(UIColor.purple)!, targetSize: CGSize(width: 13, height: 13))
+
+        }
         btnWhyThisAd.setImage(infoImage, for: .normal)
         btnWhyThisAd.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
         btnWhyThisAd.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
@@ -596,5 +615,43 @@ class AdConsentUIView: UIView {
                 return ("notInterestedInClientType", "I'm not interested in seeing ads from pharmaceutical brands.")
             }
         }
+    }
+}
+
+extension UIImage {
+    func imageWithColor(_ color: UIColor) -> UIImage? {
+        var image = withRenderingMode(.alwaysTemplate)
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        color.set()
+        image.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return image
+    }
+    
+    func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
+        let size = image.size
+        
+        let widthRatio  = targetSize.width  / size.width
+        let heightRatio = targetSize.height / size.height
+        
+        // Figure out what our orientation is, and use that to form the rectangle
+        var newSize: CGSize
+        if(widthRatio > heightRatio) {
+            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+        } else {
+            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+        }
+        
+        // This is the rect that we've calculated out and this is what is actually used below
+        let rect = CGRect(origin: .zero, size: newSize)
+        
+        // Actually do the resizing to the rect using the ImageContext stuff
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
 }

@@ -83,7 +83,12 @@ public class MRAIDHandler : NSObject, WKUIDelegate, WKNavigationDelegate {
                     let host = url.host, !host.hasPrefix("www.google.com"),
                     UIApplication.shared.canOpenURL(url) {
                     DocereeAdView.didLeaveAd = true
-                    UIApplication.shared.open(url)
+                    if #available(iOS 10, *) {
+                        UIApplication.shared.open(url)
+                    } else {
+                        // Fallback on earlier versions
+                        UIApplication.shared.openURL(url)
+                    }
                     decisionHandler(.cancel)
                 } else {
                     decisionHandler(.allow)

@@ -40,7 +40,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     lazy var adImageView: UIImageView = {
         let adImageView = UIImageView()
-        //        adImageView.image = setUpImage(with: adSize!)
+//                adImageView.image = setUpImage(with: adSize!)
         adImageView.translatesAutoresizingMaskIntoConstraints = false
         return adImageView
     }()
@@ -62,12 +62,20 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     public convenience init?(with size: String?){
         self.init()
         if size == nil || size?.count == 0{
-            os_log("Error: Please provide a valid size!", log: .default, type: .error)
+            if #available(iOS 10.0, *) {
+                os_log("Error: Please provide a valid size!", log: .default, type: .error)
+            } else {
+                // Fallback on earlier versions
+            }
             return
         }
         adSize = getAdSize(for: size)
         if adSize is Invalid {
-            os_log("Error: Invalid size!", log: .default, type: .error)
+            if #available(iOS 10.0, *) {
+                os_log("Error: Invalid size!", log: .default, type: .error)
+            } else {
+                // Fallback on earlier versions
+            }
             return
         }
         adSize = getAdSize(for: size)
@@ -89,7 +97,11 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     private convenience init(with adSize: AdSize?){
         self.init(frame: CGRect(x: .zero, y: .zero, width: (adSize?.width)!, height: (adSize?.height)!))
         if adSize == nil {
-            os_log("Error: AdSize must be provided", log: .default, type: .error)
+            if #available(iOS 10.0, *) {
+                os_log("Error: AdSize must be provided", log: .default, type: .error)
+            } else {
+                // Fallback on earlier versions
+            }
         } else{
             if adSize is Banner{
                 self.adSize = Banner()
@@ -106,7 +118,11 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     private convenience init(with adSize: AdSize?, and origin: CGPoint){
         self.init(frame: CGRect(x: origin.x, y: origin.y, width: (adSize?.width)!, height: (adSize?.height)!))
         if adSize == nil {
-            os_log("Error: AdSize must be provided", log: .default, type: .error)
+            if #available(iOS 10.0, *) {
+                os_log("Error: AdSize must be provided", log: .default, type: .error)
+            } else {
+                // Fallback on earlier versions
+            }
         } else{
             self.adSize = adSize
         }
@@ -129,7 +145,12 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             let size = "\(width)x\(height)"
             // MARK : size restriction for iPhones & iPads
             if UIDevice.current.userInterfaceIdiom == .phone && (self.adSize?.getAdSizeName() == "LEADERBOARD" || self.adSize?.getAdSizeName() == "FULLBANNER"){
-                os_log("Invalid Request. Ad size will not fit on screen", log: .default, type: .error)
+                if #available(iOS 10.0, *) {
+                    os_log("Invalid Request. Ad size will not fit on screen", log: .default, type: .error)
+                } else {
+                    // Fallback on earlier versions
+                    print("Invalid Request. Ad size will not fit on screen")
+                }
                 return
             }
             docereeAdRequest.requestAd(self.docereeAdUnitId, size){ (results, isRichMediaAd) in
@@ -158,6 +179,8 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                                 NotificationCenter.default.setObserver(observer: self, selector: #selector(self.willMoveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
                                 NotificationCenter.default.setObserver(observer: self, selector: #selector(self.didBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
                                 self.addSubview(self.adImageView)
+                                self.adImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+                                self.adImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
                                 let imageUrl = NSURL(string: (adResponseData.sourceURL)!)
                                 self.handleImageRendering(of: imageUrl)
                                 if self.delegate != nil{
@@ -239,15 +262,17 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             setupConsentIcons()
         }
     }
+
     
     private func setUpLayout(){
-        //        NSLayoutConstraint.activate([
-        //                   self.adImageView.topAnchor.constraint(equalTo: topAnchor),
-        //                   self.adImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-        //                   self.adImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-        //                   self.adImageView.trailingAnchor.constraint(equalTo: trailingAnchor)
-        //               ])
-        //        self.translatesAutoresizingMaskIntoConstraints = false
+//                NSLayoutConstraint.activate([
+//                           self.adImageView.topAnchor.constraint(equalTo: topAnchor),
+//                           self.adImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
+//                           self.adImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+//                           self.adImageView.trailingAnchor.constraint(equalTo: trailingAnchor)
+//                       ])
+        // uncomment for iOS versions 9, 10 and 11
+        self.translatesAutoresizingMaskIntoConstraints = false
         clipsToBounds = true
         // add actions here
         let tap = UITapGestureRecognizer(target: self, action: #selector(DocereeAdView.onImageTouched(_:)))
@@ -256,17 +281,29 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     private func setupConsentIcons() {
-        let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
+        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
+
+        if #available(iOS 13.0, *) {
+            let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
+            self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))
+        } else {
+            // Fallback on earlier versions
+            self.crossImageView = UIImageView(image: UIImage(named: "xmark", in: bundle, compatibleWith: nil))
+        }
         
-        self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))
         crossImageView!.frame = CGRect(x: Int(adSize!.width) - iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
         crossImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
         self.adImageView.addSubview(crossImageView!)
         crossImageView!.isUserInteractionEnabled = true
         let tapOnCrossButton = UITapGestureRecognizer(target: self, action: #selector(openAdConsentView))
         crossImageView!.addGestureRecognizer(tapOnCrossButton)
-        
+
+        if #available(iOS 13.0, *){
+            let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
         self.infoImageView = UIImageView(image: UIImage(systemName: "info.circle", withConfiguration: lightConfiguration))
+        } else {
+            self.infoImageView = UIImageView(image: UIImage(named: "info", in: bundle, compatibleWith: nil))
+        }
         infoImageView!.frame = CGRect(x: Int(adSize!.width) - 2*iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
         infoImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
         self.adImageView.addSubview(infoImageView!)

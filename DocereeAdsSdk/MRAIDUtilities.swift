@@ -79,25 +79,30 @@ public class MRAIDUtilities {
     }
     
     internal static func parseDate(_ str:String) -> Date? {
-        let iso = ISO8601DateFormatter()
-        let isoDate = iso.date(from:str)
-        if(isoDate != nil){
-            return isoDate!
-        }
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier:"en_US_POSIX")
-        let formats = [
-            "yyyy-MM-dd'T'HH:mmZZZZZ" ,
-            "yyyy-MM-dd'T'HH:mm:ssZZZZZ" ,
-            "yyyy-MM-dd" ,
-            "yyyy-MM-dd'T'HHZZZZZ"
-            ]
-        for format in formats {
-            formatter.dateFormat = format
-            let date = formatter.date(from:str)
-            if(date != nil){
-                return date!;
+        if #available(iOS 10.0, *) {
+            let iso = ISO8601DateFormatter()
+            let isoDate = iso.date(from:str)
+            if(isoDate != nil){
+                return isoDate!
             }
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier:"en_US_POSIX")
+            let formats = [
+                "yyyy-MM-dd'T'HH:mmZZZZZ" ,
+                "yyyy-MM-dd'T'HH:mm:ssZZZZZ" ,
+                "yyyy-MM-dd" ,
+                "yyyy-MM-dd'T'HHZZZZZ"
+            ]
+            for format in formats {
+                formatter.dateFormat = format
+                let date = formatter.date(from:str)
+                if(date != nil){
+                    return date!;
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+            return DateFormatter.date(fromISO8601String: str)
         }
         return nil
     }
@@ -313,3 +318,35 @@ public class MRAIDUtilities {
     }
 }
 
+extension DateFormatter {
+
+    static let iso8601DateFormatter: DateFormatter = {
+        let enUSPOSIXLocale = Locale(identifier: "en_US_POSIX")
+        let iso8601DateFormatter = DateFormatter()
+        iso8601DateFormatter.locale = enUSPOSIXLocale
+        iso8601DateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        iso8601DateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return iso8601DateFormatter
+    }()
+
+    static let iso8601WithoutMillisecondsDateFormatter: DateFormatter = {
+        let enUSPOSIXLocale = Locale(identifier: "en_US_POSIX")
+        let iso8601DateFormatter = DateFormatter()
+        iso8601DateFormatter.locale = enUSPOSIXLocale
+        iso8601DateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        iso8601DateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return iso8601DateFormatter
+    }()
+
+    static func date(fromISO8601String string: String) -> Date? {
+        if let dateWithMilliseconds = iso8601DateFormatter.date(from: string) {
+            return dateWithMilliseconds
+        }
+
+        if let dateWithoutMilliseconds = iso8601WithoutMillisecondsDateFormatter.date(from: string) {
+            return dateWithoutMilliseconds
+        }
+
+        return nil
+    }
+}

@@ -11,7 +11,11 @@ import UIKit
 class AdsRefreshCountdownTimer {
     
     var timer: Timer?
-    var countDown = 30
+    // prev implementation
+//    var countDown = 30
+    
+    // new backward compatible implementation
+    let adRefreshRepeatInterval = 30.0
     
     static let shared = AdsRefreshCountdownTimer()
     
@@ -21,20 +25,36 @@ class AdsRefreshCountdownTimer {
     // MARK: Create timer here
     private func createTimer(completion : @escaping() -> Void){
         if timer == nil {
-            self.countDown = 30
-            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true){ timer in
-                timer.tolerance = 0.1
-                if self.countDown > 0 {
-                    self.countDown -= 1
-                } else if self.countDown == 0 {
-                    self.resetCountDown()
+            
+            // prev implementation
+//            self.countDown = 30
+//            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true){ timer in
+//                timer.tolerance = 0.1
+//                if self.countDown > 0 {
+//                    self.countDown -= 1
+//                } else if self.countDown == 0 {
+//                    self.resetCountDown()
+//                    completion()
+//                }
+////                print(self.countDown)
+//            }
+            
+            // new backward compatible implementation
+            if #available(iOS 10, *){
+                timer = Timer.scheduledTimer(withTimeInterval: self.adRefreshRepeatInterval, repeats: true){ _ in
                     completion()
                 }
-//                print(self.countDown)
+            } else {
+                timer = Timer.scheduledTimer(timeInterval: self.adRefreshRepeatInterval, target: self, selector: #selector(completionCallback), userInfo: nil, repeats: true)
             }
+            
         }
     }
     
+    @objc func completionCallback(completion: @escaping() -> Void){
+        completion()
+    }
+        
     // MARK: Start refresh
     func startRefresh(completion : @escaping() -> Void){
         // create timer here
@@ -50,21 +70,21 @@ class AdsRefreshCountdownTimer {
     // MARK: Cancel the timer
     private func cancelTimer(){
         timer?.invalidate()
-        countDown = 0
+//        countDown = 0
         timer = nil
     }
     
-    @objc func startCountDown(){
-        // start countdown
-        if countDown > 0{
-            countDown -= 1
-        } else if countDown == 0{
-            resetCountDown()
-        }
-        print(self.countDown)
-    }
-    
-    func resetCountDown(){
-        countDown = 30
-    }
+//    @objc func startCountDown(){
+//        // start countdown
+//        if countDown > 0{
+//            countDown -= 1
+//        } else if countDown == 0{
+//            resetCountDown()
+//        }
+//        print(self.countDown)
+//    }
+//
+//    func resetCountDown(){
+//        countDown = 30
+//    }
 }

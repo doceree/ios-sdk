@@ -24,52 +24,8 @@ public final class RestManager{
     var loggingEnabled: Bool = false
     var isPlatformUidPresent: Bool = false
     var isVendorId: Bool = false
-    
-    // MARK: Private functions
-    private func addUrlQueryParameters(url: URL, urlQueryParameters: RestEntity) -> URL{
-        if urlQueryParameters.totalItems() > 0 {
-            guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return url }
-            urlComponents.percentEncodedQuery = urlComponents.percentEncodedQuery!.replacingOccurrences(of: ";", with:"%3B")
-            var queryItems = [URLQueryItem]()
-            for (key, value) in urlQueryParameters.allValues(){
-                //                let item = URLQueryItem(name: key, value: value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))
-                let item = URLQueryItem(name: key, value: value.trimmingCharacters(in: .whitespacesAndNewlines))
-                queryItems.append(item)
-            }
-            urlComponents.queryItems = queryItems
-            
-            guard let updatedUrl = urlComponents.url else { return url }
-            
-            return updatedUrl
-        }
-        return url
-    }
-    
-    private func getHttpBody() -> Data?{
-        guard let contentType = requestHttpHeaders.value(forKey: "Content-Type") else { return nil }
-        if contentType.contains("application/json"){
-            return try? JSONSerialization.data(withJSONObject: httpBodyParameters.allValues(), options: [.prettyPrinted, .sortedKeys])
-        } else if contentType.contains("application/x-www-form-urlencoded"){
-            let bodyString = httpBodyParameters.allValues().map{"\($0)=\(String(describing: $1.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)))"}.joined(separator: "&")
-            return bodyString.data(using: .utf8)
-        } else{
-            return httpBody
-        }
-    }
-    
-    private func prepareRequest(withUrl url : URL?, httpBody: Data?, httpMethod: HttpMethod) -> URLRequest?{
-        guard let url = url else { return nil }
-        var request = URLRequest(url: url)
-        request.httpMethod = httpMethod.rawValue
-        
-        for (header, value) in requestHttpHeaders.allValues(){
-            request.setValue(value, forHTTPHeaderField: header)
-        }
-        
-        request.httpBody = httpBody
-        return request
-    }
-    
+
+                
     // MARK: Method for fetching data
     internal func getData(fromURL url: URL, completion: @escaping(_ data: Data?) -> Void){
         DispatchQueue.global(qos: .userInitiated).async {
@@ -86,14 +42,24 @@ public final class RestManager{
     internal func getImage(_ size: String!, _ slotId: String!, completion: @escaping(_ results: Results, _ isRichmedia: Bool) -> Void){
         
         guard let appKey = Bundle.main.object(forInfoDictionaryKey: "DocereeAdsIdentifier") as? String else {
-            os_log("Error: Missing DocereeIdentifier key!", log: .default, type: .error)
+            if #available(iOS 10.0, *) {
+                os_log("Error: Missing DocereeIdentifier key!", log: .default, type: .error)
+            } else {
+                // Fallback on earlier versions
+                print("Error: Missing DocereeIdentifier key!")
+            }
             return
         }
         
         var advertisementId: String?
         advertisementId = getIdentifierForAdvertising()
         if (advertisementId == nil) {
-            os_log("Error: Ad Tracking is disabled . Please re-enable it to view ads", log: .default, type: .error)
+            if #available(iOS 10.0, *) {
+                os_log("Error: Ad Tracking is disabled . Please re-enable it to view ads", log: .default, type: .error)
+            } else {
+                // Fallback on earlier versions
+                print("Error: Ad Tracking is disabled . Please re-enable it to view ads")
+            }
             return
         }
         if advertisementId != nil {
@@ -164,7 +130,7 @@ public final class RestManager{
             let session = URLSession(configuration: config)
             var components = URLComponents()
             components.scheme = "https"
-            components.host = getHost(type: EnvironmentType.Prod)
+            components.host = getHost(type: EnvironmentType.Dev)
             components.path = getPath(methodName: Methods.GetImage)
             var queryItems: [URLQueryItem] = []
             for (key, value) in self.urlQueryParameters.allValues(){
@@ -208,7 +174,11 @@ public final class RestManager{
             }
             task.resume()
         } else {
-            os_log("Unknown error", log: .default, type: .error)
+            if #available(iOS 10.0, *){
+                os_log("Unknown error", log: .default, type: .error)
+            } else {
+                print("Unknown error")
+            }
         }
     }
     
@@ -261,7 +231,7 @@ public final class RestManager{
         let session = URLSession(configuration: config)
         var components = URLComponents()
         components.scheme = "https"
-        components.host = getDocTrackerHost(type: EnvironmentType.Prod)
+        components.host = getDocTrackerHost(type: EnvironmentType.Dev)
         components.path = getPath(methodName: Methods.AdBlock)
         let adBlockEndPoint: URL = components.url!
         var request: URLRequest = URLRequest(url: adBlockEndPoint)
