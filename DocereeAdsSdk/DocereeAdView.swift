@@ -40,7 +40,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     lazy var adImageView: UIImageView = {
         let adImageView = UIImageView()
-//                adImageView.image = setUpImage(with: adSize!)
+//        adImageView.image = setUpImage(with: adSize!)
         adImageView.translatesAutoresizingMaskIntoConstraints = false
         return adImageView
     }()
