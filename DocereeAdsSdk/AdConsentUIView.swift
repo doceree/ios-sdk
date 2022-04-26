@@ -22,9 +22,6 @@ class AdConsentUIView: UIView {
     
     var isRichMedia: Bool = false
 
-//    private var adConsentBlockLevel1 = [String: String]()
-//    private var adConsentBlockLevel2 = [String: String]()
-    
     var isMediumRectangle: Bool = false
     var isBanner: Bool = false
     var isLeaderboard: Bool = false
@@ -45,14 +42,10 @@ class AdConsentUIView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-//        addSubview(adImageView)
-//        setUpLayout()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-//        addSubview(adImageView)
-//        setUpLayout()
     }
     
     convenience init?(with adSize: AdSize, frame: CGRect, rootVC: UIViewController, adView: DocereeAdView?, isRichMedia: Bool){
@@ -62,17 +55,12 @@ class AdConsentUIView: UIView {
         rootViewController = rootVC
         docereeAdView = adView
         self.isRichMedia = isRichMedia
-        isMediumRectangle = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.MEDIUMRECTANGLE
-        isBanner = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.BANNER
-        isLeaderboard = self.getAdTypeBySize(adSize: self.adViewSize!) == AdType.LEADERBOARD
+        isMediumRectangle = getAdTypeBySize(adSize: self.adViewSize!) == AdType.MEDIUMRECTANGLE
+        isBanner = getAdTypeBySize(adSize: self.adViewSize!) == AdType.BANNER
+        isLeaderboard = getAdTypeBySize(adSize: self.adViewSize!) == AdType.LEADERBOARD
         loadConsentForm1()
     }
     
-//    private convenience init(with adViewSize: AdSize, frame: CGRect){
-//        self.init(frame: CGRect(x: .zero, y: .zero, width: (adViewSize.width), height: (adViewSize.height)))
-//        loadConsentForm1()
-//    }
-        
     // MARK: Initialize AdConsentUIView
     
     // MARK: Horizontal Containers
@@ -85,16 +73,15 @@ class AdConsentUIView: UIView {
         // load back button
         
         consentView = UIView()
+        consentView!.backgroundColor = greyBackgroundColor
+
         let iconSize: CGFloat = 15.0
         let titleHeight: CGFloat = 15.0
         
         let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.4
         let buttonHeight: CGFloat = isMediumRectangle ? self.adViewFrame!.height * 0.2 : self.adViewFrame!.height/2
         let buttonLabelFontSize: CGFloat = textFontSize12
-        
-        consentView!.backgroundColor = greyBackgroundColor
-//        self.parent?.view.addSubview(consentView)
-
+ 
         var backArrowUIImage: UIImage? = UIImage()
         
         if #available(iOS 13.0, *) {
@@ -104,7 +91,6 @@ class AdConsentUIView: UIView {
             // Fallback on earlier versions
 
             backArrowUIImage = backArrowUIImage!.resizeImage(image: UIImage(named: "backarrow", in: bundle, compatibleWith: nil)!, targetSize: CGSize(width: iconSize, height: iconSize))!
-//            self.backButtonUIImageView = UIImageView(image: UIImage(named: "backarrow", in: bundle, compatibleWith: nil))
             self.backButtonUIImageView = UIImageView(image: backArrowUIImage)
         }
         backButtonUIImageView!.contentMode = .scaleAspectFit
@@ -155,7 +141,6 @@ class AdConsentUIView: UIView {
             infoImage!.withTintColor(purpleColor)
         } else {
             // Fallback on earlier versions
-//            infoImage = UIImage(named: "info", in: bundle, compatibleWith: nil)!.imageWithColor(UIColor.purple)!
             infoImage = infoImage?.resizeImage(image: UIImage(named: "info", in: bundle, compatibleWith: nil)!.imageWithColor(UIColor.purple)!, targetSize: CGSize(width: 13, height: 13))
 
         }
@@ -195,7 +180,6 @@ class AdConsentUIView: UIView {
         verticalStackView?.translatesAutoresizingMaskIntoConstraints = false
         verticalStackView?.addArrangedSubview(horizontalStackView1)
         verticalStackView?.addArrangedSubview(horizontalStackView2)
-        //        verticalStackView!.addArrangedSubview(firstLineStackView)
         
         consentView!.addSubview(verticalStackView!)
         
@@ -209,16 +193,12 @@ class AdConsentUIView: UIView {
         if (!self.isRichMedia) {
         self.docereeAdView!.addSubview(consentView!)
         } else {
-//            self.docereeWebView!.addSubview(consentView!)
-
             for v in rootViewController!.view.subviews{
                 v.removeFromSuperview()
             }
             consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
             self.rootViewController?.view.addSubview(consentView!)
         }
-//        consentView!.frame = adViewFrame!
-//        rootViewController?.view.addSubview(consentView!)
     }
 
     // MARK: Load Consent form2
@@ -264,21 +244,16 @@ class AdConsentUIView: UIView {
         horizontalStackView2.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: self.isLeaderboard ? -32 : -4).isActive = true
   
         consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
-//        self.docereeAdView!.addSubview(consentView!)
-        
-        if (!self.isRichMedia) {
-        self.docereeAdView!.addSubview(consentView!)
-        } else {
-//            self.docereeWebView!.addSubview(consentView!)
 
+        if (!self.isRichMedia) {
+            self.docereeAdView!.addSubview(consentView!)
+        } else {
             for v in rootViewController!.view.subviews{
                 v.removeFromSuperview()
             }
             consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
             self.rootViewController?.view.addSubview(consentView!)
         }
-//        consentView!.frame = adViewFrame!
-//        rootViewController?.view.addSubview(consentView!)
     }
 
     // MARK: Load Consent form3
@@ -330,22 +305,16 @@ class AdConsentUIView: UIView {
         horizontalStackView2.trailingAnchor.constraint(equalTo: consentView!.trailingAnchor, constant: -4).isActive = true
         
         consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
-//        self.docereeAdView!.addSubview(consentView!)
-        
-        if (!self.isRichMedia) {
-        self.docereeAdView!.addSubview(consentView!)
-        } else {
-//            self.docereeWebView!.addSubview(consentView!)
 
+        if (!self.isRichMedia) {
+            self.docereeAdView!.addSubview(consentView!)
+        } else {
             for v in rootViewController!.view.subviews{
                 v.removeFromSuperview()
             }
             consentView!.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
             self.rootViewController?.view.addSubview(consentView!)
         }
-        
-//        consentView!.frame = adViewFrame!
-//        rootViewController?.view.addSubview(consentView!)
     }
     
     func createButtonWithText(_ text: String) -> UIButton {
@@ -404,17 +373,11 @@ class AdConsentUIView: UIView {
         titleView.lineBreakMode = .byWordWrapping
         titleView.numberOfLines = 3
         consentView.addSubview(titleView)
-       
-//        consentView.frame = adViewFrame!
-//        rootViewController?.view.addSubview(consentView)
         consentView.frame = CGRect(x: .zero, y: .zero, width: adViewFrame!.width, height: adViewFrame!.height)
-//        self.docereeAdView!.addSubview(consentView)
-        
-        if (!self.isRichMedia) {
-        self.docereeAdView!.addSubview(consentView)
-        } else {
-//            self.docereeWebView!.addSubview(consentView!)
 
+        if (!self.isRichMedia) {
+            self.docereeAdView!.addSubview(consentView)
+        } else {
             for v in rootViewController!.view.subviews{
                 v.removeFromSuperview()
             }
@@ -460,8 +423,6 @@ class AdConsentUIView: UIView {
     
     private func refreshAdView(){
         self.docereeAdView?.removeFromSuperview()
-//        self.docereeAdView?.removeAllViews()
-//        self.docereeAdView?.refresh()
     }
     
     @objc func adCoveringContentClicked(_ sender: UITapGestureRecognizer){
@@ -495,26 +456,6 @@ class AdConsentUIView: UIView {
     private func callAdBlockService(_ advertiserCampId: String?, _ blockLevel: String?, _ publisherACSID: String?, _ platformuid: String?){
         let restManager = RestManager()
         restManager.sendAdBlockRequest(advertiserCampId, blockLevel, platformuid, publisherACSID)
-    }
-    
-    private func getAdTypeBySize(adSize: AdSize) -> AdType {
-        let width: Int = Int(adSize.width)
-        let height: Int = Int(adSize.height)
-        let dimens: String = "\(width)x\(height)"
-        switch dimens{
-        case "320x50":
-            return AdType.BANNER
-        case "300x250":
-            return AdType.MEDIUMRECTANGLE
-        case "320x100":
-            return AdType.LARGEBANNER
-        case "468x60":
-            return AdType.FULLSIZE
-        case "728x90":
-            return AdType.LEADERBOARD
-        default:
-            return AdType.INVALID
-        }
     }
 
 }
