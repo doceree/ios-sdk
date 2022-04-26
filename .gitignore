@@ -62,6 +62,11 @@ playground.xcworkspace
 
 Carthage/Build/
 
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+
 # Accio dependency management
 Dependencies/
 .accio/
