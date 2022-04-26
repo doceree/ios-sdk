@@ -101,7 +101,7 @@ public final class RestManager{
             self.urlQueryParameters.add(value: size, forKey: QueryParamsForGetImage.size.rawValue)
             self.urlQueryParameters.add(value: "mobileApp", forKey: QueryParamsForGetImage.platformType.rawValue)
             
-            if let platformuid = NSKeyedUnarchiver.unarchiveObject(withFile: AdResponseForPlatform.ArchivingUrl.path) as? String {
+            if let platformuid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String {
                 //        if platformuid != nil {
                 //        let platformuid = DataController.shared.getPlatformuid()
                 //        if platformuid != nil {
@@ -206,7 +206,7 @@ public final class RestManager{
     }
     
     internal func savePlatformuid(let newPlatormuid: String){
-        let isSaved: Bool = NSKeyedArchiver.archiveRootObject(newPlatormuid, toFile: AdResponseForPlatform.ArchivingUrl.path)
+        let isSaved: Bool = NSKeyedArchiver.archiveRootObject(newPlatormuid, toFile: ArchivingUrl.path)
         //        DataController.shared.save(newplatformuid: newPlatormuid)
     }
     

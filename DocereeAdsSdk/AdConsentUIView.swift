@@ -389,7 +389,7 @@ class AdConsentUIView: UIView {
             consentView.alpha = 0
         }) { [self] _ in
             self.docereeAdView?.refresh()
-            if let plaformUid = NSKeyedUnarchiver.unarchiveObject(withFile: AdResponseForPlatform.ArchivingUrl.path) as? String{
+            if let plaformUid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String{
                 self.callAdBlockService(self.docereeAdView!.cbId!, adblockLevel, self.docereeAdView!.docereeAdUnitId, plaformUid)
             }
         }

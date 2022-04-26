@@ -43,6 +43,37 @@ enum BlockLevel {
     }
 }
 
+enum TypeOfEvent: String {
+       case CPC = "CPC"
+       case CPM = "CPM"
+}
+
+enum Header: String {
+    case header_user_agent = "User-Agent"
+    case header_advertising_id = "doceree-device-id"
+    case is_vendor_id = "is_doceree_iOS_sdk_vendor_id"
+    case header_is_ad_tracking_enabled = "is-ad-tracking-enabled"
+    case header_app_name = "app-name"
+    case header_app_version = "app-version"
+    case header_lib_version = "lib-version"
+    case header_app_bundle = "app-bundle"
+}
+
+enum QueryParamsForGetImage: String {
+    case id = "id"
+    case size = "size"
+    case loggedInUser = "loggedInUser"
+    case platformType = "platformType"
+    case appKey = "appKey"
+}
+
+enum AdBlockService: String {
+    case advertiserCampID = "advertiserCampID"
+    case publisherACSID = "publisherACSID"
+    case blockLevel = "blockLevel"
+    case platformUid = "platformUid"
+}
+
 enum ConsentType {
     case consentType2
     case consentType3

@@ -74,7 +74,7 @@ public final class DocereeMobileAds{
     public static func clearUserData(){
         do {
             try FileManager.default.removeItem(at: Hcp.ArchivingUrl)
-            try FileManager.default.removeItem(at: AdResponseForPlatform.ArchivingUrl)
+            try FileManager.default.removeItem(at: ArchivingUrl)
         } catch {}
     }
     
