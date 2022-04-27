@@ -137,7 +137,7 @@ public final class RestManager{
                 if urlResponse.statusCode == 200 {
                     do{
                         let adResponseData: AdResponseForPlatform = try JSONDecoder().decode(AdResponseForPlatform.self, from: data)
-                        //                    print("getImage response \(adResponseData)")
+                                            print("getImage response \(adResponseData)")
                         if adResponseData.errMessage != nil && adResponseData.errMessage!.count > 0 {
                             completion(Results(withData: nil, response: response as! HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), adResponseData.isAdRichMedia())
                             return
@@ -180,7 +180,7 @@ public final class RestManager{
         }
         
         let task = session.dataTask(with: urlRequest){ (data, response, error) in
-            guard let data = data else { return }
+            guard data != nil else { return }
             _ = response as! HTTPURLResponse
 //            print("impression sent. Http Status code is \(urlResponse.statusCode)")
         }
