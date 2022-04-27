@@ -63,12 +63,7 @@ public final class RestManager{
             return
         }
         if advertisementId != nil {
-            var cbId: String?
-            var ctaLink: String?
-            var impressionUrl: String?
-            var sourceUrl: String?
-            var loggedInUser = NSKeyedUnarchiver.unarchiveObject(withFile: Hcp.ArchivingUrl.path) as? Hcp
-            var isAdRichMedia: Bool
+            let loggedInUser = NSKeyedUnarchiver.unarchiveObject(withFile: Hcp.ArchivingUrl.path) as? Hcp
             
             let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
             let frameWorkVersion = bundle.infoDictionary![kCFBundleVersionKey as String] as! String
@@ -78,14 +73,11 @@ public final class RestManager{
             jsonEncoder.outputFormatting = .prettyPrinted
             let jsonData = try? jsonEncoder.encode(loggedInUser)
             let json = String(data: jsonData!, encoding: .utf8)!
-            var data: Data = json.data(using: .utf8)!
-            let json_dict = try! JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: String]
-            let json_data = try? jsonEncoder.encode(json_dict)
+            let data: Data = json.data(using: .utf8)!
             let json_string = String(data: data, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "")
-            var ua = UAString.init().UAString()
+            let ua = UAString.init().UAString()
             
             //header
-            //            self.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
             self.requestHttpHeaders.add(value: ua, forKey: Header.header_user_agent.rawValue)
             self.requestHttpHeaders.add(value: advertisementId!, forKey: Header.header_advertising_id.rawValue)
             self.requestHttpHeaders.add(value: self.isVendorId ? "1" : "0", forKey: Header.is_vendor_id.rawValue)
@@ -102,9 +94,6 @@ public final class RestManager{
             self.urlQueryParameters.add(value: "mobileApp", forKey: QueryParamsForGetImage.platformType.rawValue)
             
             if let platformuid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String {
-                //        if platformuid != nil {
-                //        let platformuid = DataController.shared.getPlatformuid()
-                //        if platformuid != nil {
                 var data: Dictionary<String, String?>
                 if loggedInUser?.npi != nil {
                     data = Dictionary()
@@ -114,9 +103,6 @@ public final class RestManager{
                     data = ["platformUid": platformuid,
                             "city": loggedInUser?.city,
                             "specialization": loggedInUser?.specialization,]
-                    //                    data.setValue(platformuid, forKey: "platformUid")
-                    //                    data.setValue(loggedInUser?.city, forKey: "city")
-                    //                    data.setValue(loggedInUser?.specialization, forKey: "specialization")
                 }
                 let jsonData = try? JSONSerialization.data(withJSONObject: data, options: [])
                 let jsonString = String(data: jsonData!, encoding: .utf8)?.toBase64() // encode to base64
@@ -158,12 +144,8 @@ public final class RestManager{
                         }
                         if !self.isPlatformUidPresent && adResponseData.newPlatformUid != nil {
                             // MARK check zone tag here later on for US based users' response
-                            self.savePlatformuid(let: adResponseData.newPlatformUid!)
+                            self.savePlatformuid(adResponseData.newPlatformUid!)
                         }
-                        sourceUrl = adResponseData.sourceURL
-                        cbId = adResponseData.CBID
-                        ctaLink = adResponseData.ctaLink
-                        impressionUrl = adResponseData.impressionLink
                         completion(Results(withData: data, response: response as! HTTPURLResponse, error: nil), adResponseData.isAdRichMedia())
                     } catch{
                         completion(Results(withData: nil, response: response as! HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), false)
@@ -182,7 +164,7 @@ public final class RestManager{
         }
     }
     
-    func sendAdImpression(impressionUrl: String){
+    func sendAdImpression(impressionUrl: String) {
         let updatedUrl: String? = impressionUrl
         let url: URL = URL(string: updatedUrl!)!
         var urlRequest = URLRequest(url: url)
@@ -205,9 +187,8 @@ public final class RestManager{
         task.resume()
     }
     
-    internal func savePlatformuid(let newPlatormuid: String){
-        let isSaved: Bool = NSKeyedArchiver.archiveRootObject(newPlatormuid, toFile: ArchivingUrl.path)
-        //        DataController.shared.save(newplatformuid: newPlatormuid)
+    internal func savePlatformuid(_ newPlatormuid: String){
+        NSKeyedArchiver.archiveRootObject(newPlatormuid, toFile: ArchivingUrl.path)
     }
     
     internal func sendAdBlockRequest(_ advertiserCampID: String?, _ blockLevel: String?, _ platformUid: String?, _ publisherACSID: String?){
