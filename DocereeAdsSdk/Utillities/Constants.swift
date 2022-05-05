@@ -78,3 +78,10 @@ enum ConsentType {
     case consentType2
     case consentType3
 }
+
+enum EnvironmentType {
+    case Dev
+    case Prod
+    case Local
+    case Qa
+}

@@ -401,36 +401,10 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        if delegate != nil{
+        if delegate != nil {
             delegate?.docereeAdViewWillDismissScreen(self)
         }
     }
-    
-    // MARK: Private methods
-    private func getAdSize(for size: String?) -> AdSize {
-        switch size {
-        case "320 x 50":
-            return Banner()
-        case "320 x 100":
-            return LargeBanner()
-        case "468 x 60":
-            return FullBanner()
-        case "300 x 250":
-            return MediumRectangle()
-        case "728 x 90":
-            return LeaderBoard()
-        default:
-            return Invalid()
-        }
-    }
-    
-    //    private func nibSetUp(){
-    //        let nib = UINib(nibName: "DocereeAdView", bundle: nil)
-    //        nib.instantiate(withOwner: self, options: nil)
-    //        adImageView.frame = bounds
-    //        addSubview(adImageView)
-    //        setUpLayout()
-    //    }
     
     deinit {
         NotificationCenter.default.removeObserver(self)

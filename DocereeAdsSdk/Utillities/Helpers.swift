@@ -1,5 +1,24 @@
 
 import UIKit
+import AdSupport
+
+
+func getAdSize(for size: String?) -> AdSize {
+    switch size {
+    case "320 x 50":
+        return Banner()
+    case "320 x 100":
+        return LargeBanner()
+    case "468 x 60":
+        return FullBanner()
+    case "300 x 250":
+        return MediumRectangle()
+    case "728 x 90":
+        return LeaderBoard()
+    default:
+        return Invalid()
+    }
+}
 
 func getAdTypeBySize(adSize: AdSize) -> AdType {
     let width: Int = Int(adSize.width)
@@ -29,4 +48,25 @@ func clearPlatformUid() {
     do {
         try FileManager.default.removeItem(at: ArchivingUrl)
     } catch{}
+}
+
+func savePlatformuid(_ newPlatormuid: String) {
+    NSKeyedArchiver.archiveRootObject(newPlatormuid, toFile: ArchivingUrl.path)
+}
+
+func getIdentifierForAdvertising() -> String? {
+    if #available(iOS 14, *){
+        if (DocereeMobileAds.trackingStatus == "authorized") {
+            return ASIdentifierManager.shared().advertisingIdentifier.uuidString
+        } else {
+            return UIDevice.current.identifierForVendor?.uuidString
+        }
+    } else {
+        // Fallback to previous versions
+        if ASIdentifierManager.shared().isAdvertisingTrackingEnabled {
+            return ASIdentifierManager.shared().advertisingIdentifier.uuidString
+        } else {
+            return UIDevice.current.identifierForVendor?.uuidString
+        }
+    }
 }

@@ -67,3 +67,16 @@ internal struct AdResponseForPlatform: Codable {
     }
 
 }
+
+
+struct Results {
+    var data: Data?
+    var response: HTTPURLResponse?
+    var error: Error?
+    
+    init(withData data: Data?, response: HTTPURLResponse?, error: Error?) {
+        self.data = data
+        self.response = response
+        self.error = error
+    }
+}
