@@ -1,5 +1,6 @@
 
 import UIKit
+import CommonCrypto
 
 extension UIImage {
     func imageWithColor(_ color: UIColor) -> UIImage? {
@@ -42,5 +43,59 @@ extension UIImage {
 extension String {
     func trim() -> String {
         return self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+    }
+}
+
+extension String {
+    func stringAppendingPathComponent(path: String) -> String {
+        let aString = self as NSString
+        return aString.appendingPathComponent(path)
+    }
+    
+    func withReplacedCharacter(_ oldChar: String, by newChar: String) -> String {
+        let newStr = self.replacingOccurrences(of: oldChar, with: newChar, options: .literal, range: nil)
+        return newStr
+    }
+    
+    func findIfStringConatains(_ char: String) -> Bool {
+        return self.contains(char)
+    }
+    
+    func sha256() -> String? {
+        guard let data = self.data(using: String.Encoding.utf8) else { return nil }
+        let hash = data.withUnsafeBytes{(bytes: UnsafePointer<Data>) -> [UInt8] in
+            var hash: [UInt8] = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+            CC_SHA256(bytes, CC_LONG(data.count), &hash)
+            return hash
+        }
+        return hash.map{ String(format: "%02x", $0) }.joined()
+    }
+    
+    func toBase64() -> String? {
+        return Data(self.utf8).base64EncodedString()
+    }
+}
+
+extension DocereeAdRequestError: LocalizedError {
+    public var localizedDescription: String {
+        switch self {
+        case .failedToCreateRequest: return NSLocalizedString("Failed to load ad. Please contact support@doceree.com", comment: "")
+        }
+    }
+}
+
+extension Bundle {
+    // Name of the app - title under the icon.
+    var displayName: String? {
+        return object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ??
+            object(forInfoDictionaryKey: "CFBundleName") as? String
+    }
+    
+    var releaseVersionNumber: String? {
+        return self.infoDictionary?["CFBundleShortVersionString"] as? String
+    }
+    
+    var buildVersionNumber: String? {
+        return self.infoDictionary?["CFBundleVersion"] as? String
     }
 }

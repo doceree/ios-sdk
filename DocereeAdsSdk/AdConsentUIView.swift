@@ -8,6 +8,7 @@
 
 import UIKit
 import WebKit
+import Combine
 
 class AdConsentUIView: UIView {
     
@@ -31,6 +32,9 @@ class AdConsentUIView: UIView {
     private var textFontSize10: CGFloat = 10.0
     private var textFontSize8: CGFloat = 8.0
     
+    private let addsWebRepo: AdWebRepoProtocol = AdWebRepo()
+    private var disposables = Set<AnyCancellable>()
+     
     var adViewSize: AdSize?
     
     var adViewFrame: CGRect?
@@ -85,7 +89,7 @@ class AdConsentUIView: UIView {
         var backArrowUIImage: UIImage? = UIImage()
         
         if #available(iOS 13.0, *) {
-            let lightConfiguration = UIImage.SymbolConfiguration(pointSize: iconSize, weight: .light, scale: .small)
+            let lightConfiguration = UIImage.SymbolConfiguration(pointSize: 5, weight: .light, scale: .small)
             self.backButtonUIImageView = UIImageView(image: UIImage(systemName: "arrow.backward", withConfiguration: lightConfiguration))
         } else {
             // Fallback on earlier versions
@@ -136,12 +140,12 @@ class AdConsentUIView: UIView {
         let btnWhyThisAd = UIButton()
         btnWhyThisAd.setTitle("Why this Ad?", for: .normal)
         if #available(iOS 13.0, *) {
-            let lightConfigurationWithSmallScale = UIImage.SymbolConfiguration(pointSize: 13, weight: .light, scale: .small)
+            let lightConfigurationWithSmallScale = UIImage.SymbolConfiguration(pointSize: iconSize, weight: .light, scale: .small)
             infoImage = UIImage(systemName: "info.circle", withConfiguration: lightConfigurationWithSmallScale)!
             infoImage!.withTintColor(purpleColor)
         } else {
             // Fallback on earlier versions
-            infoImage = infoImage?.resizeImage(image: UIImage(named: "info", in: bundle, compatibleWith: nil)!.imageWithColor(UIColor.purple)!, targetSize: CGSize(width: 13, height: 13))
+            infoImage = infoImage?.resizeImage(image: UIImage(named: "info", in: bundle, compatibleWith: nil)!.imageWithColor(UIColor.purple)!, targetSize: CGSize(width: iconSize, height: iconSize))
 
         }
         btnWhyThisAd.setImage(infoImage, for: .normal)
@@ -389,8 +393,8 @@ class AdConsentUIView: UIView {
             consentView.alpha = 0
         }) { [self] _ in
             self.docereeAdView?.refresh()
-            if let plaformUid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String{
-                self.callAdBlockService(self.docereeAdView!.cbId!, adblockLevel, self.docereeAdView!.docereeAdUnitId, plaformUid)
+            if let plaformUid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String {
+                self.sendAdBlockRequest(self.docereeAdView!.cbId!, adblockLevel, self.docereeAdView!.docereeAdUnitId, plaformUid)
             }
         }
     }
@@ -452,10 +456,28 @@ class AdConsentUIView: UIView {
     @objc func adNotInterestedClicked4(_ sender: UITapGestureRecognizer){
         loadAdConsentFeedback(BlockLevel.NotInterestedInClientType.info.blockLevelCode)
     }
-    
-    private func callAdBlockService(_ advertiserCampId: String?, _ blockLevel: String?, _ publisherACSID: String?, _ platformuid: String?){
-        let restManager = RestManager()
-        restManager.sendAdBlockRequest(advertiserCampId, blockLevel, platformuid, publisherACSID)
-    }
 
+    internal func sendAdBlockRequest(_ advertiserCampID: String?, _ blockLevel: String?, _ platformUid: String?, _ publisherACSID: String?) {
+        if ((advertiserCampID ?? "").isEmpty || (blockLevel ?? "").isEmpty || (platformUid ?? "").isEmpty || (publisherACSID ?? "").isEmpty) {
+            return
+        }
+
+        let request = AdBlockRequest(publisherACSID: publisherACSID ?? "", advertiserCampID: advertiserCampID ?? "", blockLevel: blockLevel ?? "", platformUid: platformUid ?? "")
+        addsWebRepo.sendAdBlockRequest(request: request)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    break
+                }
+            } receiveValue: { (data, response) in
+                print("sendAdBlockRequest", data, response)
+            }
+            .store(in: &disposables)
+        
+    }
+    
 }

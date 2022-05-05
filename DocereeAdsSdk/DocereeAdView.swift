@@ -27,8 +27,8 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     var crossImageView: UIImageView?
     var infoImageView: UIImageView?
-    let iconWidth = 13
-    let iconHeight = 13
+    let iconWidth = 20
+    let iconHeight = 20
     
     var banner: DocereeAdViewRichMediaBanner?
     
@@ -256,8 +256,10 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             self.adImageView.image = image
             setupConsentIcons()
         } else {
-            let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil)
-            let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource!, 0, nil)!)
+            guard let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil) else {
+                return
+            }
+            let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource, 0, nil)!)
             self.adImageView.image = image
             setupConsentIcons()
         }
@@ -442,7 +444,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         }
     }
     
-    func refresh(){
+    func refresh() {
         self.removeAllViews()
         if docereeAdRequest != nil {
             load(self.docereeAdRequest!)

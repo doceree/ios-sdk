@@ -8,12 +8,15 @@
 
 import Foundation
 import UIKit
+import Combine
 
 public final class DocereeAdRequest{
     
     private var size: String?
     private var adUnitId: String?
     private var cbId: String?
+    private let addsWebRepo: AdWebRepoProtocol = AdWebRepo()
+    private var disposables = Set<AnyCancellable>()
     
     // todo: create a queue of requests and inititate request
     public init() {
@@ -25,11 +28,6 @@ public final class DocereeAdRequest{
     private var isPlatformUidPresent: Bool = false
     
     // MARK: Public methods
-    //    public func requestAd() -> UIImage?{
-    //        let image = setUpImage() as UIImage?
-    //        return image
-    //    }
-    
     internal func requestAd(_ adUnitId: String!, _ size: String!, completion: @escaping(_ results: RestManager.Results,
         _ isRichMediaAd: Bool) -> Void){
         self.adUnitId = adUnitId
@@ -40,8 +38,19 @@ public final class DocereeAdRequest{
     }
     
     internal func sendImpression(impressionUrl: String){
-        let restManager = RestManager()
-        restManager.sendAdImpression(impressionUrl: impressionUrl)
+        addsWebRepo.sendAdImpression(request: impressionUrl)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure:
+                    break
+                }
+            } receiveValue: { (data, response) in
+                print("impressionUrl: ", response, data)
+            }
+            .store(in: &disposables)
     }
     
     // MARK: Private methods
