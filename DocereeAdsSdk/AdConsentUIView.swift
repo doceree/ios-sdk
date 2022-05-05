@@ -474,7 +474,7 @@ class AdConsentUIView: UIView {
                     break
                 }
             } receiveValue: { (data, response) in
-                print("sendAdBlockRequest", data, response)
+                print("sendAdBlockRequest:", data, response)
             }
             .store(in: &disposables)
         
