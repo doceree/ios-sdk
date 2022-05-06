@@ -19,19 +19,13 @@ class AdConsentUIView: UIView {
     private var infoImage: UIImage?
     
     var docereeAdView: DocereeAdView?
-    var docereeWebView: WKWebView?
     
     var isRichMedia: Bool = false
 
     var isMediumRectangle: Bool = false
     var isBanner: Bool = false
     var isLeaderboard: Bool = false
-    
-    private var textFontSize12: CGFloat = 12.0
-    private var textFontSize9: CGFloat = 9.0
-    private var textFontSize10: CGFloat = 10.0
-    private var textFontSize8: CGFloat = 8.0
-    
+
     private let addsWebRepo: AdWebRepoProtocol = AdWebRepo()
     private var disposables = Set<AnyCancellable>()
      
@@ -351,7 +345,7 @@ class AdConsentUIView: UIView {
         } else if formConsentType == .consentType3 {
             let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.4
             let buttonHeight: CGFloat = self.adViewFrame!.height * 0.9
-            let textFontSize: CGFloat = self.isBanner ? self.textFontSize8 : self.textFontSize12
+            let textFontSize: CGFloat = self.isBanner ? textFontSize8 : textFontSize12
             return (buttonWidth, buttonHeight, textFontSize)
         }
         
@@ -402,9 +396,8 @@ class AdConsentUIView: UIView {
     @objc func whyThisClicked(_ sender: UITapGestureRecognizer){
         DocereeAdView.self.didLeaveAd = true
         let whyThisLink = "https://support.doceree.com/hc/en-us/articles/360050646094-Why-this-Ad-"
-        let url = URL(string: whyThisLink)
-        if url != nil && UIApplication.shared.canOpenURL(url!){
-            UIApplication.shared.openURL(url!)
+        if let url = URL(string: "\(whyThisLink)"), !url.absoluteString.isEmpty {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
     }
     

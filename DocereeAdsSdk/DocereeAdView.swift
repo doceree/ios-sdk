@@ -14,7 +14,6 @@ import os.log
 public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     //MARK: Properties
-    var loadingResponses: [(_: URL) -> Void] = []
     public var docereeAdUnitId: String = String.init()
     public var delegate: DocereeAdViewDelegate?
     var ctaLink: String?

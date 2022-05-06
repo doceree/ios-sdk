@@ -21,11 +21,11 @@ public final class DocereeAdRequest{
     
     // todo: create a queue of requests and inititate request
     public init() {
-        queue = OperationQueue()
+//        queue = OperationQueue()
     }
     
     // MARK: Properties
-    private var queue: OperationQueue
+//    private var queue: OperationQueue
     private var isPlatformUidPresent: Bool = false
     
     // MARK: Public methods

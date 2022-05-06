@@ -31,29 +31,3 @@ extension HTTPHeaderValue {
     }
 
 }
-
-func getHost(type: EnvironmentType) -> String?{
-    switch type{
-    case .Dev:
-        return "dev-bidder.doceree.com"
-    case .Local:
-        return "10.0.3.2"
-    case .Qa:
-        return "qa-bidder.doceree.com"
-    case .Prod:
-        return "bidder.doceree.com"
-    }
-}
-
-func getDocTrackerHost(type: EnvironmentType) -> String?{
-    switch type{
-    case .Dev:
-        return "dev-tracking.doceree.com"
-    case .Local:
-        return "10.0.3.2"
-    case .Qa:
-        return "qa-tracking.doceree.com"
-    case .Prod:
-        return "tracking.doceree.com"
-    }
-}

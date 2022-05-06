@@ -24,7 +24,7 @@ func getAdTypeBySize(adSize: AdSize) -> AdType {
     let width: Int = Int(adSize.width)
     let height: Int = Int(adSize.height)
     let dimens: String = "\(width)x\(height)"
-    switch dimens{
+    switch dimens {
     case "320x50":
         return AdType.BANNER
     case "300x250":
@@ -68,5 +68,31 @@ func getIdentifierForAdvertising() -> String? {
         } else {
             return UIDevice.current.identifierForVendor?.uuidString
         }
+    }
+}
+
+func getHost(type: EnvironmentType) -> String?{
+    switch type {
+    case .Dev:
+        return "dev-bidder.doceree.com"
+    case .Local:
+        return "10.0.3.2"
+    case .Qa:
+        return "qa-bidder.doceree.com"
+    case .Prod:
+        return "bidder.doceree.com"
+    }
+}
+
+func getDocTrackerHost(type: EnvironmentType) -> String?{
+    switch type {
+    case .Dev:
+        return "dev-tracking.doceree.com"
+    case .Local:
+        return "10.0.3.2"
+    case .Qa:
+        return "qa-tracking.doceree.com"
+    case .Prod:
+        return "tracking.doceree.com"
     }
 }
