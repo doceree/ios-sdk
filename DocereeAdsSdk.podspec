@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
   spec.summary      = 'Doceree iOS SDK for mobile ads.'
   spec.platform 	= :ios, "13.0"
   spec.ios.deployment_target = "13.0"
-  spec.source       = { :git => 'https://github.com/doceree/ios-sdk.git', :tag => '1.0.4' }
+  spec.source       = { :git => 'https://github.com/muqeemahmad12/DocereePodSpecs.git', :tag => '1.0.4' }
   spec.vendored_frameworks = 'xcframework/DocereeAdsSdk.xcframework'
   spec.swift_version    = '5.0'
 end
