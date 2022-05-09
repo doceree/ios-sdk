@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-internal final class UAString{
+internal final class UAString {
     //eg. Darwin/16.3.0
     func DarwinVersion() -> String {
         var sysinfo = utsname()
@@ -31,7 +31,7 @@ internal final class UAString{
     }
     
     // iPhone or iPad
-    func deviceType() -> String{
+    func deviceType() -> String {
         return "type/\(UIDevice.current.model)"
     }
     

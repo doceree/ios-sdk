@@ -1,171 +1,126 @@
-//
-//  DocereeAdRequest.swift
-//  iosadslibrarydemo
-//
-//  Created by dushyant pawar on 29/04/20.
-//  Copyright © 2020 dushyant pawar. All rights reserved.
-//
 
 import Foundation
 import UIKit
+import Combine
+import os.log
 
-public final class DocereeAdRequest{
+public final class DocereeAdRequest {
     
     private var size: String?
     private var adUnitId: String?
-    private var cbId: String?
+    private let addsWebRepo: AdWebRepoProtocol = AdWebRepo()
+    private var disposables = Set<AnyCancellable>()
     
     // todo: create a queue of requests and inititate request
     public init() {
-        queue = OperationQueue()
     }
     
     // MARK: Properties
-    private var queue: OperationQueue
     private var isPlatformUidPresent: Bool = false
     
     // MARK: Public methods
-    //    public func requestAd() -> UIImage?{
-    //        let image = setUpImage() as UIImage?
-    //        return image
-    //    }
-    
-    internal func requestAd(_ adUnitId: String!, _ size: String!, completion: @escaping(_ results: RestManager.Results,
-        _ isRichMediaAd: Bool) -> Void){
+    internal func requestAd(_ adUnitId: String!, _ size: String!, completion: @escaping(_ results: Results,
+                                                                                        _ isRichMediaAd: Bool) -> Void){
         self.adUnitId = adUnitId
         self.size = size
-            setUpImage(){ (results, isRichMediaAd) in
-                completion(results, isRichMediaAd)
-            }
-    }
-    
-    internal func sendImpression(impressionUrl: String){
-        let restManager = RestManager()
-        restManager.sendAdImpression(impressionUrl: impressionUrl)
-    }
-    
-    // MARK: Private methods
-    private func setUpImage(completion: @escaping(_ results: RestManager.Results, _ isRichMediaAd: Bool) -> Void){
-        let restManager = RestManager()
-        restManager.getImage(self.size!, self.adUnitId!){ (results, isRichMediaAd) in
+        setUpImage(){ (results, isRichMediaAd) in
             completion(results, isRichMediaAd)
         }
     }
-}
-
-extension String{
-    func trim() -> String{
-        return self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-    }
-}
-
-internal struct AdResponseForPlatform: Codable {
-    let sourceURL: String?
     
-    let CBID: String?
-    
-    let DIVID: String?
-    
-    let ctaLink: String?
-    
-    let newPlatformUid: String?
-    
-    let height: String?
-    
-    let width: String?
-    
-    let platformUID: String?
-
-    let debugMessage: String?
-    
-    let version: String?
-    
-    let maxAge: Int?
-    
-    let passbackTag: String?
-    
-    let impressionLink: String?
-    
-    let IntegrationType: String?
-    
-    let creativeType: String?
-    
-    let errMessage: String?
-    
-    enum Platformuid: String{
-        case platformuid = "platformuid"
-    }
-    
-    init(from decoder: Decoder) throws{
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.sourceURL = try container.decodeIfPresent(String.self, forKey: .sourceURL)
-        self.CBID = try container.decodeIfPresent(String.self, forKey: .CBID)
-        self.DIVID = try container.decodeIfPresent(String.self, forKey: .DIVID)
-        self.ctaLink = try container.decodeIfPresent(String.self, forKey: .ctaLink)
-        self.newPlatformUid = try container.decodeIfPresent(String.self, forKey: .newPlatformUid)
-        self.height = try container.decodeIfPresent(String.self, forKey: .height)
-        self.width = try container.decodeIfPresent(String.self, forKey: .width)
-        self.platformUID = try container.decodeIfPresent(String.self, forKey: .platformUID)
-        self.debugMessage = try container.decodeIfPresent(String.self, forKey: .debugMessage)
-        self.version = try container.decodeIfPresent(String.self, forKey: .version)
-        self.maxAge = try container.decodeIfPresent(Int.self, forKey: .maxAge)
-        self.passbackTag = try container.decodeIfPresent(String.self, forKey: .passbackTag)
-        self.impressionLink = try container.decodeIfPresent(String.self, forKey: .impressionLink)
-        self.IntegrationType = try container.decodeIfPresent(String.self, forKey: .IntegrationType)
-        self.creativeType = try container.decodeIfPresent(String.self, forKey: .creativeType)
-        self.errMessage = try container.decodeIfPresent(String.self, forKey: .errMessage)
-    }
-    
-    internal func isAdRichMedia() -> Bool{
-        let givenType = self.creativeType
-        let html = "html"
-        let custom_html = "custom_html"
-        let text_ad = "text_ad"
-        return compareIfSame(presentValue: givenType!, expectedValue: html) || compareIfSame(presentValue: givenType!, expectedValue: custom_html) || compareIfSame(presentValue: givenType!, expectedValue: text_ad)
+    internal func sendImpression(impressionUrl: String){
+        addsWebRepo.sendAdImpression(request: impressionUrl)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure:
+                    break
+                }
+            } receiveValue: { (data, response) in
+                print("impressionUrl: ", response, data)
+            }
+            .store(in: &disposables)
     }
 
-    internal func compareIfSame(presentValue: String, expectedValue: String) -> Bool{
-        return presentValue.caseInsensitiveCompare(expectedValue) == ComparisonResult.orderedSame
+    internal func setUpImage(completion: @escaping(_ results: Results, _ isRichmedia: Bool) -> Void){
+        
+        guard let appKey = Bundle.main.object(forInfoDictionaryKey: "DocereeAdsIdentifier") as? String else {
+            if #available(iOS 10.0, *) {
+                os_log("Error: Missing DocereeIdentifier key!", log: .default, type: .error)
+            } else {
+                // Fallback on earlier versions
+                print("Error: Missing DocereeIdentifier key!")
+            }
+            return
+        }
+        
+        var advertisementId: String?
+        advertisementId = getIdentifierForAdvertising()
+        if (advertisementId == nil) {
+            if #available(iOS 10.0, *) {
+                os_log("Error: Ad Tracking is disabled . Please re-enable it to view ads", log: .default, type: .error)
+            } else {
+                // Fallback on earlier versions
+                print("Error: Ad Tracking is disabled . Please re-enable it to view ads")
+            }
+            return
+        }
+
+        if advertisementId != nil {
+            let loggedInUser = NSKeyedUnarchiver.unarchiveObject(withFile: Hcp.ArchivingUrl.path) as? Hcp
+
+            //        var loggedInUser = DataController.shared.getLoggedInUser()
+            let jsonEncoder = JSONEncoder()
+            jsonEncoder.outputFormatting = .prettyPrinted
+            let jsonData = try? jsonEncoder.encode(loggedInUser)
+            let json = String(data: jsonData!, encoding: .utf8)!
+            let data: Data = json.data(using: .utf8)!
+            let json_string = String(data: data, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "")
+
+            if let platformuid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String {
+                self.isPlatformUidPresent = true
+            } else{
+                self.isPlatformUidPresent = false
+            }
+            
+            let request = AdRequest(id: adUnitId ?? "", size: size ?? "", platformType: "mobileApp", appKey: appKey, loggedInUser: json_string.toBase64()!)
+            addsWebRepo.getAdImage(request: request)
+                .receive(on: DispatchQueue.main)
+                .sink { completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print(error.localizedDescription)
+//                        fatalError(error.localizedDescription)
+//                        completion(Results(withData: nil, response: nil, error: DocereeAdRequestError.failedToCreateRequest), false)
+                    }
+                } receiveValue: { (data, response) in
+                    do{
+                        let adResponseData: AdResponseForPlatform = try JSONDecoder().decode(AdResponseForPlatform.self, from: data)
+                                            print("getImage response \(adResponseData)")
+                        if adResponseData.errMessage != nil && adResponseData.errMessage!.count > 0 {
+                            completion(Results(withData: nil, response: response as? HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), adResponseData.isAdRichMedia())
+                            return
+                        }
+                        if !self.isPlatformUidPresent && adResponseData.newPlatformUid != nil {
+                            // MARK check zone tag here later on for US based users' response
+                            savePlatformuid(adResponseData.newPlatformUid!)
+                        }
+                        completion(Results(withData: data, response: response as? HTTPURLResponse, error: nil), adResponseData.isAdRichMedia())
+                    } catch{
+                        completion(Results(withData: nil, response: response as? HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), false)
+                    }
+                }
+                .store(in: &disposables)
+        } else {
+            if #available(iOS 10.0, *){
+                os_log("Unknown error", log: .default, type: .error)
+            } else {
+                print("Unknown error")
+            }
+        }
     }
-    
-    // MARK: Archiving paths
-    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    static let ArchivingUrl = DocumentsDirectory.appendingPathComponent("platformuid")
-}
-
-internal func clearPlatformUid(){
-    do {
-        try FileManager.default.removeItem(at: AdResponseForPlatform.ArchivingUrl)
-    } catch{}
-}
-
-internal enum TypeOfEvent: String{
-       case CPC = "CPC"
-       case CPM = "CPM"
-}
-
-internal enum Header: String{
-    case header_user_agent = "User-Agent"
-    case header_advertising_id = "doceree-device-id"
-    case is_vendor_id = "is_doceree_iOS_sdk_vendor_id"
-    case header_is_ad_tracking_enabled = "is-ad-tracking-enabled"
-    case header_app_name = "app-name"
-    case header_app_version = "app-version"
-    case header_lib_version = "lib-version"
-    case header_app_bundle = "app-bundle"
-}
-
-internal enum QueryParamsForGetImage: String {
-    case id = "id"
-    case size = "size"
-    case loggedInUser = "loggedInUser"
-    case platformType = "platformType"
-    case appKey = "appKey"
-}
-
-internal enum AdBlockService: String{
-    case advertiserCampID = "advertiserCampID"
-    case publisherACSID = "publisherACSID"
-    case blockLevel = "blockLevel"
-    case platformUid = "platformUid"
 }

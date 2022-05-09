@@ -30,8 +30,8 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
     
     var crossImageView: UIImageView?
     var infoImageView: UIImageView?
-    let iconWidth = 13
-    let iconHeight = 13
+    let iconWidth = 20
+    let iconHeight = 20
     
     // MARK: desired size for ads
     private var size: AdSize = Banner()

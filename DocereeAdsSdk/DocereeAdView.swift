@@ -14,7 +14,6 @@ import os.log
 public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     //MARK: Properties
-    var loadingResponses: [(_: URL) -> Void] = []
     public var docereeAdUnitId: String = String.init()
     public var delegate: DocereeAdViewDelegate?
     var ctaLink: String?
@@ -27,8 +26,8 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     var crossImageView: UIImageView?
     var infoImageView: UIImageView?
-    let iconWidth = 13
-    let iconHeight = 13
+    let iconWidth = 20
+    let iconHeight = 20
     
     var banner: DocereeAdViewRichMediaBanner?
     
@@ -61,7 +60,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     public convenience init?(with size: String?){
         self.init()
-        if size == nil || size?.count == 0{
+        if size == nil || size?.count == 0 {
             if #available(iOS 10.0, *) {
                 os_log("Error: Please provide a valid size!", log: .default, type: .error)
             } else {
@@ -103,11 +102,19 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                 // Fallback on earlier versions
             }
         } else{
-            if adSize is Banner{
+            if adSize is Banner {
                 self.adSize = Banner()
-            } else if adSize is LargeBanner{
+            } else if adSize is FullBanner {
+                self.adSize = FullBanner()
+            } else if adSize is MediumRectangle {
+                self.adSize = MediumRectangle()
+            } else if adSize is LargeBanner {
                 self.adSize = LargeBanner()
-            } else{
+            } else if adSize is LeaderBoard {
+                self.adSize = LeaderBoard()
+            } else if adSize is SmallBanner {
+                self.adSize = SmallBanner()
+            } else {
                 self.adSize = Banner()
             }
         }
@@ -239,11 +246,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         }
     }
     
-//    public override func layoutSubviews() {
-//        super.layoutSubviews()
-//        self.frame.size = CGSize(width: self.adSize!.width, height: self.adSize!.height)
-//    }
-    
     //MARK: Private methods
     
     private func handleImageRendering(of imageUrl: NSURL?){
@@ -256,8 +258,10 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             self.adImageView.image = image
             setupConsentIcons()
         } else {
-            let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil)
-            let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource!, 0, nil)!)
+            guard let imageSource = CGImageSourceCreateWithURL(imageUrl!, nil) else {
+                return
+            }
+            let image = UIImage(cgImage: CGImageSourceCreateImageAtIndex(imageSource, 0, nil)!)
             self.adImageView.image = image
             setupConsentIcons()
         }
@@ -369,10 +373,9 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     //Mark: Action method
     @objc func onImageTouched(_ sender: UITapGestureRecognizer){
         DocereeAdView.self.didLeaveAd = true
-        let url = URL(string: ctaLink!)
-        if url != nil && UIApplication.shared.canOpenURL(url!){
+        if let url = URL(string: "\(ctaLink ?? "")"), !url.absoluteString.isEmpty {
             AdsRefreshCountdownTimer.shared.stopRefresh()
-            UIApplication.shared.openURL(url!)
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
             self.removeAllViews()
         }
     }
@@ -399,36 +402,10 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        if delegate != nil{
+        if delegate != nil {
             delegate?.docereeAdViewWillDismissScreen(self)
         }
     }
-    
-    // MARK: Private methods
-    private func getAdSize(for size: String?) -> AdSize {
-        switch size {
-        case "320 x 50":
-            return Banner()
-        case "320 x 100":
-            return LargeBanner()
-        case "468 x 60":
-            return FullBanner()
-        case "300 x 250":
-            return MediumRectangle()
-        case "728 x 90":
-            return LeaderBoard()
-        default:
-            return Invalid()
-        }
-    }
-    
-    //    private func nibSetUp(){
-    //        let nib = UINib(nibName: "DocereeAdView", bundle: nil)
-    //        nib.instantiate(withOwner: self, options: nil)
-    //        adImageView.frame = bounds
-    //        addSubview(adImageView)
-    //        setUpLayout()
-    //    }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -442,7 +419,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         }
     }
     
-    func refresh(){
+    func refresh() {
         self.removeAllViews()
         if docereeAdRequest != nil {
             load(self.docereeAdRequest!)
@@ -458,219 +435,5 @@ fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
         return true
     default:
         return false
-    }
-}
-
-extension UIImage {
-    
-    public class func gifImageWithData(_ data: Data) -> UIImage? {
-        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
-            return nil
-        }
-        
-        return UIImage.animatedImageWithSource(source)
-    }
-    
-    public class func gifImageWithURL(_ gifUrl:String) -> UIImage? {
-        guard let bundleURL:URL? = URL(string: gifUrl)
-        else {
-            //                print("image named \"\(gifUrl)\" doesn't exist")
-            return nil
-        }
-        guard let imageData = try? Data(contentsOf: bundleURL!) else {
-            //            print("image named \"\(gifUrl)\" into NSData")
-            return nil
-        }
-        
-        return gifImageWithData(imageData)
-    }
-    
-    public class func gifImageWithName(_ name: String) -> UIImage? {
-        guard let bundleURL = Bundle.main
-                .url(forResource: name, withExtension: "gif") else {
-            //                print("SwiftGif: This image named \"\(name)\" does not exist")
-            return nil
-        }
-        guard let imageData = try? Data(contentsOf: bundleURL) else {
-            //            print("SwiftGif: Cannot turn image named \"\(name)\" into NSData")
-            return nil
-        }
-        
-        return gifImageWithData(imageData)
-    }
-    
-    class func delayForImageAtIndex(_ index: Int, source: CGImageSource!) -> Double {
-        var delay = 0.1
-        
-        let cfProperties = CGImageSourceCopyPropertiesAtIndex(source, index, nil)
-        let gifProperties: CFDictionary = unsafeBitCast(
-            CFDictionaryGetValue(cfProperties,
-                                 Unmanaged.passUnretained(kCGImagePropertyGIFDictionary).toOpaque()),
-            to: CFDictionary.self)
-        
-        var delayObject: AnyObject = unsafeBitCast(
-            CFDictionaryGetValue(gifProperties,
-                                 Unmanaged.passUnretained(kCGImagePropertyGIFUnclampedDelayTime).toOpaque()),
-            to: AnyObject.self)
-        if delayObject.doubleValue == 0 {
-            delayObject = unsafeBitCast(CFDictionaryGetValue(gifProperties,
-                                                             Unmanaged.passUnretained(kCGImagePropertyGIFDelayTime).toOpaque()), to: AnyObject.self)
-        }
-        
-        delay = delayObject as! Double
-        
-        if delay < 0.1 {
-            delay = 0.1
-        }
-        
-        return delay
-    }
-    
-    class func gcdForPair(_ a: Int?, _ b: Int?) -> Int {
-        var a = a
-        var b = b
-        if b == nil || a == nil {
-            if b != nil {
-                return b!
-            } else if a != nil {
-                return a!
-            } else {
-                return 0
-            }
-        }
-        
-        if a < b {
-            let c = a
-            a = b
-            b = c
-        }
-        
-        var rest: Int
-        while true {
-            rest = a! % b!
-            
-            if rest == 0 {
-                return b!
-            } else {
-                a = b
-                b = rest
-            }
-        }
-    }
-    
-    class func gcdForArray(_ array: Array<Int>) -> Int {
-        if array.isEmpty {
-            return 1
-        }
-        
-        var gcd = array[0]
-        
-        for val in array {
-            gcd = UIImage.gcdForPair(val, gcd)
-        }
-        
-        return gcd
-    }
-    
-    class func animatedImageWithSource(_ source: CGImageSource) -> UIImage? {
-        let count = CGImageSourceGetCount(source)
-        var images = [CGImage]()
-        var delays = [Int]()
-        
-        for i in 0..<count {
-            if let image = CGImageSourceCreateImageAtIndex(source, i, nil) {
-                images.append(image)
-            }
-            
-            let delaySeconds = UIImage.delayForImageAtIndex(Int(i),
-                                                            source: source)
-            delays.append(Int(delaySeconds * 1000.0)) // Seconds to ms
-        }
-        
-        let duration: Int = {
-            var sum = 0
-            
-            for val: Int in delays {
-                sum += val
-            }
-            
-            return sum
-        }()
-        
-        let gcd = gcdForArray(delays)
-        var frames = [UIImage]()
-        
-        var frame: UIImage
-        var frameCount: Int
-        for i in 0..<count {
-            frame = UIImage(cgImage: images[Int(i)])
-            frameCount = Int(delays[Int(i)] / gcd)
-            
-            for _ in 0..<frameCount {
-                frames.append(frame)
-            }
-        }
-        
-        let animation = UIImage.animatedImage(with: frames,
-                                              duration: Double(duration) / 1000.0)
-        
-        return animation
-    }
-}
-
-struct ImageHeaderData{
-    static var PNG: [UInt8] = [0x89]
-    static var JPEG: [UInt8] = [0xFF]
-    static var GIF: [UInt8] = [0x47]
-    static var TIFF_01: [UInt8] = [0x49]
-    static var TIFF_02: [UInt8] = [0x4D]
-}
-
-enum ImageFormat{
-    case Unknown, PNG, JPEG, GIF, TIFF
-}
-
-extension NSData{
-    var imageFormat: ImageFormat{
-        var buffer = [UInt8](repeating: 0, count: 1)
-        self.getBytes(&buffer, range: NSRange(location: 0, length: 1))
-        if buffer == ImageHeaderData.GIF{
-            return .GIF
-        } else if buffer == ImageHeaderData.JPEG{
-            return .JPEG
-        } else if buffer == ImageHeaderData.PNG{
-            return .PNG
-        } else if buffer == ImageHeaderData.TIFF_01 || buffer == ImageHeaderData.TIFF_02{
-            return .TIFF
-        } else {
-            return .Unknown
-        }
-    }
-}
-
-extension NotificationCenter{
-    func setObserver(observer: Any, selector: Selector, name: NSNotification.Name, object: AnyObject?){
-        NotificationCenter.default.removeObserver(observer, name: name, object: object)
-        NotificationCenter.default.addObserver(observer, selector: selector, name: name, object: object)
-    }
-}
-
-extension UIColor {
-    convenience init(hexString: String) {
-        let hex = hexString.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int = UInt64()
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
-        self.init(red: CGFloat(r) / 255, green: CGFloat(g) / 255, blue: CGFloat(b) / 255, alpha: CGFloat(a) / 255)
     }
 }

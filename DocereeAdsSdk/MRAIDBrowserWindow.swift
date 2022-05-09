@@ -5,9 +5,7 @@ public class MRAIDBrowserWindow : UIViewController, WKUIDelegate, WKNavigationDe
     private static let btnWidth = CGFloat(50)
     private static let btnHeight = CGFloat(50)
     private static let navHeight = btnHeight
-    
-//    private let navigationRect = CGRect(x:0, y:UIApplication.shared.isStatusBarHidden ? 0 : UIApplication.shared.statusBarFrame.height, width:UIScreen.main.bounds.width, height:navHeight)
-//    private let webViewRect = CGRect(x:0, y:navHeight + (UIApplication.shared.isStatusBarHidden ? 0 : UIApplication.shared.statusBarFrame.height), width:UIScreen.main.bounds.width, height:UIScreen.main.bounds.height - navHeight)
+
     private var webView:WKWebView?
     private var navigationView:UIView?
     

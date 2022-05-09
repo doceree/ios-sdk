@@ -14,17 +14,17 @@ import AdSupport
 
 public final class DocereeMobileAds{
     
-    var baseUrl: URL?
+//    var baseUrl: URL?
     internal static var trackingStatus: String = "not determined"
     
     private static var sharedNetworkManager: DocereeMobileAds = {
-        var docereeMobileAds = DocereeMobileAds(baseUrl: Api.baseURL)
+        var docereeMobileAds = DocereeMobileAds()
         return docereeMobileAds
     }()
     
-    private init(baseUrl: URL?){
-        self.baseUrl = baseUrl
-    }
+//    private init(baseUrl: URL?){
+//        self.baseUrl = baseUrl
+//    }
     
     public static func login(with hcp: Hcp){
         NSKeyedArchiver.archiveRootObject(hcp, toFile: Hcp.ArchivingUrl.path)
@@ -74,7 +74,7 @@ public final class DocereeMobileAds{
     public static func clearUserData(){
         do {
             try FileManager.default.removeItem(at: Hcp.ArchivingUrl)
-            try FileManager.default.removeItem(at: AdResponseForPlatform.ArchivingUrl)
+            try FileManager.default.removeItem(at: ArchivingUrl)
         } catch {}
     }
     
