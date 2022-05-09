@@ -2,7 +2,7 @@
 
 ## Requirements
 - Use Xcode 11 or higher
-- Target iOS 9.0 or higher
+- Target iOS 13.0 or higher
 - Create an account on Doceree
 
 ## Adding Doceree SDK to your Project
