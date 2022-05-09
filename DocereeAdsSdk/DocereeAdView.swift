@@ -72,7 +72,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         if adSize is Invalid {
             if #available(iOS 10.0, *) {
                 print("adSize:", adSize as Any)
-                os_log("Error: Invalid size!", log: .default, type: .error)
+                os_log("Error Test: Invalid size!", log: .default, type: .error)
             } else {
                 // Fallback on earlier versions
             }
