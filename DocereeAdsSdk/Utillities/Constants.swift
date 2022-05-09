@@ -20,6 +20,7 @@ enum AdType {
     case MEDIUMRECTANGLE
     case LEADERBOARD
     case LARGEBANNER
+    case SMALLBANNER
     case INVALID
 }
 

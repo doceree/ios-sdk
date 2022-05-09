@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-public protocol AdSize{
+public protocol AdSize {
     var height: CGFloat { set get }
     var width: CGFloat {set get}
     func getAdSize() -> CGSize
@@ -17,7 +17,7 @@ public protocol AdSize{
 }
 
 // 320 x 50
-struct Banner: AdSize{
+struct Banner: AdSize {
     var width: CGFloat = 320.0
     
     var height: CGFloat = 50.0
@@ -32,7 +32,7 @@ struct Banner: AdSize{
 }
 
 // 468 x 60
-struct FullBanner: AdSize{
+struct FullBanner: AdSize {
 
     var height: CGFloat = 60.0
     
@@ -48,7 +48,7 @@ struct FullBanner: AdSize{
 }
 
 // 300 x 250
-struct MediumRectangle : AdSize{
+struct MediumRectangle : AdSize {
     
     var height: CGFloat = 250.0
     
@@ -64,7 +64,7 @@ struct MediumRectangle : AdSize{
 }
 
 // 320 x 100
-struct LargeBanner: AdSize{
+struct LargeBanner: AdSize {
     
     var height: CGFloat = 100.0
     
@@ -80,7 +80,7 @@ struct LargeBanner: AdSize{
 }
 
 // 728 x 90
-struct LeaderBoard: AdSize{
+struct LeaderBoard: AdSize {
     
     var height: CGFloat = 90.0
     
@@ -92,6 +92,22 @@ struct LeaderBoard: AdSize{
     
     func getAdSizeName() -> String {
         return "LEADERBOARD"
+    }
+}
+
+// 300 x 50
+struct SmallBanner: AdSize {
+    
+    var height: CGFloat = 50.0
+    
+    var width: CGFloat = 300.0
+    
+    func getAdSize() -> CGSize {
+        return CGSize(width: width, height: height)
+    }
+    
+    func getAdSizeName() -> String {
+        return "SMALLBANNER"
     }
 }
 

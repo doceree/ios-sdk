@@ -60,7 +60,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     public convenience init?(with size: String?){
         self.init()
-        if size == nil || size?.count == 0{
+        if size == nil || size?.count == 0 {
             if #available(iOS 10.0, *) {
                 os_log("Error: Please provide a valid size!", log: .default, type: .error)
             } else {
@@ -102,11 +102,19 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                 // Fallback on earlier versions
             }
         } else{
-            if adSize is Banner{
+            if adSize is Banner {
                 self.adSize = Banner()
-            } else if adSize is LargeBanner{
+            } else if adSize is FullBanner {
+                self.adSize = FullBanner()
+            } else if adSize is MediumRectangle {
+                self.adSize = MediumRectangle()
+            } else if adSize is LargeBanner {
                 self.adSize = LargeBanner()
-            } else{
+            } else if adSize is LeaderBoard {
+                self.adSize = LeaderBoard()
+            } else if adSize is SmallBanner {
+                self.adSize = SmallBanner()
+            } else {
                 self.adSize = Banner()
             }
         }
@@ -365,10 +373,9 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     //Mark: Action method
     @objc func onImageTouched(_ sender: UITapGestureRecognizer){
         DocereeAdView.self.didLeaveAd = true
-        let url = URL(string: ctaLink!)
-        if url != nil && UIApplication.shared.canOpenURL(url!){
+        if let url = URL(string: "\(ctaLink ?? "")"), !url.absoluteString.isEmpty {
             AdsRefreshCountdownTimer.shared.stopRefresh()
-            UIApplication.shared.openURL(url!)
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
             self.removeAllViews()
         }
     }

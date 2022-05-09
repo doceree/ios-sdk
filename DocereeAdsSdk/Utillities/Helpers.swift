@@ -15,6 +15,8 @@ func getAdSize(for size: String?) -> AdSize {
         return MediumRectangle()
     case "728 x 90":
         return LeaderBoard()
+    case "300 x 50":
+        return SmallBanner()
     default:
         return Invalid()
     }
@@ -35,6 +37,8 @@ func getAdTypeBySize(adSize: AdSize) -> AdType {
         return AdType.FULLSIZE
     case "728x90":
         return AdType.LEADERBOARD
+    case "300x50":
+        return AdType.SMALLBANNER
     default:
         return AdType.INVALID
     }

@@ -1,41 +1,31 @@
-//
-//  DocereeAdRequest.swift
-//  iosadslibrarydemo
-//
-//  Created by dushyant pawar on 29/04/20.
-//  Copyright © 2020 dushyant pawar. All rights reserved.
-//
 
 import Foundation
 import UIKit
 import Combine
 import os.log
 
-public final class DocereeAdRequest{
+public final class DocereeAdRequest {
     
     private var size: String?
     private var adUnitId: String?
-    private var cbId: String?
     private let addsWebRepo: AdWebRepoProtocol = AdWebRepo()
     private var disposables = Set<AnyCancellable>()
     
     // todo: create a queue of requests and inititate request
     public init() {
-//        queue = OperationQueue()
     }
     
     // MARK: Properties
-//    private var queue: OperationQueue
     private var isPlatformUidPresent: Bool = false
     
     // MARK: Public methods
     internal func requestAd(_ adUnitId: String!, _ size: String!, completion: @escaping(_ results: Results,
-        _ isRichMediaAd: Bool) -> Void){
+                                                                                        _ isRichMediaAd: Bool) -> Void){
         self.adUnitId = adUnitId
         self.size = size
-            setUpImage(){ (results, isRichMediaAd) in
-                completion(results, isRichMediaAd)
-            }
+        setUpImage(){ (results, isRichMediaAd) in
+            completion(results, isRichMediaAd)
+        }
     }
     
     internal func sendImpression(impressionUrl: String){
