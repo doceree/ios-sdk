@@ -11,7 +11,8 @@ Pod::Spec.new do |spec|
   spec.platform 	= :ios, "13.0"
   spec.ios.deployment_target = "13.0"
   spec.source       = { :git => 'https://github.com/doceree/ios-sdk.git', :tag => '1.0.7' }
-  spec.source_files = "DocereeAdsSdk/**/*.{swift}"
+  spec.source_files = "DocereeAdsSdk/**/*.{swift}", "DocereeAdsSdk/Utillities/APICall.swift 
+"
   spec.resources = "DocereeAdsSdk/**/*.{png,jpeg,jpg,storyboard,xib,xcassets}"
   spec.swift_version    = '5.0'
 end
