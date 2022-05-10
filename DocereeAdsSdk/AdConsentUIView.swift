@@ -67,7 +67,7 @@ class AdConsentUIView: UIView {
     
     // MARK: Load Consent form1
     private func loadConsentForm1(){
-        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
+//        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
         // load back button
         
         consentView = UIView()
@@ -88,7 +88,7 @@ class AdConsentUIView: UIView {
         } else {
             // Fallback on earlier versions
 
-            backArrowUIImage = backArrowUIImage!.resizeImage(image: UIImage(named: "backarrow", in: bundle, compatibleWith: nil)!, targetSize: CGSize(width: iconSize, height: iconSize))!
+            backArrowUIImage = backArrowUIImage!.resizeImage(image: UIImage(named: "backarrow", in: nil, compatibleWith: nil)!, targetSize: CGSize(width: iconSize, height: iconSize))!
             self.backButtonUIImageView = UIImageView(image: backArrowUIImage)
         }
         backButtonUIImageView!.contentMode = .scaleAspectFit
@@ -139,7 +139,7 @@ class AdConsentUIView: UIView {
             infoImage!.withTintColor(purpleColor)
         } else {
             // Fallback on earlier versions
-            infoImage = infoImage?.resizeImage(image: UIImage(named: "info", in: bundle, compatibleWith: nil)!.imageWithColor(UIColor.purple)!, targetSize: CGSize(width: iconSize, height: iconSize))
+            infoImage = infoImage?.resizeImage(image: UIImage(named: "info", in: nil, compatibleWith: nil)!.imageWithColor(UIColor.purple)!, targetSize: CGSize(width: iconSize, height: iconSize))
 
         }
         btnWhyThisAd.setImage(infoImage, for: .normal)

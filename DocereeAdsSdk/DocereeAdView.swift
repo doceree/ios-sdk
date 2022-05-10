@@ -286,14 +286,14 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     private func setupConsentIcons() {
-        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
+//        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
 
         if #available(iOS 13.0, *) {
             let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
             self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))
         } else {
             // Fallback on earlier versions
-            self.crossImageView = UIImageView(image: UIImage(named: "xmark", in: bundle, compatibleWith: nil))
+            self.crossImageView = UIImageView(image: UIImage(named: "xmark", in: nil, compatibleWith: nil))
         }
         
         crossImageView!.frame = CGRect(x: Int(adSize!.width) - iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
@@ -307,7 +307,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
         self.infoImageView = UIImageView(image: UIImage(systemName: "info.circle", withConfiguration: lightConfiguration))
         } else {
-            self.infoImageView = UIImageView(image: UIImage(named: "info", in: bundle, compatibleWith: nil))
+            self.infoImageView = UIImageView(image: UIImage(named: "info", in: nil, compatibleWith: nil))
         }
         infoImageView!.frame = CGRect(x: Int(adSize!.width) - 2*iconWidth, y: iconHeight/10, width: iconWidth, height: iconHeight)
         infoImageView!.tintColor =  UIColor.init(hexString: "#6C40F7")
