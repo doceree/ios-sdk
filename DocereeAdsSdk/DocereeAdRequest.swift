@@ -79,7 +79,7 @@ public final class DocereeAdRequest {
             let data: Data = json.data(using: .utf8)!
             let json_string = String(data: data, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "")
 
-            if let platformuid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String {
+            if NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) is String {
                 self.isPlatformUidPresent = true
             } else{
                 self.isPlatformUidPresent = false

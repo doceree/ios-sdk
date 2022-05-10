@@ -38,10 +38,7 @@ public final class DocereeMobileAds{
     public typealias CompletionHandler = ((_ completionStatus:Any?) -> Void)?
     
     public func start(completionHandler: CompletionHandler){
-        
-        let obj: Any? = CompletionStatus.Loading
-        (obj)
-        
+
         if #available(iOS 14, *) {
             #if canImport(AdSupport) && canImport(AppTrackingTransparency)
             ATTrackingManager.requestTrackingAuthorization{ (status) in

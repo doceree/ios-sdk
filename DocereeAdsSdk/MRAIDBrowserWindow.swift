@@ -21,6 +21,27 @@ public class MRAIDBrowserWindow : UIViewController, WKUIDelegate, WKNavigationDe
     private var dividerRect = CGRect(x:0, y:0, width:4.0, height:btnHeight)
     private var onCloseDelegate:()->Void = {}
     
+    private lazy var statusBarHeight: CGFloat = {
+            var statusBarHeight: CGFloat = 0
+            if #available(iOS 13.0, *) {
+                let window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+                statusBarHeight = window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
+            } else {
+                statusBarHeight = UIApplication.shared.statusBarFrame.height
+            }
+            return statusBarHeight
+        }()
+    
+    private lazy var isStatusBarHidden: Bool = {
+            var statusBarHeight: CGFloat = 0
+            if #available(iOS 13.0, *) {
+                let window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+                isStatusBarHidden = ((window?.windowScene?.statusBarManager?.isStatusBarHidden) != nil)
+            } else {
+                isStatusBarHidden = UIApplication.shared.isStatusBarHidden
+            }
+            return isStatusBarHidden
+        }()
     
     public func initialize(){
         webView = WKWebView()
@@ -158,13 +179,13 @@ public class MRAIDBrowserWindow : UIViewController, WKUIDelegate, WKNavigationDe
     
     private func setOldIOSFrames(_ invert:Bool = false){
         if(invert){
-            let navigationRect = CGRect(x:0, y:UIApplication.shared.isStatusBarHidden ? 0 : UIApplication.shared.statusBarFrame.height, width:UIScreen.main.bounds.height, height:MRAIDBrowserWindow.navHeight)
-            let webViewRect = CGRect(x:0, y:MRAIDBrowserWindow.navHeight + (UIApplication.shared.isStatusBarHidden ? 0 : UIApplication.shared.statusBarFrame.height), width:UIScreen.main.bounds.height, height:UIScreen.main.bounds.width - MRAIDBrowserWindow.navHeight)
+            let navigationRect = CGRect(x: 0, y: isStatusBarHidden ? 0 : statusBarHeight, width: UIScreen.main.bounds.height, height: MRAIDBrowserWindow.navHeight)
+            let webViewRect = CGRect(x: 0, y: MRAIDBrowserWindow.navHeight + (isStatusBarHidden ? 0 : statusBarHeight), width: UIScreen.main.bounds.height, height: UIScreen.main.bounds.width - MRAIDBrowserWindow.navHeight)
             navigationView!.frame = navigationRect
             webView!.frame = webViewRect
         }else{
-            let navigationRect = CGRect(x:0, y:UIApplication.shared.isStatusBarHidden ? 0 : UIApplication.shared.statusBarFrame.height, width:UIScreen.main.bounds.width, height:MRAIDBrowserWindow.navHeight)
-            let webViewRect = CGRect(x:0, y:MRAIDBrowserWindow.navHeight + (UIApplication.shared.isStatusBarHidden ? 0 : UIApplication.shared.statusBarFrame.height), width:UIScreen.main.bounds.width, height:UIScreen.main.bounds.height - MRAIDBrowserWindow.navHeight)
+            let navigationRect = CGRect(x: 0, y: isStatusBarHidden ? 0 : statusBarHeight, width: UIScreen.main.bounds.width, height: MRAIDBrowserWindow.navHeight)
+            let webViewRect = CGRect(x: 0, y: MRAIDBrowserWindow.navHeight + (isStatusBarHidden ? 0 : statusBarHeight), width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - MRAIDBrowserWindow.navHeight)
             navigationView!.frame = navigationRect
             webView!.frame = webViewRect
         }
