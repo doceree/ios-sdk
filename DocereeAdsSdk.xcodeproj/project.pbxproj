@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		54597FDC282A79060062D826 /* APICall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54597FDB282A79060062D826 /* APICall.swift */; };
 		546203EF281810D200AFF113 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546203EE281810D200AFF113 /* Helpers.swift */; };
 		546203F12818119C00AFF113 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546203F02818119C00AFF113 /* Constants.swift */; };
 		546203F528181E3000AFF113 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546203F428181E3000AFF113 /* Colors.swift */; };
 		546203F82818312900AFF113 /* AdResponseForPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546203F72818312900AFF113 /* AdResponseForPlatform.swift */; };
 		546203FC2818347E00AFF113 /* PathUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546203FB2818347E00AFF113 /* PathUtility.swift */; };
 		546204052819550A00AFF113 /* AdRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546204042819550A00AFF113 /* AdRequest.swift */; };
-		54620407281955A900AFF113 /* APICall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54620406281955A900AFF113 /* APICall.swift */; };
 		54620409281959F300AFF113 /* HTTPSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54620408281959F300AFF113 /* HTTPSupport.swift */; };
 		5462040D2819820700AFF113 /* AdWebRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5462040C2819820700AFF113 /* AdWebRepo.swift */; };
 		5462040F281982D100AFF113 /* Parsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5462040E281982D100AFF113 /* Parsing.swift */; };
@@ -42,13 +42,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		54597FDB282A79060062D826 /* APICall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APICall.swift; sourceTree = "<group>"; };
 		546203EE281810D200AFF113 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		546203F02818119C00AFF113 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		546203F428181E3000AFF113 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		546203F72818312900AFF113 /* AdResponseForPlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdResponseForPlatform.swift; sourceTree = "<group>"; };
 		546203FB2818347E00AFF113 /* PathUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathUtility.swift; sourceTree = "<group>"; };
 		546204042819550A00AFF113 /* AdRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdRequest.swift; sourceTree = "<group>"; };
-		54620406281955A900AFF113 /* APICall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = APICall.swift; path = "../../../../../../../Muqeem/ios-assettracker/ios-assettracker/ELDMandatePortal/Utillities/APICall.swift"; sourceTree = "<group>"; };
 		54620408281959F300AFF113 /* HTTPSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPSupport.swift; sourceTree = "<group>"; };
 		5462040C2819820700AFF113 /* AdWebRepo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdWebRepo.swift; sourceTree = "<group>"; };
 		5462040E281982D100AFF113 /* Parsing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parsing.swift; sourceTree = "<group>"; };
@@ -99,7 +99,7 @@
 				546203F02818119C00AFF113 /* Constants.swift */,
 				546203F428181E3000AFF113 /* Colors.swift */,
 				546203FB2818347E00AFF113 /* PathUtility.swift */,
-				54620406281955A900AFF113 /* APICall.swift */,
+				54597FDB282A79060062D826 /* APICall.swift */,
 				54620408281959F300AFF113 /* HTTPSupport.swift */,
 				5462040E281982D100AFF113 /* Parsing.swift */,
 			);
@@ -260,6 +260,7 @@
 			files = (
 				566465D824F7C74200FDFACE /* Hcp.swift in Sources */,
 				546203F82818312900AFF113 /* AdResponseForPlatform.swift in Sources */,
+				54597FDC282A79060062D826 /* APICall.swift in Sources */,
 				546203F528181E3000AFF113 /* Colors.swift in Sources */,
 				566465E324F7C74200FDFACE /* DocereeMobileAds.swift in Sources */,
 				546203EF281810D200AFF113 /* Helpers.swift in Sources */,
@@ -287,7 +288,6 @@
 				56CEDBBD2510BD29001152D6 /* AdsRefreshCountdownTimer.swift in Sources */,
 				5462040F281982D100AFF113 /* Parsing.swift in Sources */,
 				5462044D2824FFFF00AFF113 /* UAString.swift in Sources */,
-				54620407281955A900AFF113 /* APICall.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
