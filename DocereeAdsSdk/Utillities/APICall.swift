@@ -1,9 +1,3 @@
-//
-//  APICall.swift
-//  Asset Tracker
-//
-//  Created by DK on 29/09/20.
-//
 
 import Foundation
 
@@ -14,8 +8,8 @@ public protocol APICall {
 	func body() throws -> Data?
 }
 
-extension APICall {
-	func urlRequest(baseURL: String) throws -> URLRequest {
+public extension APICall {
+    func urlRequest(baseURL: String) throws -> URLRequest {
 		guard let url = URL(string: baseURL + path) else {
 			throw APIError.url(description: "Invalid URL")
 		}
@@ -28,7 +22,7 @@ extension APICall {
 	}
 }
 
-enum APIError: Error, Equatable {
+public enum APIError: Error, Equatable {
 	case parsing(description: String)
 	case network(description: String)
 	case url(description: String)
