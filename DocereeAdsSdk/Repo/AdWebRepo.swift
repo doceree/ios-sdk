@@ -29,7 +29,7 @@ extension AdWebRepo.AdWebRepoApi: APICall {
             return "/v1/adrequest?" +
             "id=\(request.id)&" +
             "size=\(request.size)&" +
-            "platformType=\(request.platformType)&appKey=\(request.appKey)&loggedInUser=\(request.loggedInUser)"
+            "platformType=\(request.platformType)&appKey=\(request.appKey)&loggedInUser=\(request.loggedInUser)&platformUid=\(request.platformUid)"
         
         case .sendImpression:
             return ""

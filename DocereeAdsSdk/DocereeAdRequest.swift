@@ -79,13 +79,15 @@ public final class DocereeAdRequest {
             let data: Data = json.data(using: .utf8)!
             let json_string = String(data: data, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "")
 
-            if NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) is String {
+            var platformuid = ""
+            if let pid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String {
+                platformuid = pid
                 self.isPlatformUidPresent = true
             } else{
                 self.isPlatformUidPresent = false
             }
             
-            let request = AdRequest(id: adUnitId ?? "", size: size ?? "", platformType: "mobileApp", appKey: appKey, loggedInUser: json_string.toBase64()!)
+            let request = AdRequest(id: adUnitId ?? "", size: size ?? "", platformType: "mobileApp", appKey: appKey, loggedInUser: json_string.toBase64()!, platformUid: platformuid)
             addsWebRepo.getAdImage(request: request)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
