@@ -56,13 +56,6 @@ func clearPlatformUid() {
 
 func savePlatformuid(_ newPlatormuid: String) {
     NSKeyedArchiver.archiveRootObject(newPlatormuid, toFile: ArchivingUrl.path)
-    do {
-        try NSKeyedArchiver.archivedData(withRootObject: newPlatormuid, requiringSecureCoding: false)
-        os_log("Meals successfully saved.", log: .default, type: .error)
-    } catch {
-        os_log("Failed to save meals...", log: .default, type: .error)
-    }
-    
 }
 
 func getIdentifierForAdvertising() -> String? {

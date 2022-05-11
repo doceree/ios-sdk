@@ -70,30 +70,44 @@ public final class DocereeAdRequest {
 
         if advertisementId != nil {
             var bse64Str = ""
-            let loggedInUser = NSKeyedUnarchiver.unarchiveObject(withFile: Hcp.ArchivingUrl.path) as? Hcp
-
-            if let platformuid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String {
-                var data: Dictionary<String, String?> = Dictionary()
-                if loggedInUser?.npi != nil {
-                    data = ["platformUid": platformuid]
-                } else {
-                    data = ["platformUid": platformuid,
-                            "city": loggedInUser?.city,
-                            "specialization": loggedInUser?.specialization,]
+            var loggedInUser: Hcp?
+            do {
+                let rawdata = try Data(contentsOf: URL(fileURLWithPath: Hcp.ArchivingUrl.path))
+                guard let userData = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(rawdata) as? Hcp else {
+                    return
                 }
-                let jsonData = try? JSONSerialization.data(withJSONObject: data, options: [])
-                bse64Str = (String(data: jsonData!, encoding: .utf8)?.toBase64()) ?? "" // encode to base64
-                self.isPlatformUidPresent = true
-            } else{
-                let jsonEncoder = JSONEncoder()
-                jsonEncoder.outputFormatting = .prettyPrinted
-                let jsonData = try? jsonEncoder.encode(loggedInUser)
-                let json = String(data: jsonData!, encoding: .utf8)!
-                let data: Data = json.data(using: .utf8)!
-                bse64Str = String(data: data, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "").toBase64() ?? ""
-                self.isPlatformUidPresent = false
+                loggedInUser = userData
+            } catch {
+                print("Couldn't read file")
             }
             
+            do {
+                let rawdata = try Data(contentsOf: URL(fileURLWithPath: ArchivingUrl.path))
+                if let plaformUid = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(rawdata) as! String? {
+                    var data: Dictionary<String, String?> = Dictionary()
+                    if loggedInUser?.npi != nil {
+                        data = ["platformUid": plaformUid]
+                    } else {
+                        data = ["platformUid": plaformUid,
+                                "city": loggedInUser?.city,
+                                "specialization": loggedInUser?.specialization,]
+                    }
+                    let jsonData = try? JSONSerialization.data(withJSONObject: data, options: [])
+                    bse64Str = (String(data: jsonData!, encoding: .utf8)?.toBase64()) ?? "" // encode to base64
+                    self.isPlatformUidPresent = true
+                } else {
+                    let jsonEncoder = JSONEncoder()
+                    jsonEncoder.outputFormatting = .prettyPrinted
+                    let jsonData = try? jsonEncoder.encode(loggedInUser)
+                    let json = String(data: jsonData!, encoding: .utf8)!
+                    let data: Data = json.data(using: .utf8)!
+                    bse64Str = String(data: data, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "").toBase64() ?? ""
+                    self.isPlatformUidPresent = false
+                }
+            } catch {
+                print("Couldn't read file")
+            }
+
             let request = AdRequest(id: adUnitId ?? "", size: size ?? "", platformType: "mobileApp", appKey: appKey, loggedInUser: bse64Str)
             addsWebRepo.getAdImage(request: request)
                 .receive(on: DispatchQueue.main)

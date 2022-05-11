@@ -28,7 +28,6 @@ public final class DocereeMobileAds{
     
     public static func login(with hcp: Hcp){
         NSKeyedArchiver.archiveRootObject(hcp, toFile: Hcp.ArchivingUrl.path)
-        //        DataController.shared.save(hcp: hcp)
     }
     
     public class func shared() -> DocereeMobileAds{
