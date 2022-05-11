@@ -7,5 +7,4 @@ struct AdRequest: Codable {
     let platformType: String
     let appKey: String
     let loggedInUser: String
-    let platformUid: String
 }
