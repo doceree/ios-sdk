@@ -249,8 +249,7 @@ public class DocereeAdViewRichMediaBanner: UIViewController, MRAIDDelegate, UINa
     }
     
     private func setupConsentIcons() {
-//        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
-        
+
         if #available(iOS 13.0, *) {
             let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
             self.crossImageView = UIImageView(image: UIImage(systemName: "xmark.square", withConfiguration: lightConfiguration))

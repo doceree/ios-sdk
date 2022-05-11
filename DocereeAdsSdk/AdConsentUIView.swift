@@ -67,9 +67,7 @@ class AdConsentUIView: UIView {
     
     // MARK: Load Consent form1
     private func loadConsentForm1(){
-//        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
-        // load back button
-        
+
         consentView = UIView()
         consentView!.backgroundColor = greyBackgroundColor
 

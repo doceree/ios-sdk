@@ -286,7 +286,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     private func setupConsentIcons() {
-//        let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
 
         if #available(iOS 13.0, *) {
             let lightConfiguration = UIImage.SymbolConfiguration(weight: .light)
