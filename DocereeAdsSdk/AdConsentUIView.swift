@@ -25,6 +25,7 @@ class AdConsentUIView: UIView {
     var isMediumRectangle: Bool = false
     var isBanner: Bool = false
     var isLeaderboard: Bool = false
+    var isSmallBanner: Bool = false
 
     private let addsWebRepo: AdWebRepoProtocol = AdWebRepo()
     private var disposables = Set<AnyCancellable>()
@@ -56,6 +57,7 @@ class AdConsentUIView: UIView {
         isMediumRectangle = getAdTypeBySize(adSize: self.adViewSize!) == AdType.MEDIUMRECTANGLE
         isBanner = getAdTypeBySize(adSize: self.adViewSize!) == AdType.BANNER
         isLeaderboard = getAdTypeBySize(adSize: self.adViewSize!) == AdType.LEADERBOARD
+        isSmallBanner = getAdTypeBySize(adSize: self.adViewSize!) == AdType.SMALLBANNER
         loadConsentForm1()
     }
     
@@ -338,12 +340,12 @@ class AdConsentUIView: UIView {
         if formConsentType == .consentType2 {
             let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.3
             let buttonHeight: CGFloat = self.adViewFrame!.height * 0.8
-            let textFontSize: CGFloat = self.isBanner ? textFontSize10 : textFontSize12
+            let textFontSize: CGFloat = (self.isBanner || self.isSmallBanner) ? textFontSize10 : textFontSize12
             return (buttonWidth, buttonHeight, textFontSize)
         } else if formConsentType == .consentType3 {
             let buttonWidth: CGFloat = isMediumRectangle ? self.adViewFrame!.width * 0.8 : self.adViewFrame!.width * 0.4
             let buttonHeight: CGFloat = self.adViewFrame!.height * 0.9
-            let textFontSize: CGFloat = self.isBanner ? textFontSize8 : textFontSize12
+            let textFontSize: CGFloat = (self.isBanner || self.isSmallBanner) ? textFontSize8 : textFontSize12
             return (buttonWidth, buttonHeight, textFontSize)
         }
         

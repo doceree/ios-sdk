@@ -10,22 +10,6 @@ extension DocereeAdRequestError: LocalizedError {
     }
 }
 
-extension Bundle {
-    // Name of the app - title under the icon.
-    var displayName: String? {
-        return object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ??
-            object(forInfoDictionaryKey: "CFBundleName") as? String
-    }
-    
-    var releaseVersionNumber: String? {
-        return self.infoDictionary?["CFBundleShortVersionString"] as? String
-    }
-    
-    var buildVersionNumber: String? {
-        return self.infoDictionary?["CFBundleVersion"] as? String
-    }
-}
-
 extension UIColor {
     convenience init(hexString: String) {
         let hex = hexString.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
