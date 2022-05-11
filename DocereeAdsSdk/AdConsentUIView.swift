@@ -387,8 +387,13 @@ class AdConsentUIView: UIView {
             consentView.alpha = 0
         }) { [self] _ in
             self.docereeAdView?.refresh()
-            if let plaformUid = NSKeyedUnarchiver.unarchiveObject(withFile: ArchivingUrl.path) as? String {
-                self.sendAdBlockRequest(self.docereeAdView!.cbId!, adblockLevel, self.docereeAdView!.docereeAdUnitId, plaformUid)
+            do {
+                let rawdata = try Data(contentsOf: URL(fileURLWithPath: ArchivingUrl.path))
+                if let plaformUid = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(rawdata) as! String? {
+                    self.sendAdBlockRequest(self.docereeAdView!.cbId!, adblockLevel, self.docereeAdView!.docereeAdUnitId, plaformUid)
+                }
+            } catch {
+                print("Couldn't read file")
             }
         }
     }
