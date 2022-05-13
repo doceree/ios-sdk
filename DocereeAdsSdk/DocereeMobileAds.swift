@@ -66,14 +66,7 @@ public final class DocereeMobileAds{
             #endif
         }
     }
-    
-    public static func clearUserData(){
-        do {
-            try FileManager.default.removeItem(at: Hcp.ArchivingUrl)
-            try FileManager.default.removeItem(at: ArchivingUrl)
-        } catch {}
-    }
-    
+
     internal enum CompletionStatus: Any{
         case Success
         case Failure
