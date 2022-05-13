@@ -48,12 +48,6 @@ func compareIfSame(presentValue: String, expectedValue: String) -> Bool {
     return presentValue.caseInsensitiveCompare(expectedValue) == ComparisonResult.orderedSame
 }
 
-func clearPlatformUid() {
-    do {
-        try FileManager.default.removeItem(at: ArchivingUrl)
-    } catch{}
-}
-
 func savePlatformuid(_ newPlatormuid: String) {
     NSKeyedArchiver.archiveRootObject(newPlatormuid, toFile: ArchivingUrl.path)
 }
