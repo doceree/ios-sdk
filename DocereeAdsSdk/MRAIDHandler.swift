@@ -45,7 +45,7 @@ public class MRAIDHandler : NSObject, WKUIDelegate, WKNavigationDelegate {
             if(url != nil && url!.absoluteString != "about:blank"){
                 if(url!.absoluteString.range(of:"servedbyadbutler.com") != nil){
                     if UIApplication.shared.canOpenURL(url!){
-                        UIApplication.shared.open(url!, options: [:], completionHandler: nil)
+                        UIApplication.shared.openURL(url!)
                         decisionHandler(.cancel)
                     } else {
                         decisionHandler(.allow)

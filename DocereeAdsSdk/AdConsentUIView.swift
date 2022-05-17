@@ -8,9 +8,14 @@
 
 import UIKit
 import WebKit
-import Combine
 
 class AdConsentUIView: UIView {
+    
+    // MARK: Properties
+    var requestHttpHeaders = RestEntity()
+    var urlQueryParameters = RestEntity()
+    var httpBodyParameters = RestEntity()
+    var httpBody: Data?
     
     // MARK: private vars
     private var verticalStackView: UIStackView?
@@ -27,9 +32,6 @@ class AdConsentUIView: UIView {
     var isLeaderboard: Bool = false
     var isSmallBanner: Bool = false
 
-    private let addsWebRepo: AdWebRepoProtocol = AdWebRepo()
-    private var disposables = Set<AnyCancellable>()
-     
     var adViewSize: AdSize?
     
     var adViewFrame: CGRect?
@@ -401,8 +403,9 @@ class AdConsentUIView: UIView {
     @objc func whyThisClicked(_ sender: UITapGestureRecognizer){
         DocereeAdView.self.didLeaveAd = true
         let whyThisLink = "https://support.doceree.com/hc/en-us/articles/360050646094-Why-this-Ad-"
-        if let url = URL(string: "\(whyThisLink)"), !url.absoluteString.isEmpty {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        let url = URL(string: whyThisLink)
+        if url != nil && UIApplication.shared.canOpenURL(url!){
+            UIApplication.shared.openURL(url!)
         }
     }
     
@@ -455,27 +458,78 @@ class AdConsentUIView: UIView {
         loadAdConsentFeedback(BlockLevel.NotInterestedInClientType.info.blockLevelCode)
     }
 
-    internal func sendAdBlockRequest(_ advertiserCampID: String?, _ blockLevel: String?, _ platformUid: String?, _ publisherACSID: String?) {
+    internal func sendAdBlockRequest(_ advertiserCampID: String?, _ blockLevel: String?, _ platformUid: String?, _ publisherACSID: String?){
         if ((advertiserCampID ?? "").isEmpty || (blockLevel ?? "").isEmpty || (platformUid ?? "").isEmpty || (publisherACSID ?? "").isEmpty) {
             return
         }
-
-        let request = AdBlockRequest(publisherACSID: publisherACSID ?? "", advertiserCampID: advertiserCampID ?? "", blockLevel: blockLevel ?? "", platformUid: platformUid ?? "")
-        addsWebRepo.sendAdBlockRequest(request: request)
-            .receive(on: DispatchQueue.main)
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    print(error.localizedDescription)
-                    break
-                }
-            } receiveValue: { (data, response) in
-                print("sendAdBlockRequest:", data, response)
-            }
-            .store(in: &disposables)
+        let ua: String = UAString.init().UAString()
+        // headers
+        self.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
+        self.requestHttpHeaders.add(value: UAString.init().UAString(), forKey: Header.header_user_agent.rawValue)
         
+        // query params
+        self.httpBodyParameters.add(value: advertiserCampID!, forKey: AdBlockService.advertiserCampID.rawValue)
+        self.httpBodyParameters.add(value: blockLevel!, forKey: AdBlockService.blockLevel.rawValue)
+        self.httpBodyParameters.add(value: platformUid!, forKey: AdBlockService.platformUid.rawValue)
+        self.httpBodyParameters.add(value: publisherACSID!, forKey: AdBlockService.publisherACSID.rawValue)
+        
+        let body = httpBodyParameters.allValues()
+//        print("AdBlock request passed is \(body)")
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = getDocTrackerHost(type: EnvironmentType.Dev)
+        components.path = getPath(methodName: Methods.AdBlock)
+        let adBlockEndPoint: URL = components.url!
+        var request: URLRequest = URLRequest(url: adBlockEndPoint)
+        request.setValue(ua, forHTTPHeaderField: Header.header_user_agent.rawValue)
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // set headers
+        for header in requestHttpHeaders.allValues() {
+            request.setValue(header.value, forHTTPHeaderField: header.key)
+        }
+        
+        request.httpMethod = HttpMethod.post.rawValue
+        let jsonData: Data
+        do {
+            jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
+            request.httpBody = jsonData
+        } catch{
+            return
+        }
+        let task = session.dataTask(with: request){(data, response, error) in
+            guard data != nil else { return }
+            _ = response as! HTTPURLResponse
+            print("Test: Send Block")
+//            print(urlResponse.statusCode)
+        }
+        task.resume()
     }
+    
+//    
+//    internal func sendAdBlockRequest(_ advertiserCampID: String?, _ blockLevel: String?, _ platformUid: String?, _ publisherACSID: String?) {
+//        if ((advertiserCampID ?? "").isEmpty || (blockLevel ?? "").isEmpty || (platformUid ?? "").isEmpty || (publisherACSID ?? "").isEmpty) {
+//            return
+//        }
+//
+//        let request = AdBlockRequest(publisherACSID: publisherACSID ?? "", advertiserCampID: advertiserCampID ?? "", blockLevel: blockLevel ?? "", platformUid: platformUid ?? "")
+//        addsWebRepo.sendAdBlockRequest(request: request)
+//            .receive(on: DispatchQueue.main)
+//            .sink { completion in
+//                switch completion {
+//                case .finished:
+//                    break
+//                case .failure(let error):
+//                    print(error.localizedDescription)
+//                    break
+//                }
+//            } receiveValue: { (data, response) in
+//                print("sendAdBlockRequest:", data, response)
+//            }
+//            .store(in: &disposables)
+//        
+//    }
     
 }

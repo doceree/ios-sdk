@@ -173,7 +173,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                         self.ctaLink = adResponseData.ctaLink
                         let isImpressionLinkNullOrEmpty: Bool = (adResponseData.impressionLink ?? "").isEmpty
                         if (!isImpressionLinkNullOrEmpty) {
-                            docereeAdRequest.sendImpression(impressionUrl: adResponseData.impressionLink!)
+                            docereeAdRequest.sendAdImpression(impressionUrl: adResponseData.impressionLink!)
                         }
                         if !isRichMediaAd{
                             if (imageUrl == nil || imageUrl?.count == 0) {
@@ -374,10 +374,10 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     //Mark: Action method
     @objc func onImageTouched(_ sender: UITapGestureRecognizer){
         DocereeAdView.self.didLeaveAd = true
-        if let url = URL(string: "\(ctaLink ?? "")"), !url.absoluteString.isEmpty {
+        let url = URL(string: ctaLink!)
+        if url != nil && UIApplication.shared.canOpenURL(url!){
             AdsRefreshCountdownTimer.shared.stopRefresh()
-            customTimer?.stop()
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            UIApplication.shared.openURL(url!)
             self.removeAllViews()
         }
     }
