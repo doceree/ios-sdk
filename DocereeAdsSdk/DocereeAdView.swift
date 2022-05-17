@@ -19,7 +19,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     var ctaLink: String?
     var cbId: String?
     static var didLeaveAd: Bool = false
-    var countDown = 30
     private var docereeAdRequest: DocereeAdRequest?
     
     var consentUV: AdConsentUIView?
@@ -34,9 +33,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     @IBOutlet public weak var rootViewController: UIViewController?
     
     var adSize: AdSize?
-    
-    var image: UIImage?
-    
+
     lazy var adImageView: UIImageView = {
         let adImageView = UIImageView()
 //        adImageView.image = setUpImage(with: adSize!)
@@ -284,12 +281,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
 
     
     private func setUpLayout(){
-//                NSLayoutConstraint.activate([
-//                           self.adImageView.topAnchor.constraint(equalTo: topAnchor),
-//                           self.adImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-//                           self.adImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-//                           self.adImageView.trailingAnchor.constraint(equalTo: trailingAnchor)
-//                       ])
         // uncomment for iOS versions 9, 10 and 11
         self.translatesAutoresizingMaskIntoConstraints = true
         clipsToBounds = true
@@ -356,8 +347,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     @objc func openAdConsentView(_ sender: UITapGestureRecognizer){
-        //         let consentVC = AdConsentViewController()
-        //        consentVC.initialize(parentViewController: self.rootViewController!, adsize: self.adSize!, frame: self.frame)
         openAdConsent()
     }
     
@@ -365,8 +354,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         consentUV = AdConsentUIView(with: self.adSize!, frame: self.frame, rootVC: self.rootViewController!, adView: self, isRichMedia: false)
         self.adImageView.removeFromSuperview()
         self.addSubview(consentUV!)
-        //        self.adImageView.addSubview(consentUV!)
-        //        self.addSubview(consentUV!)
     }
     
     public override class var requiresConstraintBasedLayout: Bool{
