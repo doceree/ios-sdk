@@ -28,7 +28,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     var infoImageView: UIImageView?
     let iconWidth = 20
     let iconHeight = 20
-    
+    var customTimer: CustomTimer?
     var banner: DocereeAdViewRichMediaBanner?
     
     @IBOutlet public weak var rootViewController: UIViewController?
@@ -242,11 +242,25 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             }
         })
         queue.addOperation(operation1)
-        AdsRefreshCountdownTimer.shared.startRefresh(){
-            self.refresh()
-        }
+//        AdsRefreshCountdownTimer.shared.startRefresh(){
+//            self.refresh()
+//        }
+        startTimer()
     }
     
+    private func startTimer() {
+        customTimer?.stop()
+        customTimer = CustomTimer { (seconds) in
+            // do whatever you want
+            print("seconds: ", seconds)
+            if self.customTimer!.count % 30 == 0 {
+                self.customTimer?.count = 0
+                self.refresh()
+            }
+        }
+        customTimer?.count = 0
+        customTimer?.start()
+    }
     //MARK: Private methods
     
     private func handleImageRendering(of imageUrl: NSURL?){
@@ -375,6 +389,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         DocereeAdView.self.didLeaveAd = true
         if let url = URL(string: "\(ctaLink ?? "")"), !url.absoluteString.isEmpty {
             AdsRefreshCountdownTimer.shared.stopRefresh()
+            customTimer?.stop()
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
             self.removeAllViews()
         }
@@ -382,6 +397,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     @objc func appMovedToBackground(){
         AdsRefreshCountdownTimer.shared.stopRefresh()
+        customTimer?.stop()
         if  DocereeAdView.didLeaveAd && delegate != nil {
             delegate?.docereeAdViewWillLeaveApplication(self)
         }
@@ -410,12 +426,14 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     deinit {
         NotificationCenter.default.removeObserver(self)
         AdsRefreshCountdownTimer.shared.stopRefresh()
+        customTimer?.stop()
     }
     
     public override func willMove(toWindow newWindow: UIWindow?) {
         if window != nil {
             NotificationCenter.default.removeObserver(self)
             AdsRefreshCountdownTimer.shared.stopRefresh()
+            customTimer?.stop()
         }
     }
     
