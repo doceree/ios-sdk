@@ -291,7 +291,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
 //                           self.adImageView.trailingAnchor.constraint(equalTo: trailingAnchor)
 //                       ])
         // uncomment for iOS versions 9, 10 and 11
-        self.translatesAutoresizingMaskIntoConstraints = false
+        self.translatesAutoresizingMaskIntoConstraints = true
         clipsToBounds = true
         // add actions here
         let tap = UITapGestureRecognizer(target: self, action: #selector(DocereeAdView.onImageTouched(_:)))
