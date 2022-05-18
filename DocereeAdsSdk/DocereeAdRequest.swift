@@ -56,10 +56,9 @@ public final class DocereeAdRequest {
         }
         task.resume()
     }
-    
-    
+
     internal func setUpImage(_ size: String!, _ slotId: String!, completion: @escaping(_ results: Results, _ isRichmedia: Bool) -> Void){
-        
+
         guard let appKey = Bundle.main.object(forInfoDictionaryKey: "DocereeAdsIdentifier") as? String else {
             if #available(iOS 10.0, *) {
                 os_log("Error: Missing DocereeIdentifier key!", log: .default, type: .error)
@@ -112,7 +111,7 @@ public final class DocereeAdRequest {
             self.requestHttpHeaders.add(value: Bundle.main.displayName!, forKey: Header.header_app_name.rawValue)
             self.requestHttpHeaders.add(value: Bundle.main.bundleIdentifier!, forKey: Header.header_app_bundle.rawValue)
             self.requestHttpHeaders.add(value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String, forKey: Header.header_app_version.rawValue)
-            self.requestHttpHeaders.add(value: frameWorkVersion, forKey: Header.header_lib_version.rawValue)
+            self.requestHttpHeaders.add(value: sdkVersion, forKey: Header.header_lib_version.rawValue)
             
             // query params
             self.urlQueryParameters.add(value: appKey, forKey: QueryParamsForGetImage.appKey.rawValue) // DocereeAdsIdentifier
