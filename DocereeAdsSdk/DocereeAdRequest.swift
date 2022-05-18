@@ -41,11 +41,9 @@ public final class DocereeAdRequest {
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
         
-        if (self.requestHttpHeaders != nil) {
-            // set headers
-            for header in requestHttpHeaders.allValues() {
-                urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
-            }
+        // set headers
+        for header in requestHttpHeaders.allValues() {
+            urlRequest.setValue(header.value, forHTTPHeaderField: header.key)
         }
         
         let task = session.dataTask(with: urlRequest){ (data, response, error) in
@@ -81,26 +79,16 @@ public final class DocereeAdRequest {
             return
         }
         if advertisementId != nil {
-            var cbId: String?
-            var ctaLink: String?
-            var impressionUrl: String?
-            var sourceUrl: String?
             let loggedInUser = NSKeyedUnarchiver.unarchiveObject(withFile: Hcp.ArchivingUrl.path) as? Hcp
-            var isAdRichMedia: Bool
-            
-            let bundle = Bundle(identifier: "com.doceree.DocereeAdsSdk")!
-            let frameWorkVersion = bundle.infoDictionary![kCFBundleVersionKey as String] as! String
-            
+ 
             //        var loggedInUser = DataController.shared.getLoggedInUser()
             let jsonEncoder = JSONEncoder()
             jsonEncoder.outputFormatting = .prettyPrinted
             let jsonData = try? jsonEncoder.encode(loggedInUser)
             let json = String(data: jsonData!, encoding: .utf8)!
-            var data: Data = json.data(using: .utf8)!
-            let json_dict = try! JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: String]
-            let json_data = try? jsonEncoder.encode(json_dict)
+            let data: Data = json.data(using: .utf8)!
             let json_string = String(data: data, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "")
-            var ua = UAString.init().UAString()
+            let ua = UAString.init().UAString()
             
             //header
             //            self.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
@@ -166,23 +154,19 @@ public final class DocereeAdRequest {
                         let adResponseData: AdResponseForPlatform = try JSONDecoder().decode(AdResponseForPlatform.self, from: data)
                         //                    print("getImage response \(adResponseData)")
                         if adResponseData.errMessage != nil && adResponseData.errMessage!.count > 0 {
-                            completion(Results(withData: nil, response: response as! HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), adResponseData.isAdRichMedia())
+                            completion(Results(withData: nil, response: response as? HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), adResponseData.isAdRichMedia())
                             return
                         }
                         if !self.isPlatformUidPresent && adResponseData.newPlatformUid != nil {
                             // MARK check zone tag here later on for US based users' response
                             savePlatformuid(adResponseData.newPlatformUid!)
                         }
-                        sourceUrl = adResponseData.sourceURL
-                        cbId = adResponseData.CBID
-                        ctaLink = adResponseData.ctaLink
-                        impressionUrl = adResponseData.impressionLink
-                        completion(Results(withData: data, response: response as! HTTPURLResponse, error: nil), adResponseData.isAdRichMedia())
+                        completion(Results(withData: data, response: response as? HTTPURLResponse, error: nil), adResponseData.isAdRichMedia())
                     } catch{
-                        completion(Results(withData: nil, response: response as! HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), false)
+                        completion(Results(withData: nil, response: response as? HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), false)
                     }
                 } else {
-                    completion(Results(withData: nil, response: response as! HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), false)
+                    completion(Results(withData: nil, response: response as? HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), false)
                 }
             }
             task.resume()
