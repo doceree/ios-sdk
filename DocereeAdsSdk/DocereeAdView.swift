@@ -249,7 +249,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         customTimer?.stop()
         customTimer = CustomTimer { (seconds) in
             // do whatever you want
-            print("seconds: ", seconds)
+//            print("seconds: ", seconds)
             if self.customTimer!.count % 30 == 0 {
                 self.customTimer?.count = 0
                 self.refresh()
