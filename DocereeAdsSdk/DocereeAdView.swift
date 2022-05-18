@@ -16,6 +16,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     //MARK: Properties
     public var docereeAdUnitId: String = String.init()
     public var delegate: DocereeAdViewDelegate?
+    public var position: AdPosition = .custom
     var ctaLink: String?
     var cbId: String?
     static var didLeaveAd: Bool = false
@@ -29,7 +30,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     let iconHeight = 20
     var customTimer: CustomTimer?
     var banner: DocereeAdViewRichMediaBanner?
-    
     @IBOutlet public weak var rootViewController: UIViewController?
     
     var adSize: AdSize?
@@ -54,8 +54,18 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         addSubview(adImageView)
         setUpLayout()
     }
+ 
+    public convenience init?(with size: String?, and origin: CGPoint, adPosition: AdPosition?){
+        self.init(with: size, adPosition: adPosition!)
+        
+        adSize = getAdSize(for: size)
+        if adSize!.width > UIScreen.main.bounds.width {
+            self.adSize?.width = UIScreen.main.bounds.width
+        }
+        self.init(with: adSize, and: origin, adPosition: adPosition!)
+    }
     
-    public convenience init?(with size: String?){
+    public convenience init?(with size: String?, adPosition: AdPosition) {
         self.init()
         if size == nil || size?.count == 0 {
             if #available(iOS 10.0, *) {
@@ -79,19 +89,10 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         if adSize!.width > UIScreen.main.bounds.width {
             self.adSize?.width = UIScreen.main.bounds.width
         }
-        self.init(with: adSize)
+        self.init(with: adSize, adPosition: adPosition)
     }
-    
-    public convenience init?(with size: String?, and origin: CGPoint){
-        self.init(with: size)
-        adSize = getAdSize(for: size)
-        if adSize!.width > UIScreen.main.bounds.width {
-            self.adSize?.width = UIScreen.main.bounds.width
-        }
-        self.init(with: adSize, and: origin)
-    }
-    
-    private convenience init(with adSize: AdSize?){
+   
+    private convenience init(with adSize: AdSize?, adPosition: AdPosition){
         self.init(frame: CGRect(x: .zero, y: .zero, width: (adSize?.width)!, height: (adSize?.height)!))
         if adSize == nil {
             if #available(iOS 10.0, *) {
@@ -116,11 +117,12 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                 self.adSize = Banner()
             }
         }
+        self.position = adPosition
         addSubview(adImageView)
         setUpLayout()
     }
     
-    private convenience init(with adSize: AdSize?, and origin: CGPoint){
+    private convenience init(with adSize: AdSize?, and origin: CGPoint, adPosition: AdPosition){
         self.init(frame: CGRect(x: origin.x, y: origin.y, width: (adSize?.width)!, height: (adSize?.height)!))
         if adSize == nil {
             if #available(iOS 10.0, *) {
@@ -131,8 +133,23 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         } else{
             self.adSize = adSize
         }
+        self.position = adPosition
         addSubview(adImageView)
         setUpLayout()
+    }
+    
+    private func setUpLayout() {
+        // uncomment for iOS versions 9, 10 and 11
+        if self.position == .top || self.position == .bottom {
+            self.translatesAutoresizingMaskIntoConstraints = false
+        } else {
+            self.translatesAutoresizingMaskIntoConstraints = true
+        }
+        clipsToBounds = true
+        // add actions here
+        let tap = UITapGestureRecognizer(target: self, action: #selector(DocereeAdView.onImageTouched(_:)))
+        self.adImageView.addGestureRecognizer(tap)
+        self.adImageView.isUserInteractionEnabled = true
     }
     
     public override var intrinsicContentSize: CGSize{
@@ -279,17 +296,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         }
     }
 
-    
-    private func setUpLayout(){
-        // uncomment for iOS versions 9, 10 and 11
-        self.translatesAutoresizingMaskIntoConstraints = true
-        clipsToBounds = true
-        // add actions here
-        let tap = UITapGestureRecognizer(target: self, action: #selector(DocereeAdView.onImageTouched(_:)))
-        self.adImageView.addGestureRecognizer(tap)
-        self.adImageView.isUserInteractionEnabled = true
-    }
-    
     private func setupConsentIcons() {
 
         if #available(iOS 13.0, *) {
