@@ -392,7 +392,7 @@ class AdConsentUIView: UIView {
             do {
                 let rawdata = try Data(contentsOf: URL(fileURLWithPath: ArchivingUrl.path))
                 if let plaformUid = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(rawdata) as! String? {
-                    self.sendAdBlockRequest(self.docereeAdView!.cbId!, adblockLevel, self.docereeAdView!.docereeAdUnitId, plaformUid)
+                    self.sendAdBlockRequest(self.docereeAdView!.cbId!, adblockLevel, plaformUid, self.docereeAdView!.docereeAdUnitId)
                 }
             } catch {
                 print("Couldn't read file")
@@ -501,35 +501,11 @@ class AdConsentUIView: UIView {
         }
         let task = session.dataTask(with: request){(data, response, error) in
             guard data != nil else { return }
-            _ = response as! HTTPURLResponse
+            let urlResponse = response as! HTTPURLResponse
             print("Test: Send Block")
-//            print(urlResponse.statusCode)
+            print(urlResponse.statusCode)
         }
         task.resume()
     }
-    
-//    
-//    internal func sendAdBlockRequest(_ advertiserCampID: String?, _ blockLevel: String?, _ platformUid: String?, _ publisherACSID: String?) {
-//        if ((advertiserCampID ?? "").isEmpty || (blockLevel ?? "").isEmpty || (platformUid ?? "").isEmpty || (publisherACSID ?? "").isEmpty) {
-//            return
-//        }
-//
-//        let request = AdBlockRequest(publisherACSID: publisherACSID ?? "", advertiserCampID: advertiserCampID ?? "", blockLevel: blockLevel ?? "", platformUid: platformUid ?? "")
-//        addsWebRepo.sendAdBlockRequest(request: request)
-//            .receive(on: DispatchQueue.main)
-//            .sink { completion in
-//                switch completion {
-//                case .finished:
-//                    break
-//                case .failure(let error):
-//                    print(error.localizedDescription)
-//                    break
-//                }
-//            } receiveValue: { (data, response) in
-//                print("sendAdBlockRequest:", data, response)
-//            }
-//            .store(in: &disposables)
-//        
-//    }
-    
+
 }
