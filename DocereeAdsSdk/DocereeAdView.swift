@@ -262,6 +262,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         startTimer()
     }
     
+    //MARK: Private methods
     private func startTimer() {
         customTimer?.stop()
         customTimer = CustomTimer { (seconds) in
@@ -275,7 +276,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         customTimer?.count = 0
         customTimer?.start()
     }
-    //MARK: Private methods
     
     private func handleImageRendering(of imageUrl: NSURL?){
         if imageUrl == nil || imageUrl?.absoluteString?.count == 0 {
@@ -383,6 +383,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         let url = URL(string: ctaLink!)
         if url != nil && UIApplication.shared.canOpenURL(url!){
             AdsRefreshCountdownTimer.shared.stopRefresh()
+            customTimer?.stop()
             UIApplication.shared.openURL(url!)
             self.removeAllViews()
         }
