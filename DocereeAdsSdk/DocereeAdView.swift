@@ -382,7 +382,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         DocereeAdView.self.didLeaveAd = true
         let url = URL(string: ctaLink!)
         if url != nil && UIApplication.shared.canOpenURL(url!){
-            AdsRefreshCountdownTimer.shared.stopRefresh()
+//            AdsRefreshCountdownTimer.shared.stopRefresh()
             customTimer?.stop()
             UIApplication.shared.openURL(url!)
             self.removeAllViews()
@@ -390,7 +390,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     @objc func appMovedToBackground(){
-        AdsRefreshCountdownTimer.shared.stopRefresh()
+//        AdsRefreshCountdownTimer.shared.stopRefresh()
         customTimer?.stop()
         if  DocereeAdView.didLeaveAd && delegate != nil {
             delegate?.docereeAdViewWillLeaveApplication(self)
@@ -419,14 +419,14 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-        AdsRefreshCountdownTimer.shared.stopRefresh()
+//        AdsRefreshCountdownTimer.shared.stopRefresh()
         customTimer?.stop()
     }
     
     public override func willMove(toWindow newWindow: UIWindow?) {
         if window != nil {
             NotificationCenter.default.removeObserver(self)
-            AdsRefreshCountdownTimer.shared.stopRefresh()
+//            AdsRefreshCountdownTimer.shared.stopRefresh()
             customTimer?.stop()
         }
     }
