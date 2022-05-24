@@ -12,4 +12,5 @@ import Foundation
 // MARK: Archiving paths
 let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
 let ArchivingUrl = DocumentsDirectory.appendingPathComponent("platformuid")
+let DocereeAdsIdArchivingUrl = DocumentsDirectory.appendingPathComponent("DocereeAdsId")
 

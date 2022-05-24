@@ -57,7 +57,7 @@ public final class DocereeAdRequest {
 
     internal func setUpImage(_ size: String!, _ slotId: String!, completion: @escaping(_ results: Results, _ isRichmedia: Bool) -> Void){
 
-        guard let appKey = Bundle.main.object(forInfoDictionaryKey: "DocereeAdsIdentifier") as? String else {
+        guard let appKey = NSKeyedUnarchiver.unarchiveObject(withFile: DocereeAdsIdArchivingUrl.path) as? String else {
             if #available(iOS 10.0, *) {
                 os_log("Error: Missing DocereeIdentifier key!", log: .default, type: .error)
             } else {
