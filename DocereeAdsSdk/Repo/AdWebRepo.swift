@@ -1,6 +1,5 @@
 
 import Foundation
-import Combine
 
 // MARK: Base class
 class AdWebRepo {
@@ -66,43 +65,43 @@ extension AdWebRepo.AdWebRepoApi: APICall {
         }
     }
 }
-
-// MARK: Protocol
-protocol AdWebRepoProtocol {
-    func getAdImage(request: AdRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
-    func sendAdImpression(request: String) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
-    func sendAdBlockRequest(request: AdBlockRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
-}
-
-// MARK: Implementation
-extension AdWebRepo: AdWebRepoProtocol {
-
-    func getAdImage(request: AdRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
-         let apiRequest = try? AdWebRepoApi.getAdImage(request)
-             .urlRequest(baseURL: "https://dev-bidder.doceree.com")
-        return session.dataTaskPublisher(for: apiRequest!)
-                .eraseToAnyPublisher()
-    }
-    
-    func sendAdImpression(request: String) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
-        let apiRequest = (try? AdWebRepoApi.sendImpression
-            .urlRequest(baseURL: request)) ?? opetionalRequest()
-        return session.dataTaskPublisher(for: apiRequest)
-            .eraseToAnyPublisher()
-    }
-    
-    func sendAdBlockRequest(request: AdBlockRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
-        let apiRequest = (try? AdWebRepoApi.blockRequest(request)
-            .urlRequest(baseURL: "https://dev-tracking.doceree.com")) ?? opetionalRequest()
-        return session.dataTaskPublisher(for: apiRequest)
-            .eraseToAnyPublisher()
-    }
-
-    
-    // Optional request
-    func opetionalRequest() -> URLRequest {
-        let url = URL(string: "")!
-        let request = URLRequest(url: url)
-        return request
-    }
-}
+//
+//// MARK: Protocol
+//protocol AdWebRepoProtocol {
+//    func getAdImage(request: AdRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
+//    func sendAdImpression(request: String) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
+//    func sendAdBlockRequest(request: AdBlockRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
+//}
+//
+//// MARK: Implementation
+//extension AdWebRepo: AdWebRepoProtocol {
+//
+//    func getAdImage(request: AdRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
+//         let apiRequest = try? AdWebRepoApi.getAdImage(request)
+//             .urlRequest(baseURL: "https://dev-bidder.doceree.com")
+//        return session.dataTaskPublisher(for: apiRequest!)
+//                .eraseToAnyPublisher()
+//    }
+//    
+//    func sendAdImpression(request: String) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
+//        let apiRequest = (try? AdWebRepoApi.sendImpression
+//            .urlRequest(baseURL: request)) ?? opetionalRequest()
+//        return session.dataTaskPublisher(for: apiRequest)
+//            .eraseToAnyPublisher()
+//    }
+//    
+//    func sendAdBlockRequest(request: AdBlockRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
+//        let apiRequest = (try? AdWebRepoApi.blockRequest(request)
+//            .urlRequest(baseURL: "https://dev-tracking.doceree.com")) ?? opetionalRequest()
+//        return session.dataTaskPublisher(for: apiRequest)
+//            .eraseToAnyPublisher()
+//    }
+//
+//    
+//    // Optional request
+//    func opetionalRequest() -> URLRequest {
+//        let url = URL(string: "")!
+//        let request = URLRequest(url: url)
+//        return request
+//    }
+//}

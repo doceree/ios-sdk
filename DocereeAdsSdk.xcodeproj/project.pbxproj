@@ -23,6 +23,7 @@
 		5462044928240C9C00AFF113 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5462044728240C9C00AFF113 /* Extensions.swift */; };
 		5462044B28240CAF00AFF113 /* ImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5462044A28240CAF00AFF113 /* ImageExtensions.swift */; };
 		5462044D2824FFFF00AFF113 /* UAString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5462044C2824FFFF00AFF113 /* UAString.swift */; };
+		54EBB026283373F200C7B249 /* CustomTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EBB025283373F200C7B249 /* CustomTimer.swift */; };
 		5660E01D25F792B900838E56 /* AdConsentUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5660E01C25F792B900838E56 /* AdConsentUIView.swift */; };
 		566465BF24F7C72300FDFACE /* DocereeAdsSdk.h in Headers */ = {isa = PBXBuildFile; fileRef = 566465BD24F7C72300FDFACE /* DocereeAdsSdk.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		566465D724F7C74200FDFACE /* MRAIDBrowserWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566465C624F7C74100FDFACE /* MRAIDBrowserWindow.swift */; };
@@ -58,6 +59,7 @@
 		5462044728240C9C00AFF113 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		5462044A28240CAF00AFF113 /* ImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageExtensions.swift; sourceTree = "<group>"; };
 		5462044C2824FFFF00AFF113 /* UAString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UAString.swift; sourceTree = "<group>"; };
+		54EBB025283373F200C7B249 /* CustomTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTimer.swift; sourceTree = "<group>"; };
 		5660E01C25F792B900838E56 /* AdConsentUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdConsentUIView.swift; sourceTree = "<group>"; };
 		566465BA24F7C72300FDFACE /* DocereeAdsSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DocereeAdsSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		566465BD24F7C72300FDFACE /* DocereeAdsSdk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocereeAdsSdk.h; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				566465BE24F7C72300FDFACE /* Info.plist */,
 				56CEDBBC2510BD29001152D6 /* AdsRefreshCountdownTimer.swift */,
 				5660E01C25F792B900838E56 /* AdConsentUIView.swift */,
+				54EBB025283373F200C7B249 /* CustomTimer.swift */,
 			);
 			path = DocereeAdsSdk;
 			sourceTree = "<group>";
@@ -285,6 +288,7 @@
 				5462043B2823FB3100AFF113 /* AdSize.swift in Sources */,
 				54620409281959F300AFF113 /* HTTPSupport.swift in Sources */,
 				5462044828240C9C00AFF113 /* StringExtensions.swift in Sources */,
+				54EBB026283373F200C7B249 /* CustomTimer.swift in Sources */,
 				56CEDBBD2510BD29001152D6 /* AdsRefreshCountdownTimer.swift in Sources */,
 				5462040F281982D100AFF113 /* Parsing.swift in Sources */,
 				5462044D2824FFFF00AFF113 /* UAString.swift in Sources */,
@@ -437,13 +441,13 @@
 				EXCLUDED_ARCHS = "";
 				INFOPLIST_FILE = DocereeAdsSdk/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.1.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.doceree.DocereeAdsSdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -470,13 +474,13 @@
 				EXCLUDED_ARCHS = "";
 				INFOPLIST_FILE = DocereeAdsSdk/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.1.3;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.doceree.DocereeAdsSdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";

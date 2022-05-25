@@ -175,12 +175,6 @@ public final class Hcp: NSObject, NSCoding, Encodable{
     
 }
 
-internal func clearUserData(){
-    do {
-        try FileManager.default.removeItem(at: Hcp.ArchivingUrl)
-    } catch{}
-}
-
 struct HcpProfile {
     static let firstName = "firstname"
     static let lastName = "lastname"

@@ -16,10 +16,10 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     //MARK: Properties
     public var docereeAdUnitId: String = String.init()
     public var delegate: DocereeAdViewDelegate?
+    public var position: AdPosition = .custom
     var ctaLink: String?
     var cbId: String?
     static var didLeaveAd: Bool = false
-    var countDown = 30
     private var docereeAdRequest: DocereeAdRequest?
     
     var consentUV: AdConsentUIView?
@@ -28,15 +28,12 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     var infoImageView: UIImageView?
     let iconWidth = 20
     let iconHeight = 20
-    
+    var customTimer: CustomTimer?
     var banner: DocereeAdViewRichMediaBanner?
-    
     @IBOutlet public weak var rootViewController: UIViewController?
     
     var adSize: AdSize?
-    
-    var image: UIImage?
-    
+
     lazy var adImageView: UIImageView = {
         let adImageView = UIImageView()
 //        adImageView.image = setUpImage(with: adSize!)
@@ -57,8 +54,18 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         addSubview(adImageView)
         setUpLayout()
     }
+ 
+    public convenience init?(with size: String?, and origin: CGPoint, adPosition: AdPosition?){
+        self.init(with: size, adPosition: adPosition!)
+        
+        adSize = getAdSize(for: size)
+        if adSize!.width > UIScreen.main.bounds.width {
+            self.adSize?.width = UIScreen.main.bounds.width
+        }
+        self.init(with: adSize, and: origin, adPosition: adPosition!)
+    }
     
-    public convenience init?(with size: String?){
+    public convenience init?(with size: String?, adPosition: AdPosition) {
         self.init()
         if size == nil || size?.count == 0 {
             if #available(iOS 10.0, *) {
@@ -82,19 +89,10 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         if adSize!.width > UIScreen.main.bounds.width {
             self.adSize?.width = UIScreen.main.bounds.width
         }
-        self.init(with: adSize)
+        self.init(with: adSize, adPosition: adPosition)
     }
-    
-    public convenience init?(with size: String?, and origin: CGPoint){
-        self.init(with: size)
-        adSize = getAdSize(for: size)
-        if adSize!.width > UIScreen.main.bounds.width {
-            self.adSize?.width = UIScreen.main.bounds.width
-        }
-        self.init(with: adSize, and: origin)
-    }
-    
-    private convenience init(with adSize: AdSize?){
+   
+    private convenience init(with adSize: AdSize?, adPosition: AdPosition){
         self.init(frame: CGRect(x: .zero, y: .zero, width: (adSize?.width)!, height: (adSize?.height)!))
         if adSize == nil {
             if #available(iOS 10.0, *) {
@@ -119,11 +117,12 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                 self.adSize = Banner()
             }
         }
+        self.position = adPosition
         addSubview(adImageView)
         setUpLayout()
     }
     
-    private convenience init(with adSize: AdSize?, and origin: CGPoint){
+    private convenience init(with adSize: AdSize?, and origin: CGPoint, adPosition: AdPosition){
         self.init(frame: CGRect(x: origin.x, y: origin.y, width: (adSize?.width)!, height: (adSize?.height)!))
         if adSize == nil {
             if #available(iOS 10.0, *) {
@@ -134,8 +133,23 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         } else{
             self.adSize = adSize
         }
+        self.position = adPosition
         addSubview(adImageView)
         setUpLayout()
+    }
+    
+    private func setUpLayout() {
+        // uncomment for iOS versions 9, 10 and 11
+        if self.position == .top || self.position == .bottom {
+            self.translatesAutoresizingMaskIntoConstraints = false
+        } else {
+            self.translatesAutoresizingMaskIntoConstraints = true
+        }
+        clipsToBounds = true
+        // add actions here
+        let tap = UITapGestureRecognizer(target: self, action: #selector(DocereeAdView.onImageTouched(_:)))
+        self.adImageView.addGestureRecognizer(tap)
+        self.adImageView.isUserInteractionEnabled = true
     }
     
     public override var intrinsicContentSize: CGSize{
@@ -176,7 +190,7 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
                         self.ctaLink = adResponseData.ctaLink
                         let isImpressionLinkNullOrEmpty: Bool = (adResponseData.impressionLink ?? "").isEmpty
                         if (!isImpressionLinkNullOrEmpty) {
-                            docereeAdRequest.sendImpression(impressionUrl: adResponseData.impressionLink!)
+                            docereeAdRequest.sendAdImpression(impressionUrl: adResponseData.impressionLink!)
                         }
                         if !isRichMediaAd{
                             if (imageUrl == nil || imageUrl?.count == 0) {
@@ -242,12 +256,26 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
             }
         })
         queue.addOperation(operation1)
-        AdsRefreshCountdownTimer.shared.startRefresh(){
-            self.refresh()
-        }
+//        AdsRefreshCountdownTimer.shared.startRefresh(){
+//            self.refresh()
+//        }
+        startTimer()
     }
     
     //MARK: Private methods
+    private func startTimer() {
+        customTimer?.stop()
+        customTimer = CustomTimer { (seconds) in
+            // do whatever you want
+//            print("seconds: ", seconds)
+            if self.customTimer!.count % 30 == 0 {
+                self.customTimer?.count = 0
+                self.refresh()
+            }
+        }
+        customTimer?.count = 0
+        customTimer?.start()
+    }
     
     private func handleImageRendering(of imageUrl: NSURL?){
         if imageUrl == nil || imageUrl?.absoluteString?.count == 0 {
@@ -268,23 +296,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         }
     }
 
-    
-    private func setUpLayout(){
-//                NSLayoutConstraint.activate([
-//                           self.adImageView.topAnchor.constraint(equalTo: topAnchor),
-//                           self.adImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-//                           self.adImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-//                           self.adImageView.trailingAnchor.constraint(equalTo: trailingAnchor)
-//                       ])
-        // uncomment for iOS versions 9, 10 and 11
-        self.translatesAutoresizingMaskIntoConstraints = false
-        clipsToBounds = true
-        // add actions here
-        let tap = UITapGestureRecognizer(target: self, action: #selector(DocereeAdView.onImageTouched(_:)))
-        self.adImageView.addGestureRecognizer(tap)
-        self.adImageView.isUserInteractionEnabled = true
-    }
-    
     private func setupConsentIcons() {
 
         if #available(iOS 13.0, *) {
@@ -342,8 +353,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     }
     
     @objc func openAdConsentView(_ sender: UITapGestureRecognizer){
-        //         let consentVC = AdConsentViewController()
-        //        consentVC.initialize(parentViewController: self.rootViewController!, adsize: self.adSize!, frame: self.frame)
         openAdConsent()
     }
     
@@ -351,8 +360,6 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
         consentUV = AdConsentUIView(with: self.adSize!, frame: self.frame, rootVC: self.rootViewController!, adView: self, isRichMedia: false)
         self.adImageView.removeFromSuperview()
         self.addSubview(consentUV!)
-        //        self.adImageView.addSubview(consentUV!)
-        //        self.addSubview(consentUV!)
     }
     
     public override class var requiresConstraintBasedLayout: Bool{
@@ -373,15 +380,18 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     //Mark: Action method
     @objc func onImageTouched(_ sender: UITapGestureRecognizer){
         DocereeAdView.self.didLeaveAd = true
-        if let url = URL(string: "\(ctaLink ?? "")"), !url.absoluteString.isEmpty {
-            AdsRefreshCountdownTimer.shared.stopRefresh()
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        let url = URL(string: ctaLink!)
+        if url != nil && UIApplication.shared.canOpenURL(url!){
+//            AdsRefreshCountdownTimer.shared.stopRefresh()
+            customTimer?.stop()
+            UIApplication.shared.openURL(url!)
             self.removeAllViews()
         }
     }
     
     @objc func appMovedToBackground(){
-        AdsRefreshCountdownTimer.shared.stopRefresh()
+//        AdsRefreshCountdownTimer.shared.stopRefresh()
+        customTimer?.stop()
         if  DocereeAdView.didLeaveAd && delegate != nil {
             delegate?.docereeAdViewWillLeaveApplication(self)
         }
@@ -409,13 +419,15 @@ public final class DocereeAdView: UIView, UIApplicationDelegate {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-        AdsRefreshCountdownTimer.shared.stopRefresh()
+//        AdsRefreshCountdownTimer.shared.stopRefresh()
+        customTimer?.stop()
     }
     
     public override func willMove(toWindow newWindow: UIWindow?) {
         if window != nil {
             NotificationCenter.default.removeObserver(self)
-            AdsRefreshCountdownTimer.shared.stopRefresh()
+//            AdsRefreshCountdownTimer.shared.stopRefresh()
+            customTimer?.stop()
         }
     }
     

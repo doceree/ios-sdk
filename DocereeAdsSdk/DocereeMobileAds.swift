@@ -26,13 +26,16 @@ public final class DocereeMobileAds{
 //        self.baseUrl = baseUrl
 //    }
     
-    public static func login(with hcp: Hcp){
-        NSKeyedArchiver.archiveRootObject(hcp, toFile: Hcp.ArchivingUrl.path)
-        //        DataController.shared.save(hcp: hcp)
-    }
-    
     public class func shared() -> DocereeMobileAds{
         return sharedNetworkManager
+    }
+    
+    public static func login(with hcp: Hcp){
+        NSKeyedArchiver.archiveRootObject(hcp, toFile: Hcp.ArchivingUrl.path)
+    }
+    
+    public static func setApplicationKey(_ key: String){
+        NSKeyedArchiver.archiveRootObject(key, toFile: DocereeAdsIdArchivingUrl.path)
     }
     
     public typealias CompletionHandler = ((_ completionStatus:Any?) -> Void)?

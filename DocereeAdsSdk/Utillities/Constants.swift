@@ -13,6 +13,7 @@ let textFontSize12: CGFloat = 12.0
 let textFontSize9: CGFloat = 9.0
 let textFontSize10: CGFloat = 10.0
 let textFontSize8: CGFloat = 8.0
+let sdkVersion = Bundle(for: DocereeAdRequest.self).infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
 
 enum AdType {
     case BANNER
@@ -91,4 +92,10 @@ enum EnvironmentType {
     case Prod
     case Local
     case Qa
+}
+
+public enum AdPosition {
+    case top
+    case bottom
+    case custom
 }
