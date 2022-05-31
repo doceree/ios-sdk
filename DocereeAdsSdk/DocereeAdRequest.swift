@@ -152,7 +152,7 @@ public final class DocereeAdRequest {
                     print("Test: Ad Request")
                     do{
                         let adResponseData: AdResponseForPlatform = try JSONDecoder().decode(AdResponseForPlatform.self, from: data)
-                        //                    print("getImage response \(adResponseData)")
+                        print("Ad Response: \(adResponseData)")
                         if adResponseData.errMessage != nil && adResponseData.errMessage!.count > 0 {
                             completion(Results(withData: nil, response: response as? HTTPURLResponse, error: DocereeAdRequestError.failedToCreateRequest), adResponseData.isAdRichMedia())
                             return
